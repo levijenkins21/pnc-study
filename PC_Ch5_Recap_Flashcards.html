@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch5 Recap Flashcards</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem 1rem 4rem}
+  .top{width:100%;max-width:660px;margin-bottom:1rem}
+  .title{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+  h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.3rem}
+  .subtitle{font-size:12px;color:#555;margin-bottom:.8rem}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem}
+  select{background:#1a1a1a;border:1px solid #2a2a2a;color:#e2e2e2;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+  .btn-sm{padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn-sm:hover{background:#222}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+  .prog-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .stats{font-size:12px;color:#555;display:flex;gap:16px;margin-bottom:1rem}
+  .stat-val{color:#e2e2e2;font-weight:600}
+  .card-wrap{width:100%;max-width:660px;perspective:1200px;cursor:pointer;margin-bottom:1rem;user-select:none}
+  .card-inner{position:relative;min-height:300px;transition:transform .5s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;min-height:300px;border-radius:16px;padding:2rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:.6rem}
+  .back .face-label{color:#1e3a6e}
+  .section-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem;text-align:center}
+  .q-text{font-size:16px;font-weight:500;color:#fff;line-height:1.5;text-align:center}
+  .a-text{font-size:15px;color:#ccc;line-height:1.65;text-align:center}
+  .nav-row{width:100%;max-width:660px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+  .counter{font-size:13px;color:#555;text-align:center;flex:1}
+  .nav-btn{padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#222}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .know-row{width:100%;max-width:660px;display:none;gap:10px;margin-bottom:1rem}
+  .card-wrap.flipped ~ .know-row{display:flex}
+  .know-btn{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;border:none;transition:opacity .15s}
+  .know-btn.yes{background:#0a2e0a;color:#4aaa4a;border:1px solid #1a4a1a}
+  .know-btn.no{background:#2e0a0a;color:#c05050;border:1px solid #4a1a1a}
+  .know-btn:hover{opacity:.8}
+  .done-screen{display:none;width:100%;max-width:660px;background:#141414;border:1px solid #222;border-radius:16px;padding:2rem;text-align:center}
+  .done-screen.show{display:block}
+  @media(max-width:480px){.q-text{font-size:14px}.a-text{font-size:13px}.face{padding:1.4rem}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="title">P&C Exam · Chapter 5</div>
+  <h1>Chapter Recap Flashcards</h1>
+  <div class="subtitle">Kansas Statutes and Regulations Common to All Lines</div>
+  <div class="controls">
+    <select id="sectionFilter" onchange="filterSection()">
+      <option value="all">All Topics</option>
+      <option value="Commissioner">Commissioner of Insurance</option>
+      <option value="Agent">Agent Regulation</option>
+      <option value="Guaranty">Insurance Guaranty Association</option>
+      <option value="Licensing">Licensing Requirements</option>
+    </select>
+    <button class="btn-sm" onclick="shuffle()">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="resetProgress()">↺ Reset</button>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+  <div class="stats">
+    <span>Card <span class="stat-val" id="cardNum">1</span> of <span class="stat-val" id="cardTotal">0</span></span>
+    <span>✓ <span class="stat-val" id="knewCount" style="color:#4aaa4a">0</span> knew it</span>
+    <span>✗ <span class="stat-val" id="stillCount" style="color:#c05050">0</span> still learning</span>
+  </div>
+</div>
+
+<div class="card-wrap" id="cardWrap" onclick="flip()">
+  <div class="card-inner">
+    <div class="face front">
+      <div class="face-label">Question — tap to reveal answer</div>
+      <div class="section-tag" id="sectionText"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Answer</div>
+      <div class="a-text" id="aText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="know-row" id="knowRow">
+  <button class="know-btn yes" onclick="markKnew()">✓ Knew it</button>
+  <button class="know-btn no" onclick="markLearning()">✗ Still learning</button>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">← Prev</button>
+  <span class="counter" id="counter"></span>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div style="font-size:32px;margin-bottom:.5rem">🎉</div>
+  <div style="font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem">Deck complete!</div>
+  <div id="doneStats" style="font-size:14px;color:#aaa;margin-bottom:1.2rem"></div>
+  <button class="btn-sm" onclick="restart()" style="padding:10px 24px;font-size:14px">Start Over</button>
+  <button class="btn-sm" onclick="reviewLearning()" style="padding:10px 24px;font-size:14px;margin-left:8px">Review Still Learning</button>
+</div>
+
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  // ── Commissioner of Insurance ─────────────────────────────────
+  { s:"Commissioner", q:"How long is the Commissioner of Insurance's term of office?", a:"4 years — elected at the same time as other state officials." },
+  { s:"Commissioner", q:"What does the Commissioner of Insurance regulate?", a:"The internal affairs of the Department of Insurance and enforcement of the Kansas Insurance Code." },
+  { s:"Commissioner", q:"Does the Commissioner of Insurance write insurance laws?", a:"No. The Commissioner enforces laws — the legislature writes them. The Commissioner does not write laws." },
+  { s:"Commissioner", q:"What is one of the Commissioner's key duties regarding authorized insurers?", a:"The Commissioner examines all authorized insurers — at least once every 5 years — to ensure solvency and compliance." },
+  // ── Agent Regulation ──────────────────────────────────────────
+  { s:"Agent", q:"How many licenses of the same type can a Kansas agent hold?", a:"Only one license of the same type is allowed per agent." },
+  { s:"Agent", q:"What must an agent be licensed for in order to transact insurance?", a:"An agent must be licensed in the specific line of authority for which they transact insurance — you cannot sell outside your licensed line." },
+  { s:"Agent", q:"What category of conduct must agents always avoid?", a:"Unfair trade practices — including misrepresentation, rebating, false advertising, defamation, coercion, and unfair discrimination." },
+  // ── Insurance Guaranty Association ───────────────────────────
+  { s:"Guaranty", q:"What is the purpose of the Kansas Insurance Guaranty Association?", a:"To protect policyowners, insureds, and beneficiaries against losses caused by insolvent insurers." },
+  { s:"Guaranty", q:"Who must be members of the Kansas Insurance Guaranty Association?", a:"All admitted (authorized) insurers doing business in Kansas must be members — it is a condition of their authority to transact business." },
+  { s:"Guaranty", q:"What are the 3 separate accounts maintained by the Insurance Guaranty Association?", a:"Life insurance, annuities, and health insurance." },
+  { s:"Guaranty", q:"What is an unfair trade practice specifically related to the Guaranty Association?", a:"Stating that an insurer's policies are guaranteed by the existence of the Association — it cannot be used as a marketing or sales tool." },
+  { s:"Guaranty", q:"What is the maximum the Guaranty Association will pay per covered P&C claim?", a:"$300,000 per claim — except workers compensation claims, which are paid in full with no cap." },
+  { s:"Guaranty", q:"What is the maximum assessment the Guaranty Association can levy on a member insurer?", a:"No more than 2% of the insurer's direct written premiums in the previous calendar year." },
+  // ── Licensing Requirements ────────────────────────────────────
+  { s:"Licensing", q:"What are the two basic steps in the Kansas producer licensing process?", a:"(1) Pass the licensing examination and (2) submit the application and required fees." },
+  { s:"Licensing", q:"What are the two types of individual producer licenses available in Kansas?", a:"Resident license and nonresident license." },
+  { s:"Licensing", q:"How long is a temporary license valid, and what is its purpose?", a:"Valid for 180 days (extendable once). Purpose: to maintain the existing business during a transition — e.g., death or disability of a licensed agent." },
+  { s:"Licensing", q:"How often must a Kansas producer license be renewed?", a:"Every 2 years (biennially) — by the last day of the agent's birth month in their biennial year." },
+  { s:"Licensing", q:"What happens to a license that lapses due to failure to complete CE?", a:"The license is suspended for 90 days. It can be reinstated within 1 year (pay $100 fee + complete CE), or within 1–4 years by reapplying. After 4 years, the agent must retake the exam." },
+  { s:"Licensing", q:"When is a producer license NOT required?", a:"When a person does not receive commissions — e.g., salaried employees not directly involved in selling insurance." },
+  { s:"Licensing", q:"What are the disciplinary actions that can be taken against a Kansas producer's license?", a:"Denial of license · Cease and desist order · Suspension, revocation, or refusal to renew · Monetary penalties." },
+  { s:"Licensing", q:"How many hours of continuing education are required for Kansas producers every 2 years?", a:"18 hours total — including at least 3 hours of ethics training." },
+  { s:"Licensing", q:"After how many years does a revoked producer need to wait before reapplying for a license?", a:"2 years from the date of the Commissioner's revocation order." }
+];
+
+let deck = [...ALL_CARDS];
+let idx = 0, knew = 0, still = 0;
+let marked = new Set();
+
+function filterSection() {
+  const val = document.getElementById('sectionFilter').value;
+  deck = val === 'all' ? [...ALL_CARDS] : ALL_CARDS.filter(c => c.s === val);
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function render() {
+  if (!deck.length) return;
+  const card = deck[idx];
+  document.getElementById('sectionText').textContent = card.s;
+  document.getElementById('qText').textContent = card.q;
+  document.getElementById('aText').textContent = card.a;
+  document.getElementById('cardWrap').classList.remove('flipped');
+  document.getElementById('cardNum').textContent = idx + 1;
+  document.getElementById('cardTotal').textContent = deck.length;
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + deck.length;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === deck.length - 1;
+  document.getElementById('prog').style.width = ((idx + 1) / deck.length * 100) + '%';
+  document.getElementById('knewCount').textContent = knew;
+  document.getElementById('stillCount').textContent = still;
+}
+
+function flip() { document.getElementById('cardWrap').classList.toggle('flipped'); }
+
+function markKnew() { if (!marked.has(idx)) { knew++; marked.add(idx); } next(); }
+function markLearning() { if (!marked.has(idx)) { still++; marked.add(idx); } next(); }
+
+function next() {
+  if (idx < deck.length - 1) { idx++; render(); } else { showDone(); }
+}
+function prev() { if (idx > 0) { idx--; render(); } }
+
+function shuffle() {
+  deck = [...ALL_CARDS].sort(() => Math.random() - .5);
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('sectionFilter').value = 'all';
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function resetProgress() {
+  deck = [...ALL_CARDS];
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('sectionFilter').value = 'all';
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function restart() { resetProgress(); }
+
+function reviewLearning() {
+  const learning = deck.filter((_, i) => marked.has(i) && still > 0);
+  deck = deck.filter((_, i) => marked.has(i));
+  if (!deck.length) deck = [...ALL_CARDS];
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function showDone() {
+  document.getElementById('doneStats').textContent =
+    'Knew it: ' + knew + ' · Still learning: ' + still + ' · Unmarked: ' + (deck.length - marked.size);
+  document.getElementById('doneScreen').classList.add('show');
+}
+
+render();
+</script>
+</body>
+</html>
