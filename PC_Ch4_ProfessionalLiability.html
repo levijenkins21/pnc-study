@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Professional Liability</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box.teal{background:#0a1a1a;border-color:#1a3a3a}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  .compare-row{display:flex;gap:0;margin-bottom:8px;border-radius:10px;overflow:hidden;border:1px solid #2a2a2a}
+  .cr-left{background:#0d1a2e;padding:10px 12px;flex:1;border-right:1px solid #1e3a6e}
+  .cr-right{background:#130d2e;padding:10px 12px;flex:1}
+  .cr-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .cr-val{font-size:12px;color:#aaa;line-height:1.5}
+  .cr-val strong{color:#e2e2e2}
+  .agr-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #1a1a1a}
+  .agr-row:last-child{border-bottom:none}
+  .agr-num{font-size:18px;font-weight:700;color:#5b8dee;flex-shrink:0;width:28px}
+  .agr-body{}
+  .agr-name{font-size:13px;font-weight:600;color:#e2e2e2;margin-bottom:2px}
+  .agr-def{font-size:12px;color:#aaa;line-height:1.5}
+  .epli-item{background:#1a1a1a;border-radius:8px;padding:8px 12px;font-size:13px;color:#aaa;line-height:1.5;margin-bottom:6px}
+  .epli-item strong{color:#e2e2e2}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}.compare-row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:9.1%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · Professional Liability</div>
+      <h1>Professional Liability</h1>
+      <p class="sub">E&O · Medical Malpractice · D&O · EPLI · Cyber Liability · Funds Transfer Fraud · Liquor Liability</p>
+    </div>
+  </div>
+
+  <!-- S2: Overview + Consent to Settle -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>Professional liability — overview</h2>
+      <ul>
+        <li>Covers professionals who provide <strong>services for a fee</strong></li>
+        <li>Protects against legal liability from <strong>negligence, errors and omissions, and rendering (or failure to render) professional services</strong></li>
+        <li><strong>Most policies written on a claims-made basis</strong></li>
+      </ul>
+      <div style="margin-top:.9rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Types of Professionals Covered</div>
+      <div class="grid3" style="gap:7px;margin-bottom:1rem">
+        <div class="box"><div class="box-val" style="font-size:12px">Physicians, surgeons, dentists — malpractice for errors in rendering or failing to render services</div></div>
+        <div class="box"><div class="box-val" style="font-size:12px">Lawyers — financial advice, contracts, legal services; wide range of E&O exposure</div></div>
+        <div class="box"><div class="box-val" style="font-size:12px">Insurance agents & brokers — incorrect advice, coverage not placed, failure to inform</div></div>
+      </div>
+      <div class="box amber">
+        <div class="box-label">Consent to Settle</div>
+        <div class="box-val">Insurer <strong>cannot settle a claim without the insured's consent</strong>. If the insured disputes negligence, they can require the insurer to defend in court — even if settlement would be cheaper. Reason: the professional's <strong>reputation is at stake</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Pro Liability vs General/Personal Liability -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Professional liability vs. general/personal liability</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <div class="compare-row">
+          <div class="cr-left"><div class="cr-label">General / Personal Liability</div><div class="cr-val">Covers losses caused by <strong>negligence</strong> of the insured. <strong>Excludes intentional acts.</strong></div></div>
+          <div class="cr-right"><div class="cr-label">Professional Liability</div><div class="cr-val">Also covers <strong>some intentional acts</strong> in addition to negligence. Example: surgeon amputates the wrong leg — intended to amputate, but it was the wrong one due to misdiagnosis. <strong>Criminal acts still excluded.</strong></div></div>
+        </div>
+        <div class="compare-row">
+          <div class="cr-left"><div class="cr-label">Settling a Claim</div><div class="cr-val">Insurer decides whether to <strong>defend or pay</strong> — usually chooses the least expensive option.</div></div>
+          <div class="cr-right"><div class="cr-label">Settling a Claim</div><div class="cr-val">Insurer <strong>cannot settle without insured's consent.</strong> Insured can force court defense to protect professional reputation.</div></div>
+        </div>
+        <div class="compare-row">
+          <div class="cr-left"><div class="cr-label">Coverage Trigger</div><div class="cr-val">Usually <strong>occurrence-based</strong></div></div>
+          <div class="cr-right"><div class="cr-label">Coverage Trigger</div><div class="cr-val">Nearly always <strong>claims-made</strong></div></div>
+        </div>
+      </div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Key phrase for exam</div>
+        <div class="box-val" style="font-size:12px">"Professional liability" now replaces "malpractice insurance" and "errors and omissions insurance" as the umbrella term for all professional coverage fields.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: E&O + Medical Malpractice -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>E&O and medical malpractice</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Errors & Omissions (E&O)</div>
+        <div class="box-val">Protects <strong>insurance agents and brokers</strong> from financial losses when insureds sue to recover losses caused by:
+          <ul style="margin-top:6px">
+            <li>Giving <strong>incorrect advice</strong></li>
+            <li><strong>Not placing</strong> requested coverage</li>
+            <li><strong>Not informing</strong> the insured of important issues</li>
+          </ul>
+          <div style="margin-top:6px;font-size:12px;color:#777">Written on a <strong style="color:#aaa">claims-made basis</strong>. States vary on interpretation. Coverage is very similar to professional liability.</div>
+        </div>
+      </div>
+      <div class="box purple">
+        <div class="box-label">Medical Malpractice</div>
+        <div class="box-val">Written for <strong>doctors, hospitals, and medical practitioners</strong> to indemnify for injuries to third parties due to legal liability for <strong>bodily injury or death</strong>.
+          <ul style="margin-top:6px">
+            <li>Responds to claims of <strong>dereliction of professional duty</strong>, failure of professional skill, misconduct, negligence, or incompetence</li>
+            <li>Covers <strong>some intentional acts</strong> (wrong surgery, wrong tooth extraction) — but not criminal acts</li>
+            <li>Nearly all written on <strong>claims-made basis</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: D&O -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Directors & Officers (D&O) liability</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">What it covers</div>
+        <div class="box-val">Protection for <strong>directors and officers (past and present)</strong> of an organization for claims arising from <strong>wrongful acts</strong> committed while acting in an official capacity.</div>
+      </div>
+      <div class="grid2" style="margin-bottom:10px;gap:8px">
+        <div class="box green">
+          <div class="box-label">Coverage Trigger</div>
+          <div class="box-val"><strong>Wrongful acts</strong> — not accident or occurrence.<br>Includes: misstatements, neglect, breach of duty</div>
+        </div>
+        <div class="box red">
+          <div class="box-label">What D&O Will NOT Pay</div>
+          <div class="box-val"><strong>Fines, penalties, or punitive damages</strong></div>
+        </div>
+      </div>
+      <div class="box amber">
+        <div class="box-label">Key distinction</div>
+        <div class="box-val">D&O pays only damages the <strong>corporation would be legally required to reimburse</strong> the director or officer. It's essentially corporate indemnification coverage.</div>
+      </div>
+      <ul style="margin-top:.9rem">
+        <li>Covers <strong>past and present</strong> directors and officers</li>
+        <li>Claim must arise from acting in an <strong>official capacity</strong></li>
+        <li>Trigger is <strong>wrongful act</strong>, not accident or occurrence</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S6: EPLI -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>Employment Practices Liability (EPLI)</h2>
+      <div class="box amber" style="margin-bottom:10px">
+        <div class="box-label">Critical gap to know</div>
+        <div class="box-val">EPLI claims are <strong>NOT covered</strong> by CGL or the employers liability section of WC. EPLI fills this gap.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">What EPLI Covers — Employer's Capacity Claims</div>
+      <div class="epli-item"><strong>Refusal to employ, termination, demotion, failure to promote, negative evaluation, reassignment, discipline, defamation or humiliation</strong> based on discrimination</div>
+      <div class="epli-item"><strong>Work-related sexual harassment</strong></div>
+      <div class="epli-item">Other work-related <strong>verbal, physical, mental, or emotional abuse</strong> related to race, color, national origin, gender, marital status, age, sexual orientation, physical or mental condition, or any other <strong>protected class established by federal, state, or local law</strong></div>
+    </div>
+  </div>
+
+  <!-- S7: Cyber Liability -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>Cyber liability & data breach</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">ISO's <strong>Internet Liability and Network Protection Policy</strong> — 5 separate agreements, each with its own aggregate limit:</p>
+      <div class="agr-row"><div class="agr-num">1</div><div class="agr-body"><div class="agr-name">Website Publishing Liability</div><div class="agr-def">Internet-related publishing perils — libel, copyright, trademark, or service mark infringement</div></div></div>
+      <div class="agr-row"><div class="agr-num">2</div><div class="agr-body"><div class="agr-name">Network Security Liability</div><div class="agr-def">Claims for <strong>failing to maintain security</strong> of a computer system</div></div></div>
+      <div class="agr-row"><div class="agr-num">3</div><div class="agr-body"><div class="agr-name">Replacement / Restoration of Electronic Data</div><div class="agr-def">Cost to replace or restore data lost due to <strong>virus, malicious instruction, or denial-of-service attack</strong></div></div></div>
+      <div class="agr-row"><div class="agr-num">4</div><div class="agr-body"><div class="agr-name">Cyber Extortion</div><div class="agr-def">Expenses including <strong>ransom payments</strong> from extortion threats</div></div></div>
+      <div class="agr-row"><div class="agr-num">5</div><div class="agr-body"><div class="agr-name">Business Income & Extra Expense</div><div class="agr-def">Expenses from an <strong>extortion threat or e-commerce incident</strong></div></div></div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:4px 10px;color:#aaa">Claims-made basis</span>
+        <span style="font-size:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:4px 10px;color:#aaa">Defense expenses within policy limits</span>
+        <span style="font-size:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:4px 10px;color:#aaa">Worldwide by endorsement</span>
+        <span style="font-size:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:4px 10px;color:#aaa">Overall policy limit applies</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Funds Transfer Fraud -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Funds transfer fraud</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Funds Transfer Fraud Coverage</div>
+        <div class="box-val">Covers loss of funds from <strong>fraudulent instructions received by a financial institution</strong> to pay money from the insured's transfer account to someone else. <strong>Computer fraud is excluded from this coverage.</strong></div>
+      </div>
+      <div class="box purple" style="margin-bottom:10px">
+        <div class="box-label">Computer Systems Rider</div>
+        <div class="box-val">Protects against fraudulent transfer of funds initiated <strong>through the financial institution's computer system</strong>. A customer, dishonest employee, or hacker can be responsible. Access may be via PC, internet, or home banking. Covers <strong>damage and reconstruction</strong> from virus or hacker activity.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">3 Insuring Agreements — Electronic Transaction Losses</div>
+      <div class="agr-row"><div class="agr-num">1</div><div class="agr-body"><div class="agr-name">Fraudulent Entry of Electronic Data / Computer Programs</div><div class="agr-def">Fraudulent transfer of funds via electronic means</div></div></div>
+      <div class="agr-row"><div class="agr-num">2</div><div class="agr-body"><div class="agr-name">Destruction of Data / Computer Programs</div><div class="agr-def">Damage from <strong>virus, hacker, or employee sabotage</strong></div></div></div>
+      <div class="agr-row"><div class="agr-num">3</div><div class="agr-body"><div class="agr-name">Toll Fraud</div><div class="agr-def">Long-distance charges from <strong>fraudulent use of accounts or passwords</strong></div></div></div>
+    </div>
+  </div>
+
+  <!-- S9: Liquor Liability -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Liquor liability (dram shop)</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Also Known As</div>
+        <div class="box-val"><strong>Dram shop liability</strong> — named after laws that hold establishments responsible for serving alcohol</div>
+      </div>
+      <div class="box amber" style="margin-bottom:10px">
+        <div class="box-label">Who Needs It</div>
+        <div class="box-val">Bars, restaurants, and establishments involved in <strong>selling, distributing, manufacturing, or serving alcoholic beverages</strong>. Recall that the CGL and BOP <em>exclude</em> liquor liability for these businesses.</div>
+      </div>
+      <div class="box green" style="margin-bottom:10px">
+        <div class="box-label">What it covers</div>
+        <div class="box-val">Protection when action is brought against the insured for <strong>selling liquor to a customer who is later involved in an accident</strong> — covering bodily injury or property damage resulting from that accident.</div>
+      </div>
+      <ul>
+        <li>Exposure exists under <strong>state or local dram shop statutes</strong> that establish responsibility for injuries from distribution or use of alcohol</li>
+        <li>Covers injuries to the <strong>user</strong> or injuries to <strong>others caused by the user</strong></li>
+        <li>Businesses: manufacturing · distributing · selling · serving · furnishing alcoholic beverages</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S10: Recap -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>Recap — professional liability</h2>
+      <div class="recap-grid">
+        <div class="rpill">Most pro liability = claims-made</div>
+        <div class="rpill">Consent to settle required</div>
+        <div class="rpill">Pro liability covers some intentional acts</div>
+        <div class="rpill">Criminal acts still excluded</div>
+        <div class="rpill">E&O = agents/brokers, claims-made</div>
+        <div class="rpill">Medical malpractice = doctors/hospitals</div>
+        <div class="rpill">D&O trigger = wrongful acts (not occurrence)</div>
+        <div class="rpill">D&O: no fines, penalties, punitive damages</div>
+        <div class="rpill">D&O = past and present directors/officers</div>
+        <div class="rpill">EPLI not covered by CGL or WC</div>
+        <div class="rpill">EPLI: discrimination, harassment, termination</div>
+        <div class="rpill">Cyber: 5 agreements, each own aggregate</div>
+        <div class="rpill">Cyber: defense within limits</div>
+        <div class="rpill">Cyber: claims-made + worldwide by endorsement</div>
+        <div class="rpill">Funds Transfer: fraudulent instructions to bank</div>
+        <div class="rpill">Computer fraud excluded from Funds Transfer</div>
+        <div class="rpill">Computer Rider: 3 agreements</div>
+        <div class="rpill">Toll fraud = long-distance via stolen passwords</div>
+        <div class="rpill">Liquor liability = dram shop</div>
+        <div class="rpill">CGL/BOP exclude liquor for sellers/manufacturers</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 10</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=10;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
