@@ -85,6 +85,10 @@ const CHAPTERS = [
       { name: "Professional Liability", file: "PC_Ch4_ProfessionalLiability.html" },
       { name: "Umbrella and Excess Liability", file: "PC_Ch4_UmbrellaExcess.html" },
       { name: "Bonds", file: "PC_Ch4_Bonds.html" }
+    ],
+    tools: [
+      { name: "Chapter 4 Flashcards (78 cards)", file: "PC_Ch4_Flashcards.html", icon: "🃏" },
+      { name: "Chapter 4 Quiz (40 questions)", file: "PC_Ch4_Quiz.html", icon: "📝" }
     ]
   },
   {
@@ -147,6 +151,15 @@ function render() {
       </div>`;
     }).join('');
 
+    const toolRows = (ch.tools || []).map(t =>
+      `<div class="section-row" style="border-color:#1a2e1a">
+        <span class="section-name">${t.icon || '🔧'} ${t.name}</span>
+        <div class="section-actions">
+          <a class="btn btn-sm" href="${t.file}" target="_blank" style="border-color:#1a3a1a;background:#0a1f0a;color:#4aaa4a">Open →</a>
+        </div>
+      </div>`
+    ).join('');
+
     const emptyMsg = hasSections ? '' : `<div style="font-size:12px;color:#333;padding:8px 0 12px;">No sections built yet — paste a section to Claude to generate one.</div>`;
 
     return `<div class="chapter">
@@ -156,6 +169,7 @@ function render() {
       </div>
       <div class="chapter-body" id="ch-${ci}">
         ${rows}
+        ${toolRows}
         ${emptyMsg}
       </div>
     </div><hr class="divider">`;
