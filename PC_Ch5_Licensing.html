@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch5: Licensing</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.2rem 2rem;min-height:360px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.7rem}
+  .info-grid{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:10px 13px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .know-this{background:#1c1500;border:2px solid #c8a84b;border-radius:12px;padding:13px 15px;margin-top:.8rem}
+  .know-this-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;font-weight:700;margin-bottom:5px}
+  .know-this p{font-size:14px;color:#f0d080;line-height:1.6}
+  .warn-box{background:#1a1200;border:1px solid #3a2a00;border-radius:10px;padding:11px 13px;margin-top:.8rem}
+  .warn-box p{font-size:13px;color:#c8a84b;line-height:1.55}
+  .num-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:12px}
+  .num-big{font-size:24px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:64px;text-align:center;line-height:1.1}
+  .num-desc{font-size:13px;color:#aaa;line-height:1.45}
+  .num-desc strong{color:#e2e2e2}
+  ul.bullet{padding-left:1.1rem;display:flex;flex-direction:column;gap:5px;margin-top:.4rem}
+  ul.bullet li{font-size:13px;color:#999;line-height:1.45}
+  ul.bullet li strong{color:#ddd}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.6rem}
+  .mini-card{background:#1a1a1a;border:1px solid #242424;border-radius:9px;padding:9px 11px}
+  .mini-label{font-size:10px;color:#5b8dee;font-weight:600;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .mini-val{font-size:12px;color:#bbb;line-height:1.4}
+  .slide-num{position:absolute;top:1.1rem;right:1.4rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+  {
+    label: "Chapter 5 · Licensing",
+    title: "Kansas Producer Licensing Overview",
+    body: `<p>Kansas licensing laws ensure producers are <strong>competent and qualified</strong> and protect the public interest. The <strong>Kansas Uniform Insurance Agents Licensing Act</strong> (effective July 1, 2001) governs:</p>
+<ul class="bullet" style="margin-top:.7rem">
+  <li>Who must be licensed to transact insurance</li>
+  <li>Types of licenses available</li>
+  <li>Continuing education requirements</li>
+</ul>
+<p style="margin-top:.8rem">Individuals who sell insurance to the public are called <strong>producers</strong>, which includes both <strong>agents</strong> and <strong>brokers</strong>.</p>`
+  },
+  {
+    label: "Licensing · Agents & Producers",
+    title: "Agent vs. Producer — Defined",
+    body: `<div class="info-grid">
+  <div class="info-row"><div class="info-label">Insurance Agent / Producer</div><div class="info-val">Any person required to be licensed to <strong>sell, solicit, or negotiate insurance</strong>. The terms agent, insurance producer, and producer are interchangeable in Kansas.</div></div>
+  <div class="info-row"><div class="info-label">Who They Represent</div><div class="info-val">An agent always represents the <strong>insurer, not the insured</strong>. Any knowledge of the agent is presumed to be knowledge of the insurer.</div></div>
+  <div class="info-row"><div class="info-label">Liability</div><div class="info-val">All agents authorized by an insurer become liable for all duties, requirements, liabilities, and penalties in the Insurance Code.</div></div>
+</div>
+<div class="warn-box"><p>💡 If the agent is acting within their contract, the <strong>company is fully responsible</strong> for the agent's actions.</p></div>`
+  },
+  {
+    label: "Licensing · License Types",
+    title: "Resident vs. Nonresident License",
+    body: `<div class="info-grid">
+  <div class="info-row"><div class="info-label">Resident License</div><div class="info-val">A Kansas resident who meets the Commissioner's qualifications may apply for a resident producer license to transact insurance in Kansas.</div></div>
+  <div class="info-row"><div class="info-label">Nonresident License Requirements</div><div class="info-val">
+    Must be: At least <strong>18 years old</strong> · Licensed resident producer in good standing in home state · Submit NAIC Uniform Application via NIPR + pay <strong>$80 nonrefundable fee</strong> · Lives in a state that awards nonresident status to Kansas producers on a <strong>reciprocal basis</strong>
+  </div></div>
+  <div class="info-row"><div class="info-label">Maintaining Nonresident License</div><div class="info-val">Must maintain home state license, be appointed by a Kansas insurer, and pay a <strong>$50 renewal fee biennially</strong></div></div>
+</div>`
+  },
+  {
+    label: "Licensing · Nonresident",
+    title: "Nonresident — Changes & Reporting",
+    body: `<p>Changes to a nonresident agent's information must be reported to the Department within <strong>30 days</strong> of occurrence. Reportable changes include:</p>
+<ul class="bullet" style="margin-top:.6rem">
+  <li>Address or name changes</li>
+  <li>Email address changes</li>
+  <li>Regulatory actions</li>
+  <li>Terminations</li>
+  <li>Actions taken against a license in another state</li>
+  <li>New criminal convictions</li>
+</ul>
+<div class="warn-box" style="margin-top:.8rem"><p>📝 A <strong>Certification Letter</strong> from the home state is NOT required — license status is verified through the NAIC's Producer Data Base (PDB).</p></div>`
+  },
+  {
+    label: "Licensing · Temporary License",
+    title: "Temporary Agent License",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">180 days</div><div class="num-desc"><strong>Maximum duration</strong> of a temporary license — no exam required. May be extended once for an additional 180 days.</div></div>
+</div>
+<p style="margin-top:.8rem;font-size:13px;color:#aaa">Issued in special circumstances to:</p>
+<ul class="bullet">
+  <li>Surviving spouse, court-appointed representative, or business member — upon <strong>death or disability</strong> of a licensed agent</li>
+  <li>A designee — when a licensed agent enters <strong>active U.S. military service</strong></li>
+  <li>Any other person when the Commissioner determines the <strong>public interest is best served</strong></li>
+</ul>
+<div class="warn-box" style="margin-top:.8rem"><p>⚠️ A temporary licensee <strong>cannot write new business</strong>. Each individual may only hold <strong>one temporary license per year</strong>.</p></div>`
+  },
+  {
+    label: "Licensing · Appointments",
+    title: "Producer Appointment & Certification",
+    body: `<p>A producer cannot act as an agent of an insurer unless they are <strong>appointed</strong> by that insurer. To appoint a producer, the insurer must determine the producer:</p>
+<ul class="bullet" style="margin-top:.5rem">
+  <li>Is of <strong>good business reputation</strong></li>
+  <li>Has insurance experience or will immediately receive training</li>
+</ul>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="num-card"><div class="num-big">30 days</div><div class="num-desc"><strong>Insurer must file notice of appointment or termination</strong> electronically via NIPR within 30 days.</div></div>
+  <div class="num-card"><div class="num-big">$25/day</div><div class="num-desc"><strong>Penalty</strong> for failure to certify agent within <strong>30 working days</strong> of appointment — assessed per calendar day until properly recorded.</div></div>
+</div>
+<div class="warn-box" style="margin-top:.7rem"><p>📝 Appointments must be <strong>renewed annually on January 1</strong>. Insurer pays the nonrefundable appointment fee.</p></div>`
+  },
+  {
+    label: "Licensing · Getting Licensed",
+    title: "Qualifications to Obtain a License",
+    body: `<p>To apply for a Kansas resident producer license, an applicant must:</p>
+<ul class="bullet" style="margin-top:.5rem">
+  <li>Be <strong>18 years of age or older</strong></li>
+  <li>Submit the NAIC Uniform Application via <strong>NIPR</strong> (paper forms NOT accepted)</li>
+  <li>Pay a <strong>$30 application fee</strong> + <strong>$60 fingerprint fee</strong></li>
+  <li>Be fingerprinted and submit to a <strong>criminal background check</strong></li>
+  <li>Receive <strong>tax clearance</strong> from Kansas Dept. of Revenue</li>
+  <li>Pass the appropriate license examination</li>
+  <li>Comply with all requirements within <strong>1 year of application</strong></li>
+</ul>
+<div class="warn-box" style="margin-top:.7rem"><p>📝 Applications and fingerprints are valid for <strong>one year</strong>.</p></div>`
+  },
+  {
+    label: "Licensing · Lines of Authority",
+    title: "Available Lines of Authority",
+    body: `<p>A producer may only sell insurance for lines they are specifically licensed for. Available lines in Kansas:</p>
+<div class="two-col" style="margin-top:.7rem">
+  <div class="mini-card"><div class="mini-label">Life</div><div class="mini-val">Life insurance</div></div>
+  <div class="mini-card"><div class="mini-label">A&H</div><div class="mini-val">Accident, health or sickness</div></div>
+  <div class="mini-card"><div class="mini-label">Variable</div><div class="mini-val">Variable life & variable annuities</div></div>
+  <div class="mini-card"><div class="mini-label">Property</div><div class="mini-val">Property insurance</div></div>
+  <div class="mini-card"><div class="mini-label">Casualty</div><div class="mini-val">Casualty insurance</div></div>
+  <div class="mini-card"><div class="mini-label">Personal Lines</div><div class="mini-val">Personal lines</div></div>
+  <div class="mini-card"><div class="mini-label">Credit</div><div class="mini-val">Credit insurance</div></div>
+  <div class="mini-card"><div class="mini-label">Other</div><div class="mini-val">Any other lines permitted by state</div></div>
+</div>`
+  },
+  {
+    label: "Licensing · Examination",
+    title: "The Licensing Exam",
+    body: `<p>All applicants must pass an exam testing competence in the kinds of insurance and transactions for the license applied for. Key rules:</p>
+<div class="info-grid" style="margin-top:.7rem">
+  <div class="num-card"><div class="num-big">24 hrs</div><div class="num-desc">Must wait at least <strong>24 hours</strong> before scheduling a retest after failing.</div></div>
+  <div class="num-card"><div class="num-big">7 days</div><div class="num-desc">Must wait at least <strong>7 calendar days</strong> before actually retaking the examination.</div></div>
+</div>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">Attempts</div><div class="info-val">No limit on the number of times a candidate may take the exam.</div></div>
+  <div class="info-row"><div class="info-label">Fee</div><div class="info-val">An exam fee is required for each class of insurance for <strong>each attempt</strong> — even retakes.</div></div>
+</div>`
+  },
+  {
+    label: "Licensing · Exam Waivers",
+    title: "When the Exam Can Be Waived",
+    body: `<p>The Commissioner will waive the exam if the applicant:</p>
+<ul class="bullet" style="margin-top:.6rem">
+  <li>Is <strong>currently licensed in another state</strong></li>
+  <li>Applies within <strong>90 days</strong> of cancellation of their previous out-of-state license (if in good standing at cancellation)</li>
+  <li>Has been licensed in Kansas for the same class and <strong>voluntarily surrendered the license for no more than 2 years</strong> prior to application, with all CE requirements satisfied</li>
+  <li>Will only write <strong>travel insurance or crop insurance</strong></li>
+</ul>
+<div class="know-this" style="margin-top:.8rem">
+  <div class="know-this-label">⚠ Know This</div>
+  <p><strong>90 days</strong> = out-of-state cancellation window · <strong>2 years</strong> = voluntary surrender window · both allow exam waiver</p>
+</div>`
+  },
+  {
+    label: "Licensing · Exemptions",
+    title: "Who Does NOT Need a License",
+    body: `<p>A license is NOT required for:</p>
+<ul class="bullet" style="margin-top:.5rem">
+  <li>Officers/directors/employees of an insurer <strong>not involved in actual sales</strong> and receiving no commission</li>
+  <li>Directors or employees limited to <strong>executive, administrative, managerial, or clerical</strong> activities</li>
+  <li>Special agents providing only <strong>technical advice</strong> to licensed producers</li>
+  <li>Persons who secure information for <strong>group insurance</strong> or perform administrative services for mass-marketed P&C</li>
+  <li>Employers administering <strong>employee benefit programs</strong> for their own employees</li>
+  <li>Persons whose activities are limited to <strong>advertising without intent to solicit</strong></li>
+  <li>Nonresidents selling commercial P&C risks to insureds with risks in <strong>more than one state</strong></li>
+  <li>Salaried full-time employees who <strong>counsel their employer</strong> on the employer's own insurance interests</li>
+</ul>`
+  },
+  {
+    label: "Licensing · Continuing Education",
+    title: "CE Requirements",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">18 hrs</div><div class="num-desc"><strong>CE required every 2 years</strong> for life & health or property & casualty producers. Must include <strong>3 hours of ethics</strong>.</div></div>
+  <div class="num-card"><div class="num-big">3 hrs</div><div class="num-desc"><strong>Ethics training</strong> required — included within the 18 hours.</div></div>
+  <div class="num-card"><div class="num-big">2 hrs</div><div class="num-desc">CE required for producers licensed <strong>only for crop insurance</strong>.</div></div>
+  <div class="num-card"><div class="num-big">4 hrs</div><div class="num-desc">CE required for producers licensed to sell <strong>title insurance</strong>.</div></div>
+</div>
+<div class="warn-box" style="margin-top:.7rem"><p>📝 Also required: $4 renewal fee. Biennial due date = last day of birth month (odd-year birth = odd years; even-year birth = even years).</p></div>`
+  },
+  {
+    label: "Licensing · CE Non-Compliance",
+    title: "Failing to Meet CE Requirements",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">90 days</div><div class="num-desc"><strong>License suspended</strong> if CE not completed by deadline. Agent fined <strong>$100 per suspended license</strong>.</div></div>
+</div>
+<p style="margin-top:.8rem;font-size:13px;color:#aaa">After suspension, the path to reinstatement depends on how long the license has been expired:</p>
+<div class="info-grid" style="margin-top:.5rem">
+  <div class="info-row"><div class="info-label">Within 1 year of expiration</div><div class="info-val">Submit renewal app + $4 fee · Complete 18 hrs CE · Pay $100 reinstatement fee · Be reappointed</div></div>
+  <div class="info-row"><div class="info-label">1–4 years after expiration</div><div class="info-val">Reapply ($90 application + $100 reinstatement) · Complete outstanding CE · Be reappointed</div></div>
+  <div class="info-row"><div class="info-label">After 4 years</div><div class="info-val">Must apply for a <strong>new license</strong> and pass the licensing examination again</div></div>
+</div>`
+  },
+  {
+    label: "Licensing · Suspension & Revocation",
+    title: "Grounds for Suspension or Revocation",
+    body: `<p>The Commissioner may revoke or suspend a license if the agent has:</p>
+<ul class="bullet" style="margin-top:.5rem">
+  <li>Obtained a license by <strong>fraud</strong></li>
+  <li>Made <strong>incomplete or misleading comparisons</strong> of policies</li>
+  <li>Been convicted of a <strong>misdemeanor or felony</strong></li>
+  <li>Failed to serve the insurer's or public's interest</li>
+  <li>Violated any <strong>subpoena or Commissioner's order</strong></li>
+  <li><strong>Forged</strong> another person's name on any insurance document</li>
+  <li>Failed to comply with a <strong>child support order</strong></li>
+  <li>Failed to pay <strong>state income tax</strong></li>
+</ul>
+<div class="warn-box" style="margin-top:.7rem"><p>⚠️ A person whose license is revoked may <strong>not reapply for 2 years</strong> from the date of the Commissioner's order.</p></div>`
+  },
+  {
+    label: "Licensing · Revocation Alternatives",
+    title: "Alternatives to Revocation",
+    body: `<p>Instead of denying, suspending, or revoking a license, the Commissioner may:</p>
+<div class="info-grid" style="margin-top:.7rem">
+  <div class="info-row"><div class="info-label">Censure</div><div class="info-val">Issue a formal reprimand to the producer</div></div>
+  <div class="info-row"><div class="info-label">Administrative Penalty — Nonwillful</div><div class="info-val">Up to <strong>$500 per violation</strong> · max <strong>$2,500</strong> for same violation within 6 consecutive calendar months</div></div>
+  <div class="info-row"><div class="info-label">Administrative Penalty — Willful</div><div class="info-val">Up to <strong>$1,000 per violation</strong> · max <strong>$5,000</strong> for same violation within 6 consecutive calendar months</div></div>
+</div>
+<div class="warn-box" style="margin-top:.7rem"><p>📝 A suspended or revoked licensee <strong>may not be employed</strong> by any insurer in Kansas — directly, indirectly, or as an independent contractor.</p></div>`
+  },
+  {
+    label: "Numbers to Memorize",
+    title: "Licensing — Key Numbers",
+    body: `<div class="two-col">
+  <div class="mini-card"><div class="mini-label">Min. Age</div><div class="mini-val"><strong>18</strong> years old to apply</div></div>
+  <div class="mini-card"><div class="mini-label">App Fees</div><div class="mini-val"><strong>$30</strong> app + <strong>$60</strong> fingerprint</div></div>
+  <div class="mini-card"><div class="mini-label">Nonresident Fee</div><div class="mini-val"><strong>$80</strong> application · <strong>$50</strong> biennial renewal</div></div>
+  <div class="mini-card"><div class="mini-label">Exam Retest</div><div class="mini-val">Wait <strong>24 hrs</strong> to schedule · <strong>7 days</strong> to retest</div></div>
+  <div class="mini-card"><div class="mini-label">Exam Waiver</div><div class="mini-val"><strong>90 days</strong> (out-of-state cancel) · <strong>2 yrs</strong> (voluntary surrender)</div></div>
+  <div class="mini-card"><div class="mini-label">Temp License</div><div class="mini-val"><strong>180 days</strong> · extendable once</div></div>
+  <div class="mini-card"><div class="mini-label">Appointment</div><div class="mini-val"><strong>30 days</strong> to file · <strong>$25/day</strong> penalty</div></div>
+  <div class="mini-card"><div class="mini-label">CE</div><div class="mini-val"><strong>18 hrs</strong> every 2 yrs · <strong>3 hrs</strong> ethics</div></div>
+  <div class="mini-card"><div class="mini-label">CE Suspension</div><div class="mini-val"><strong>90 days</strong> · <strong>$100</strong> fine per license</div></div>
+  <div class="mini-card"><div class="mini-label">Expired License</div><div class="mini-val"><strong>4 yrs</strong> → must retake exam</div></div>
+  <div class="mini-card"><div class="mini-label">Revocation</div><div class="mini-val">Can't reapply for <strong>2 years</strong></div></div>
+  <div class="mini-card"><div class="mini-label">Address Change</div><div class="mini-val">Notify within <strong>30 days</strong></div></div>
+</div>`
+  }
+];
+
+let cur = 0;
+
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'PC_Dashboard.html'
+    : () => go(1);
+}
+
+function go(dir) {
+  cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir));
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
