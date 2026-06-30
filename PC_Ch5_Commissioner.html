@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch5: Commissioner of Insurance</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.5rem 2rem;min-height:360px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:21px;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.75rem}
+  .info-grid{display:flex;flex-direction:column;gap:9px;margin-top:.5rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:11px 14px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:3px}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .num-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:14px}
+  .num-big{font-size:28px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:52px;text-align:center}
+  .num-desc{font-size:13px;color:#aaa;line-height:1.5}
+  .num-desc strong{color:#e2e2e2}
+  .warn-box{background:#1a1200;border:1px solid #3a2a00;border-radius:10px;padding:12px 14px;margin-top:.8rem}
+  .warn-box p{font-size:13px;color:#c8a84b;line-height:1.55}
+  .penalty-block{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+  .penalty-title{font-size:12px;font-weight:600;color:#e2e2e2;margin-bottom:6px;letter-spacing:.3px}
+  .penalty-row{font-size:13px;color:#999;line-height:1.5;padding-left:12px;border-left:2px solid #333;margin-bottom:4px}
+  .penalty-row.nonwill{border-color:#5b8dee}
+  .penalty-row.will{border-color:#c05050}
+  .penalty-row strong{color:#e2e2e2}
+  .slide-num{position:absolute;top:1.2rem;right:1.5rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+  ul.bullet{padding-left:1.1rem;display:flex;flex-direction:column;gap:5px;margin-top:.4rem}
+  ul.bullet li{font-size:13px;color:#999;line-height:1.5}
+  ul.bullet li strong{color:#ddd}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+  {
+    label: "Chapter 5 · Kansas Regulations",
+    title: "Commissioner of Insurance",
+    body: `<p>The <strong>Kansas Department of Insurance</strong> was established to supervise and regulate the business of insurance in Kansas. The Department's chief officer is the <strong>Commissioner of Insurance</strong>.</p>
+<p>The Commissioner's role is to protect the public, enforce insurance laws, and ensure insurers remain financially sound and conduct business fairly.</p>
+<div class="info-grid" style="margin-top:.9rem">
+  <div class="info-row"><div class="info-label">Department Purpose</div><div class="info-val">Supervise and regulate the business of insurance in Kansas</div></div>
+  <div class="info-row"><div class="info-label">Chief Officer</div><div class="info-val">Commissioner of Insurance — elected position</div></div>
+  <div class="info-row"><div class="info-label">Governing Law</div><div class="info-val">The Kansas Insurance Code — the collection of all state insurance statutes</div></div>
+</div>`
+  },
+  {
+    label: "Commissioner · Election",
+    title: "How the Commissioner is Chosen",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">4 yrs</div><div class="num-desc"><strong>Term of office.</strong> The Commissioner is elected for a 4-year term at the same time other state officials are elected.</div></div>
+</div>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">Vacancy</div><div class="info-val">If the Commissioner's position becomes vacant, the <strong>Governor appoints</strong> a qualified person to serve the unexpired term until a successor is elected and qualified.</div></div>
+</div>
+<div class="warn-box"><p>📝 <strong>Exam tip:</strong> Know that the Commissioner is <em>elected</em> (not appointed) and serves a <em>4-year term</em>. Vacancy = Governor appoints.</p></div>`
+  },
+  {
+    label: "Commissioner · Duties & Powers",
+    title: "General Duties and Powers",
+    body: `<p>The Commissioner is charged with administering the Department and enforcing the <strong>Kansas Insurance Code</strong>. Key powers include:</p>
+<ul class="bullet" style="margin-top:.8rem">
+  <li>Enforce the provisions of the state Insurance Code</li>
+  <li>Issue insurance <strong>licenses and certificates of authority</strong></li>
+  <li>Conduct <strong>examinations and investigations</strong> of insurance matters</li>
+  <li>Approve or disapprove insurance <strong>forms and rates</strong></li>
+  <li>Issue <strong>orders and notices</strong> regarding insurance matters</li>
+  <li>Administer oaths, <strong>subpoena witnesses</strong>, and examine evidence during hearings</li>
+</ul>`
+  },
+  {
+    label: "Commissioner · Examinations",
+    title: "Examination of Insurers",
+    body: `<p>The Commissioner examines insurers to ensure they remain <strong>solvent</strong> and comply with Kansas laws covering licensing, policy forms, rates, claims, and market conduct.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="num-card"><div class="num-big">5 yrs</div><div class="num-desc"><strong>Every 5 years</strong> — Commissioner must examine the affairs and financial condition of each insurer authorized to do business in Kansas.</div></div>
+  <div class="info-row"><div class="info-label">Before Certificate of Authority</div><div class="info-val">Commissioner must examine all Kansas-organized companies <strong>before issuing a certificate of authority</strong>, and as often as deemed necessary thereafter.</div></div>
+  <div class="info-row"><div class="info-label">Who Pays?</div><div class="info-val">The <strong>insurance company being examined</strong> bears the cost of the examination.</div></div>
+  <div class="info-row"><div class="info-label">Foreign & Alien Insurers</div><div class="info-val">Instead of conducting its own exam, the Commissioner may accept an examination report from the <strong>accredited Department of Insurance of their state of domicile</strong>.</div></div>
+</div>`
+  },
+  {
+    label: "Commissioner · Examinations",
+    title: "Access & Non-Compliance",
+    body: `<p>During an examination, companies and their officers, directors, employees, and agents must provide the Commissioner with <strong>free access</strong> to all books, papers, and records relating to the company's business.</p>
+<div class="warn-box" style="margin-top:.8rem"><p>⚠️ If any company or its personnel <strong>refuses to comply</strong> with a reasonable request from examiners, the Commissioner may <strong>suspend or not renew the company's certificate of authority</strong>.</p></div>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">Key Rule</div><div class="info-val">Full transparency is required. No company can obstruct an examination — doing so risks losing the right to do business in Kansas.</div></div>
+</div>`
+  },
+  {
+    label: "Commissioner · Hearings",
+    title: "Hearings: Notice & Timing",
+    body: `<p>If the Commissioner suspects a violation or unfair trade practice, a <strong>statement of charges</strong> may be issued and a hearing held.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="num-card"><div class="num-big">15 days</div><div class="num-desc"><strong>Hearing must be held within 15 days</strong> after a written request for a hearing is made.</div></div>
+  <div class="info-row"><div class="info-label">Notice Requirement</div><div class="info-val">Commissioner must give <strong>reasonable notice by registered mail</strong> to all interested parties, stating the time, place, and purpose of the hearing.</div></div>
+</div>
+<p style="margin-top:.9rem;font-size:13px;color:#888">Hearings may be held when:</p>
+<ul class="bullet">
+  <li>The <strong>solvency of an insurer is impaired</strong></li>
+  <li>A company is in <strong>violation of Kansas law</strong></li>
+  <li>A company's affairs are in an <strong>unsound condition</strong> that could endanger policyholders</li>
+</ul>`
+  },
+  {
+    label: "Commissioner · Hearings",
+    title: "Commissioner's Hearing Powers",
+    body: `<p>At a hearing, the person charged has the opportunity to <strong>show cause</strong> why the Commissioner should not issue a cease and desist order. During a hearing, the Commissioner may:</p>
+<ul class="bullet" style="margin-top:.6rem">
+  <li>Administer <strong>oaths</strong></li>
+  <li><strong>Subpoena witnesses</strong></li>
+  <li>Examine and <strong>cross-examine witnesses</strong></li>
+  <li>Receive <strong>oral and documentary evidence</strong></li>
+  <li>Require production of <strong>books, records, and documents</strong> relevant to the inquiry</li>
+</ul>
+<div class="warn-box" style="margin-top:.9rem"><p>💡 If found in violation after the hearing, the person or insurer is charged for the <strong>cost of the hearing</strong> and may be subject to a <strong>fine</strong>.</p></div>`
+  },
+  {
+    label: "Penalties · General Provisions",
+    title: "Violations of General Insurance Code",
+    body: `<p>Any person who violates <strong>general provisions</strong> of the Kansas Insurance Code may face:</p>
+<div class="penalty-block" style="margin-top:.8rem">
+  <div class="penalty-title">Nonwillful Violations</div>
+  <div class="penalty-row nonwill">Up to <strong>$500 per violation</strong></div>
+  <div class="penalty-row nonwill">Maximum <strong>$2,500</strong> for the same violation within 6 consecutive calendar months</div>
+</div>
+<div class="penalty-block">
+  <div class="penalty-title">Willful Violations</div>
+  <div class="penalty-row will">Up to <strong>$1,000 per violation</strong></div>
+  <div class="penalty-row will">Maximum <strong>$5,000</strong> for the same violation within 6 consecutive calendar months</div>
+</div>
+<div class="warn-box"><p>📝 The 6-month window is key — violations stack up to the max within that period.</p></div>`
+  },
+  {
+    label: "Penalties · Insurance Laws",
+    title: "Violations of Insurance Laws & Failure to File",
+    body: `<p>If the Commissioner finds a person in violation of Kansas insurance statutes or failing to file required reports:</p>
+<div class="penalty-block" style="margin-top:.8rem">
+  <div class="penalty-title">Monetary Penalties</div>
+  <div class="penalty-row nonwill">Nonwillful: up to <strong>$1,000 per violation</strong></div>
+  <div class="penalty-row will">Willful: up to <strong>$2,000 per violation</strong></div>
+</div>
+<div class="penalty-block">
+  <div class="penalty-title">Additional Remedies Available</div>
+  <div class="penalty-row" style="border-color:#888"><strong>Suspension or revocation</strong> of license or certificate of authority</div>
+  <div class="penalty-row" style="border-color:#888"><strong>Cease and desist order</strong></div>
+</div>
+<div class="penalty-block">
+  <div class="penalty-title">Failure to File a Required Report</div>
+  <div class="penalty-row will">Up to <strong>$1,000 per violation</strong> + up to <strong>$500 per week</strong> after the report is due</div>
+</div>`
+  },
+  {
+    label: "Penalties · Unfair Trade Practices",
+    title: "Violations of Unfair Trade Practice Statutes",
+    body: `<p>After a hearing, if the Commissioner finds a violation of unfair methods of competition or deceptive practices:</p>
+<div class="penalty-block" style="margin-top:.8rem">
+  <div class="penalty-title">Nonwillful Violations</div>
+  <div class="penalty-row nonwill">Up to <strong>$1,000 per act or violation</strong></div>
+  <div class="penalty-row nonwill">Max aggregate: <strong>$10,000</strong></div>
+</div>
+<div class="penalty-block">
+  <div class="penalty-title">Willful Violations</div>
+  <div class="penalty-row will">Up to <strong>$5,000 per violation</strong></div>
+  <div class="penalty-row will">Max aggregate: <strong>$50,000 in any 6-month period</strong></div>
+</div>
+<div class="penalty-block">
+  <div class="penalty-title">Additional Remedies</div>
+  <div class="penalty-row" style="border-color:#888">Suspension or revocation of license or certificate of authority</div>
+  <div class="penalty-row" style="border-color:#c8a84b"><strong>Refund of all monies taken or withheld</strong> from the consumer, plus interest, and <strong>public notification</strong> of the violation</div>
+</div>`
+  },
+  {
+    label: "Numbers to Memorize",
+    title: "Kansas Commissioner — Key Numbers",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">4 yrs</div><div class="num-desc"><strong>Commissioner's term of office</strong> — elected, same cycle as other state officials</div></div>
+  <div class="num-card"><div class="num-big">5 yrs</div><div class="num-desc"><strong>Examination frequency</strong> — Commissioner must examine each authorized insurer at least once every 5 years</div></div>
+  <div class="num-card"><div class="num-big">15 days</div><div class="num-desc"><strong>Hearing deadline</strong> — must be held within 15 days after written request</div></div>
+</div>
+<div class="warn-box" style="margin-top:.9rem"><p>💡 Also remember the 6-month window for penalty caps, the $500/week late-filing penalty, and the $50,000 max for willful unfair trade practice violations.</p></div>`
+  },
+  {
+    label: "Penalty Summary",
+    title: "Penalty Quick-Reference",
+    body: `<div class="info-grid">
+  <div class="info-row">
+    <div class="info-label">General Code — Nonwillful</div>
+    <div class="info-val">$500/violation · max $2,500 in 6 months</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">General Code — Willful</div>
+    <div class="info-val">$1,000/violation · max $5,000 in 6 months</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">Insurance Laws — Nonwillful</div>
+    <div class="info-val">$1,000/violation + license suspension/revocation + C&D</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">Insurance Laws — Willful</div>
+    <div class="info-val">$2,000/violation + license suspension/revocation + C&D</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">Failure to File Report</div>
+    <div class="info-val">$1,000 + $500/week after due date</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">Unfair Trade Practices — Nonwillful</div>
+    <div class="info-val">$1,000/act · max $10,000 aggregate</div>
+  </div>
+  <div class="info-row">
+    <div class="info-label">Unfair Trade Practices — Willful</div>
+    <div class="info-val">$5,000/violation · max $50,000 in 6 months + refund + public notice</div>
+  </div>
+</div>`
+  }
+];
+
+let cur = 0;
+
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'PC_Dashboard.html'
+    : () => go(1);
+}
+
+function go(dir) {
+  cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir));
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
