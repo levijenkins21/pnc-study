@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Crime Insurance</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  .term{font-size:14px;font-weight:600;color:#5b8dee;margin-bottom:3px;margin-top:.9rem}
+  .def{font-size:13px;color:#aaa;line-height:1.6}
+  .def strong{color:#e2e2e2;font-weight:500}
+  .crime-type{border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+  .ct-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+  .ct-body{}
+  .ct-name{font-size:13px;font-weight:600;margin-bottom:3px}
+  .ct-def{font-size:12px;color:#aaa;line-height:1.5}
+  .ct-def strong{color:#e2e2e2}
+  .decl-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  .decl-table th{background:#1a1a1a;color:#5b8dee;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid #2a2a2a}
+  .decl-table td{padding:7px 12px;border-bottom:1px solid #1a1a1a;color:#bbb;vertical-align:middle}
+  .decl-table td:last-child{color:#444;text-align:right;font-style:italic;font-size:11px}
+  .decl-table tr:hover td{background:#161616}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;font-weight:500}
+  .pill-b{background:#0d1a2e;color:#5b8dee;border:1px solid #1e3a6e}
+  .pill-g{background:#0a1f0a;color:#4aaa4a;border:1px solid #1a3a1a}
+  .pill-r{background:#1f0a0a;color:#c05050;border:1px solid #3a1a1a}
+  .pill-y{background:#1a1200;color:#c9a030;border:1px solid #3a2e00}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:10%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · Crime</div>
+      <h1>Crime Insurance</h1>
+      <p class="sub">Discovery vs. Loss Sustained · Definitions · Burglary vs. Robbery vs. Theft · General Exclusions · Employee Theft · Forgery & Alteration</p>
+    </div>
+  </div>
+
+  <!-- S2: Program Overview -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>Crime program — overview</h2>
+      <ul>
+        <li>Can be added to a <strong>commercial package policy</strong> or written <strong>monoline</strong></li>
+        <li>Fills gaps left by building and business personal property forms for crime losses</li>
+        <li>Each coverage selected has its <strong>own insuring agreement, conditions, and exclusions</strong></li>
+        <li>Activated by the <strong>declarations page</strong></li>
+      </ul>
+      <div class="grid2" style="margin:1rem 0">
+        <div class="box blue">
+          <div class="box-label">Commercial Entities</div>
+          <div class="box-val">Forms for private businesses</div>
+        </div>
+        <div class="box purple">
+          <div class="box-label">Government Entities</div>
+          <div class="box-val">Forms for public/government entities</div>
+        </div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Coverage Triggers — Similar to Liability</div>
+      <div class="grid2">
+        <div class="box green">
+          <div class="box-label">Loss Sustained Form</div>
+          <div class="box-val">Similar to <strong>occurrence</strong> — covers losses that occur and are <em>discovered</em> during the policy period.</div>
+        </div>
+        <div class="box amber">
+          <div class="box-label">Discovery Form</div>
+          <div class="box-val">Similar to <strong>claims-made</strong> — covers losses <em>discovered</em> during the policy period, regardless of when they occurred.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Crime Declarations -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Crime declarations — coverage options</h2>
+      <p style="font-size:12px;color:#555;margin-bottom:.7rem">Each line is selected separately with its own dollar limit:</p>
+      <table class="decl-table">
+        <thead><tr><th>Coverage</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Employee Theft (Employee Dishonesty)</td><td>$_____</td></tr>
+          <tr><td>Forgery and Alteration</td><td>$_____</td></tr>
+          <tr><td>Inside — Theft of Money and Securities</td><td>$_____</td></tr>
+          <tr><td>Inside — Robbery or Safe Burglary of Other Property</td><td>$_____</td></tr>
+          <tr><td>Outside Premises</td><td>$_____</td></tr>
+          <tr><td>Computer Fraud</td><td>$_____</td></tr>
+          <tr><td>Fund Transfer Fraud</td><td>$_____</td></tr>
+          <tr><td>Money Orders and Counterfeit Paper Currency</td><td>$_____</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;background:#1a1a1a;border-radius:8px;padding:10px 12px;font-size:12px;color:#555">Each coverage has its <strong style="color:#aaa">own insuring agreement, conditions, and exclusions</strong>. Only coverages with limits shown on the declarations page are active.</div>
+    </div>
+  </div>
+
+  <!-- S4: Definitions — Employee + Trigger Terms -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>Key definitions — Part 1</h2>
+      <div class="term">Employee</div>
+      <div class="def">
+        <ul style="margin-top:4px">
+          <li>Natural person in insured's service + <strong>30 days after termination</strong></li>
+          <li><strong>Temporary employee</strong> hired from an employment contractor</li>
+          <li><strong>Managers, directors, trustees</strong> performing acts within usual employee duties</li>
+          <li>Former employees, managers, partners, directors, trustees working as <strong>consultants</strong></li>
+        </ul>
+      </div>
+      <div class="term">Discover / Discovered</div>
+      <div class="def">The time the insured <strong>first becomes aware of facts</strong> that would lead a reasonable person to assume a loss occurred.</div>
+      <div class="term">Occurrence</div>
+      <div class="def">An act or a <strong>series of acts</strong> — may or may not involve multiple people.</div>
+      <div class="term">Premises</div>
+      <div class="def">The <strong>interior</strong> of the premises where the insured conducts business.</div>
+      <div class="term">Banking Premises</div>
+      <div class="def">The <strong>interior</strong> of premises occupied by a banking institution or similar facility.</div>
+    </div>
+  </div>
+
+  <!-- S5: Definitions — Money/Securities/Property -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Key definitions — Part 2 (property types)</h2>
+      <div class="grid2" style="gap:8px">
+        <div class="box blue">
+          <div class="box-label">Money</div>
+          <div class="box-val">Currency, coin, bank notes in current use, traveler's checks, register checks, <strong>money orders held for sale to the public</strong></div>
+        </div>
+        <div class="box blue">
+          <div class="box-label">Securities</div>
+          <div class="box-val">Negotiable and non-negotiable instruments or contracts representing money or property — tokens, tickets, revenue stamps, evidence of debt from credit/charge cards <strong>not issued by the insured</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">Funds</div>
+          <div class="box-val"><strong>Money + Securities</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">Other Property</div>
+          <div class="box-val">Property <strong>other than</strong> money or securities</div>
+        </div>
+        <div class="box" style="grid-column:1/-1">
+          <div class="box-label">Tangible Property</div>
+          <div class="box-val">Any other property that has <strong>intrinsic value</strong></div>
+        </div>
+      </div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Memory tip</div>
+        <div class="box-val" style="font-size:12px"><strong>Funds = Money + Securities</strong><br>Other Property = everything else · Tangible Property = intrinsic value</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Crime Type Definitions -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>Crime definitions — burglary, robbery, theft</h2>
+      <div class="crime-type" style="background:#1a0d0d;border:1px solid #3a1a1a">
+        <div class="ct-icon">🔓</div>
+        <div class="ct-body">
+          <div class="ct-name" style="color:#c05050">Burglary</div>
+          <div class="ct-def">Forced entry <strong>into or out of</strong> premises with felonious intent. Policy requires <strong>visible signs of forced entry or exit</strong> following a loss.</div>
+        </div>
+      </div>
+      <div class="crime-type" style="background:#1a0d0d;border:1px solid #3a1a1a">
+        <div class="ct-icon">🔒</div>
+        <div class="ct-body">
+          <div class="ct-name" style="color:#c05050">Safe Burglary</div>
+          <div class="ct-def">Unlawful taking of covered property from <strong>within a locked safe or vault inside premises</strong>, or taking the <strong>entire safe/vault from the premises</strong>.</div>
+        </div>
+      </div>
+      <div class="crime-type" style="background:#1a0d0d;border:1px solid #3a1a1a">
+        <div class="ct-icon">🔫</div>
+        <div class="ct-body">
+          <div class="ct-name" style="color:#c05050">Robbery</div>
+          <div class="ct-def">Taking property <strong>from the care and custody of a person</strong> by causing or threatening bodily harm, or committing an obviously unlawful act <strong>witnessed by that person</strong>. Requires a victim present.</div>
+        </div>
+      </div>
+      <div class="crime-type" style="background:#0a1a1a;border:1px solid #1a3a3a">
+        <div class="ct-icon">🕵️</div>
+        <div class="ct-body">
+          <div class="ct-name" style="color:#4aaaaa">Theft</div>
+          <div class="ct-def"><strong>Any act of stealing</strong> — encompasses both burglary and robbery. Broadest term.</div>
+        </div>
+      </div>
+      <div class="crime-type" style="background:#1a1200;border:1px solid #3a2e00">
+        <div class="ct-icon">❓</div>
+        <div class="ct-body">
+          <div class="ct-name" style="color:#c9a030">Mysterious Disappearance</div>
+          <div class="ct-def">Property gone with <strong>no apparent explanation</strong>. Considered the <em>probability</em> of theft. <strong>Most property policies deny claims</strong> for mysterious disappearance.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: General Exclusions -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>General exclusions — all crime forms</h2>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-label">Acts by Insured/Partners/Members</div><div class="box-val">No coverage for acts committed by the insured, partners, members, or acts by managers/directors/employees <strong>known to the insured before the policy period</strong></div></div>
+        <div class="box red"><div class="box-label">Acts of Employees</div><div class="box-val">Employee dishonest acts <strong>learned of before the policy period</strong> — excluded for all coverages except Employee Theft</div></div>
+        <div class="box red"><div class="box-label">Confidential Information</div><div class="box-val">Unauthorized disclosure of patents, trade secrets, or customer lists</div></div>
+        <div class="box red"><div class="box-label">Data Security Breach</div><div class="box-val">Fees, fines, penalties, and costs related to access or disclosure of another's personal/confidential information</div></div>
+        <div class="box red"><div class="box-label">Government Action</div><div class="box-val">Seizure or destruction of property by governmental authority</div></div>
+        <div class="box red"><div class="box-label">Indirect Losses</div><div class="box-val">Expenses incurred while <strong>establishing the amount of loss</strong></div></div>
+        <div class="box red"><div class="box-label">Legal Fees</div><div class="box-val">Legal expenses related to legal action</div></div>
+        <div class="box red"><div class="box-label">Nuclear / Pollution / War</div><div class="box-val">Standard exclusions across all coverages</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Employee Theft -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Employee theft (employee dishonesty)</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">What it covers</div>
+        <div class="box-val">Loss of <strong>money, securities, and other property</strong> resulting from theft by an employee. <strong>Only coverage that overrides</strong> the general exclusion for employee acts.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Special Conditions</div>
+      <ul>
+        <li>Coverage extension for employees <strong>temporarily outside the coverage territory</strong> for up to <strong>90 days</strong></li>
+        <li>Coverage is <strong>automatically cancelled</strong> on any employee when the insured discovers that employee has committed a dishonest act — whether or not the act occurred before employment</li>
+      </ul>
+      <div style="margin-top:.9rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Additional Exclusions</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="box red"><div class="box-val">Losses provable <strong>only through inventory shortage</strong> or profit/loss accounting</div></div>
+        <div class="box red"><div class="box-val">Losses from <strong>trading</strong></div></div>
+        <div class="box red"><div class="box-val">Fraudulent signing, issuing, cancelling, or failing to cancel a <strong>warehouse receipt</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: Forgery or Alteration -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Forgery or alteration</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">What it covers</div>
+        <div class="box-val"><strong>Worldwide</strong> coverage for loss of money resulting from <strong>forgery and alteration of outgoing</strong> checks, drafts, or promissory notes. Also provides <strong>defense coverage</strong> if the insured is sued for failure to honor a financial instrument suspected of forgery.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Special Conditions</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="box">
+          <div class="box-label">Proof of Loss</div>
+          <div class="box-val">Insured must provide the insurer with the <strong>actual altered or forged check/instrument</strong></div>
+        </div>
+        <div class="box green">
+          <div class="box-label">Territory</div>
+          <div class="box-val"><strong>Anywhere in the world</strong> — this is broader than most coverages</div>
+        </div>
+        <div class="box">
+          <div class="box-label">Electronic Signatures</div>
+          <div class="box-val">Treated the same as <strong>handwritten signatures</strong></div>
+        </div>
+      </div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Key distinction — Outgoing only</div>
+        <div class="box-val" style="font-size:12px">Forgery or alteration covers <em>outgoing</em> instruments (checks the insured writes). Incoming check fraud would fall under a different coverage.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: Recap -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>Recap — crime insurance</h2>
+      <div class="recap-grid">
+        <div class="rpill">Monoline or package</div>
+        <div class="rpill">Loss Sustained ≈ occurrence trigger</div>
+        <div class="rpill">Discovery ≈ claims-made trigger</div>
+        <div class="rpill">Commercial & government entity forms</div>
+        <div class="rpill">Employee includes 30 days post-termination</div>
+        <div class="rpill">Temp employees = employees</div>
+        <div class="rpill">Theft = broadest (includes burglary + robbery)</div>
+        <div class="rpill">Robbery requires a victim present</div>
+        <div class="rpill">Burglary requires visible forced entry/exit</div>
+        <div class="rpill">Safe burglary = locked safe or vault taken</div>
+        <div class="rpill">Mysterious disappearance usually denied</div>
+        <div class="rpill">Funds = Money + Securities</div>
+        <div class="rpill">Employee Theft overrides employee exclusion</div>
+        <div class="rpill">Auto-cancel on discovered dishonest employee</div>
+        <div class="rpill">90-day extension outside coverage territory</div>
+        <div class="rpill">Inventory shortage alone = not enough proof</div>
+        <div class="rpill">Forgery = worldwide territory</div>
+        <div class="rpill">Forgery covers outgoing instruments only</div>
+        <div class="rpill">Electronic sig = handwritten sig</div>
+        <div class="rpill">Data breach costs = excluded</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 10</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=10;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
