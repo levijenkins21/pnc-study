@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Workers Compensation & Employers Liability</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  .defense{background:#1f0a0a;border:1px solid #3a1a1a;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+  .defense-name{font-size:13px;font-weight:600;color:#c05050;margin-bottom:4px}
+  .defense-def{font-size:13px;color:#aaa;line-height:1.5}
+  .fed-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+  .fed-row:last-child{border-bottom:none}
+  .fed-act{color:#5b8dee;font-weight:600;flex-shrink:0;min-width:80px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;line-height:1.4;margin-top:1px}
+  .fed-who{color:#aaa;line-height:1.5}
+  .fed-who strong{color:#e2e2e2}
+  .sec-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1a1a1a}
+  .sec-row:last-child{border-bottom:none}
+  .sec-id{font-size:12px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:60px}
+  .sec-text{font-size:13px;color:#aaa;line-height:1.4}
+  .sec-text strong{color:#e2e2e2}
+  .limit-visual{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+  .lv-row{display:flex;align-items:center;gap:10px}
+  .lv-bar{height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:12px;font-weight:700;letter-spacing:.5px;text-align:center;flex-shrink:0}
+  .lv-label{font-size:13px;color:#aaa;line-height:1.4}
+  .lv-label strong{color:#e2e2e2}
+  .state-diagram{background:#141414;border:1px solid #222;border-radius:10px;padding:14px;margin-top:8px}
+  .sd-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+  .sd-row:last-child{border-bottom:none}
+  .sd-tag{font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:6px;flex-shrink:0;width:30px;text-align:center}
+  .sd-text{color:#aaa;line-height:1.4}
+  .sd-text strong{color:#e2e2e2}
+  .benefit-grid{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+  .ben-row{display:flex;gap:10px;align-items:flex-start;background:#1a1a1a;border-radius:8px;padding:9px 11px}
+  .ben-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+  .ben-text{font-size:13px;color:#aaa;line-height:1.5}
+  .ben-text strong{color:#e2e2e2}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:6.25%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · WC</div>
+      <h1>Workers Compensation &<br>Employers Liability</h1>
+      <p class="sub">Common law defenses · Federal programs · Policy structure · Benefits · Other States coverage · Employers Liability limits · Exclusive Remedy · Premium rating</p>
+    </div>
+  </div>
+
+  <!-- S2: Common Law Defenses -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>Historical — common law defenses</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Before WC laws, employees had to <strong style="color:#e2e2e2">prove employer negligence</strong> to recover. Even then, employers used these defenses to avoid paying:</p>
+      <div class="defense">
+        <div class="defense-name">Fellow Servant Rule</div>
+        <div class="defense-def">If the injury was caused by a <strong>fellow employee's negligence</strong>, it was not considered the employer's negligence.</div>
+      </div>
+      <div class="defense">
+        <div class="defense-name">Contributory Negligence</div>
+        <div class="defense-def">If the injured employee was <strong>even partially responsible</strong> for the injury, they were <strong>completely barred</strong> from recovering damages.</div>
+      </div>
+      <div class="defense">
+        <div class="defense-name">Assumption of Risk</div>
+        <div class="defense-def">Employee <strong>knew the risks</strong> of the job in advance and had been compensated for those risks through their salary.</div>
+      </div>
+      <div class="box amber" style="margin-top:8px">
+        <div class="box-val" style="font-size:12px">States began diluting these defenses with employer's liability laws → by early 1900s, <strong>compulsory WC laws</strong> established <strong>absolute liability</strong> — compensation required <em>regardless of fault</em>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Federal Programs -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Federal compensation programs</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">OSHA — 1970</div>
+        <div class="box-val">Set <strong>minimum work safety standards</strong>. States can retain jurisdiction if their standards meet or exceed OSHA minimums.</div>
+      </div>
+      <div class="fed-row"><div class="fed-act">FECA</div><div class="fed-who"><strong>Federal Employees Compensation Act</strong> — covers federal <strong>civil employees</strong></div></div>
+      <div class="fed-row"><div class="fed-act">LHWCA</div><div class="fed-who"><strong>US Longshore & Harbor Workers Act</strong> — crews of vessels, employees in <strong>shipbuilding or repair</strong></div></div>
+      <div class="fed-row"><div class="fed-act">DBA</div><div class="fed-who"><strong>Defense Base Act</strong> — civilians employed on a <strong>military base</strong></div></div>
+      <div class="fed-row"><div class="fed-act">Black Lung</div><div class="fed-who"><strong>Federal Black Lung Compensation</strong> — <strong>coal miners</strong></div></div>
+      <div class="fed-row"><div class="fed-act">FELA<br>1908</div><div class="fed-who"><strong>Federal Employers Liability Act</strong> — <strong>railroad employees</strong>. Exempt from many state WC laws. Allows workers to <strong>sue employer for negligence</strong> — removes contributory negligence and assumption of risk defenses.</div></div>
+    </div>
+  </div>
+
+  <!-- S4: Who is Employee/Employer -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>Who is an employee & employer</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Employee Definition</div>
+        <div class="box-val">Person hired to perform a service <strong>under the control of the employer</strong>, paid a wage or salary, doing work usual and customary to the business. Includes full-time, part-time, seasonal, temporary, leased, borrowed, and unpaid volunteers.<br><br><strong>Independent contractors are NOT employees</strong> (unless classification is for tax purposes only).</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">5 Factors to Determine Employee Status</div>
+      <div class="grid2" style="gap:6px">
+        <div class="box"><div class="box-val">Employer <strong>controls</strong> the person's task</div></div>
+        <div class="box"><div class="box-val">Work is <strong>consistent with the nature</strong> of the business</div></div>
+        <div class="box"><div class="box-val">Person is <strong>paid a wage</strong> or compensation</div></div>
+        <div class="box"><div class="box-val">Business has right to <strong>hire or fire</strong></div></div>
+        <div class="box" style="grid-column:1/-1"><div class="box-val">Business <strong>furnishes materials</strong> for the person to do their work</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#555">Farm workers and domestic servants are <strong style="color:#aaa">exempt</strong> from WC in most states.</div>
+    </div>
+  </div>
+
+  <!-- S5: Policy Structure -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>WC policy general section — 5 parts</h2>
+      <div class="sec-row"><div class="sec-id">1. Policy</div><div class="sec-text">Summarizes all components. <strong>Information page</strong> substitutes for the Declarations page. Terms can only be changed by endorsement.</div></div>
+      <div class="sec-row"><div class="sec-id">2. Who is Insured</div><div class="sec-text">Employer named on information page. For partnerships, each partner is insured <strong>only as an employer</strong> of the partnership's employees.</div></div>
+      <div class="sec-row"><div class="sec-id">3. WC Law</div><div class="sec-text">Policy refers to the WC laws in states listed in <strong>3A</strong> (states where employer has employees). <strong>No dollar amounts shown</strong> — policy pays whatever the state's statute requires.</div></div>
+      <div class="sec-row"><div class="sec-id">4. State</div><div class="sec-text">Defined as any <strong>US state + District of Columbia</strong>.</div></div>
+      <div class="sec-row"><div class="sec-id">5. Locations</div><div class="sec-text">Coverage applies to all locations listed in the information page and in <strong>3A</strong>, unless those states have other insurance or self-insurance in place.</div></div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Key Point</div>
+        <div class="box-val">Medical payments under WC are <strong>unlimited</strong> — no dollar or time limits for necessary medical and surgical expenses (certain types of care may have limits).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Benefits -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>WC benefits</h2>
+      <div class="benefit-grid">
+        <div class="ben-row">
+          <div class="ben-icon">🏥</div>
+          <div class="ben-text"><strong>Medical</strong> — unlimited payments for medical and surgical expenses. No dollar or time limits (except possibly certain care types).</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">💵</div>
+          <div class="ben-text"><strong>Disability Income</strong> — % of lost wages after a waiting period. Retroactive to day 1 if disability exceeds the waiting period. Subject to weekly max/min.</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">🎓</div>
+          <div class="ben-text"><strong>Rehabilitation</strong> — vocational training, physical/mental therapy, board, lodging, travel. States may impose maximums.</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">⚰️</div>
+          <div class="ben-text"><strong>Death Benefits</strong> — small amount for funeral/burial + weekly income to surviving spouse/children. Continues for life of spouse or until remarriage.</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">🔄</div>
+          <div class="ben-text"><strong>Second Injury Fund</strong> — covers additional benefits when an employee with a <em>prior disability</em> suffers a second injury that worsens the total disability. Encourages employers to hire disabled workers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: Disability Types -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>Types of disability benefits</h2>
+      <div class="grid2" style="gap:8px;margin-bottom:10px">
+        <div class="box blue">
+          <div class="box-label">Temporary Total Disability</div>
+          <div class="box-val"><strong>Total inability to work</strong> for a limited time. Benefits = % of wages, subject to weekly max/min.</div>
+        </div>
+        <div class="box green">
+          <div class="box-label">Permanent Total Disability</div>
+          <div class="box-val"><strong>Total inability to work permanently.</strong> Benefits = % of wages, subject to weekly max/min.</div>
+        </div>
+        <div class="box amber">
+          <div class="box-label">Temporary Partial Disability</div>
+          <div class="box-val">Ability to do <strong>some or alternative work</strong>. Benefits = % of the <strong>difference between pre- and post-injury wages</strong>.</div>
+        </div>
+        <div class="box purple">
+          <div class="box-label">Permanent Partial (Scheduled)</div>
+          <div class="box-val">Schedule of benefits for <strong>specific losses</strong> (limb, hearing, eyesight). Usually paid <em>in addition to</em> other benefits.</div>
+        </div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Generally Excluded from WC</div>
+      <div class="grid2" style="gap:6px">
+        <div class="box red"><div class="box-val">Injuries traveling <strong>to/from work</strong></div></div>
+        <div class="box red"><div class="box-val">Injuries from <strong>intoxication</strong></div></div>
+        <div class="box red"><div class="box-val">Injuries <strong>willfully caused</strong> by the employee</div></div>
+        <div class="box red"><div class="box-val">Willful failure to follow <strong>safety precautions</strong></div></div>
+        <div class="box red" style="grid-column:1/-1"><div class="box-val">Activities <strong>not part of the job</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Other States Insurance -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Other states insurance — 3A vs. 3C</h2>
+      <div class="state-diagram">
+        <div class="sd-row">
+          <div class="sd-tag" style="background:#0d1a2e;color:#5b8dee">3A</div>
+          <div class="sd-text"><strong>States where employer currently has employees</strong> — mandatory WC coverage. No dollar limits stated; policy pays whatever that state's law requires.</div>
+        </div>
+        <div class="sd-row">
+          <div class="sd-tag" style="background:#0a1f0a;color:#4aaa4a">3C</div>
+          <div class="sd-text"><strong>Other states</strong> (excluding monopolistic states) — covers new or incidental operations automatically and temporarily. Most insurers list all non-monopolistic states here for maximum protection.</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">How 3C Coverage Works</div>
+      <ul>
+        <li>New work begins <strong>after</strong> policy effective date → automatic coverage as if listed in 3A</li>
+        <li>Work is <strong>already underway</strong> on effective date → insurer must be notified within <strong>30 days</strong> or no coverage</li>
+        <li>In subsequent policy periods, the state must be added to <strong>3A</strong> by January 30 (30 days into new term) or coverage lapses</li>
+      </ul>
+      <div class="box amber" style="margin-top:8px">
+        <div class="box-label">Example</div>
+        <div class="box-val" style="font-size:12px">Work begins in June in a new state listed in 3C → covered. In year 2, work continues. Injury occurs in March. Insurer must have been notified by end of January — if not, <strong style="color:#c9a030">no coverage</strong> even if still in 3C.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: Employers Liability Limits -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Employers liability — limits & trigger</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Unlike WC (no stated limits), Employers Liability <strong>limits are shown on the information page:</strong></p>
+      <div class="limit-visual">
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#0d1a2e;color:#5b8dee;width:110px">$100,000</div>
+          <div class="lv-label">Bodily injury <strong>per accident</strong></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#0a3a0a;color:#4aaa4a;width:110px">$100,000</div>
+          <div class="lv-label">Bodily injury by disease <strong>per employee</strong></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#130d2e;color:#8a6aee;width:110px">$500,000</div>
+          <div class="lv-label">Bodily injury by disease <strong>policy limit</strong> (all disease claims during policy term)</div>
+        </div>
+      </div>
+      <div style="margin-top:.9rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Coverage Triggered When ALL 4 Conditions Met</div>
+      <div class="grid2" style="gap:6px">
+        <div class="box"><div class="box-val">Injury arises from <strong>employment by the insured</strong></div></div>
+        <div class="box"><div class="box-val">Occurs in a state listed in <strong>3A</strong></div></div>
+        <div class="box"><div class="box-val">Occurs <strong>during the policy period</strong></div></div>
+        <div class="box"><div class="box-val">Suit brought in <strong>US, territories, possessions, or Canada</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: Employers Liability Exclusions -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>Employers liability — exclusions</h2>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-val">Liability <strong>assumed under a contract</strong></div></div>
+        <div class="box red"><div class="box-val"><strong>Punitive or exemplary damages</strong></div></div>
+        <div class="box red"><div class="box-val">Employees knowingly hired in <strong>violation of law</strong></div></div>
+        <div class="box red"><div class="box-val">Injury <strong>intentionally caused</strong> by the insured</div></div>
+        <div class="box red"><div class="box-val">Injuries <strong>outside the US</strong>, territories, or Canada — <em>exception:</em> residents temporarily outside are covered</div></div>
+        <div class="box red"><div class="box-val">Employment practices — <strong>defamation, harassment, discrimination, termination</strong></div></div>
+        <div class="box red"><div class="box-val">Employees subject to <strong>federal WC or employers liability laws</strong> (coverage usually available by endorsement)</div></div>
+        <div class="box red"><div class="box-val"><strong>Fines or penalties</strong> for violation of state or federal laws</div></div>
+        <div class="box red"><div class="box-val">Damages under <strong>Migrant & Seasonal Agricultural Worker Protection Act</strong> or similar laws</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#555">Other insurance: losses paid on <strong style="color:#aaa">contribution by equal shares</strong> basis.</div>
+    </div>
+  </div>
+
+  <!-- S11: Exclusive Remedy & When EL Kicks In -->
+  <div class="slide" id="s11">
+    <div class="card">
+      <h2>Exclusive remedy & employers liability gaps</h2>
+      <div class="box amber" style="margin-bottom:10px">
+        <div class="box-label">Exclusive Remedy Doctrine</div>
+        <div class="box-val">Under compulsory WC laws, injured employees are <strong>barred from suing the employer</strong> outside of WC — WC is the only remedy.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Situations Where Employers Liability Fills the Gap</div>
+      <div class="benefit-grid">
+        <div class="ben-row">
+          <div class="ben-icon">⚖️</div>
+          <div class="ben-text"><strong>Exempt or illegal employment</strong> — workers not covered by WC statute</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">🔄</div>
+          <div class="ben-text"><strong>Third-party over claims</strong> — employee sues a third party → third party sues employer back</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">🏭</div>
+          <div class="ben-text"><strong>Dual capacity</strong> — employee and employer in two separate relationships (e.g., injured by a product the employer manufactures). Employee can collect WC <em>and</em> additional compensation.</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">👨‍👩‍👧</div>
+          <div class="ben-text"><strong>Loss of consortium / consequential BI</strong> — family member claims for loss of companionship or injury resulting from employee's injury</div>
+        </div>
+        <div class="ben-row">
+          <div class="ben-icon">🏢</div>
+          <div class="ben-text"><strong>Parent-subsidiary claims</strong> — employee injured by subsidiary, seeks additional compensation from parent company</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12: Premium Determination -->
+  <div class="slide" id="s12">
+    <div class="card">
+      <h2>Premium determination</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Basic Rating Formula</div>
+        <div class="box-val">Rate per <strong>$100 of payroll</strong> × job classification rate (set by rating bureau, e.g. NCCI).<br><strong>Payroll</strong> = salaries, wages, commissions, bonuses, noncash compensation, vacation, sick leave.</div>
+      </div>
+      <div class="grid2" style="gap:8px">
+        <div class="box">
+          <div class="box-label">Experience Modification Factor (Mod)</div>
+          <div class="box-val" style="font-size:12px">Developed by a rating bureau. Compares employer's actual losses and payroll against expected. <strong>Below 1.0 = credit (discount), above 1.0 = debit (surcharge).</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">Premium Discount</div>
+          <div class="box-val" style="font-size:12px">Applies when total standard premium exceeds <strong>$5,000</strong>. Recognizes economies of scale for larger accounts.</div>
+        </div>
+        <div class="box green">
+          <div class="box-label">Participating Policies (Safety Groups)</div>
+          <div class="box-val" style="font-size:12px">Eligible for <strong>dividends</strong> (partial premium refund) if loss experience meets guidelines. Dividends are <strong>not guaranteed.</strong> No penalty for high losses.</div>
+        </div>
+        <div class="box purple">
+          <div class="box-label">Retrospective Rating</div>
+          <div class="box-val" style="font-size:12px">For large commercial accounts. Final premium based on <strong>actual loss experience</strong> during policy term. Subject to <strong>minimum and maximum</strong> premium. Formula guaranteed in contract.</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#555">Estimated payroll used at policy issuance → final premium determined by <strong style="color:#aaa">audit</strong>.</div>
+    </div>
+  </div>
+
+  <!-- S13: Compulsory vs Elective -->
+  <div class="slide" id="s13">
+    <div class="card">
+      <h2>Compulsory vs. elective WC laws</h2>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box blue">
+          <div class="box-label">Compulsory (most states)</div>
+          <div class="box-val"><strong>All employers must provide WC coverage</strong> (except those excluded by staff size or employment type). Exclusive remedy — employees cannot sue outside WC.</div>
+        </div>
+        <div class="box amber">
+          <div class="box-label">Elective (few states)</div>
+          <div class="box-val">Employer can <strong>opt out</strong> of state WC laws. However, if they opt out, they <strong>lose common law defenses</strong> against liability suits.</div>
+        </div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">NCCI Standard Policy</div>
+      <ul>
+        <li>All WC & Employers Liability policies based on <strong>NCCI (National Council on Compensation Insurance)</strong> standard policy</li>
+        <li>May contain slight variations by state or insurer</li>
+        <li>Written through private insurers, or <strong>state funds</strong> in monopolistic states</li>
+      </ul>
+      <div style="margin-top:.9rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Work-Related Requirement</div>
+      <ul>
+        <li>Must arise <strong>out of or during employment</strong></li>
+        <li>Occupational disease requires a <strong>direct relationship</strong> between job and disease — ordinary public diseases not covered</li>
+        <li>Penalties for employer's willful failure to provide safety equipment — <strong>NOT covered by WC insurance, paid by employer</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S14: Recap -->
+  <div class="slide" id="s14">
+    <div class="card">
+      <h2>Recap — workers comp & employers liability</h2>
+      <div class="recap-grid">
+        <div class="rpill">3 common law defenses</div>
+        <div class="rpill">FELA — railroad, 1908</div>
+        <div class="rpill">LHWCA — vessel crews/shipbuilding</div>
+        <div class="rpill">Defense Base Act — military bases</div>
+        <div class="rpill">Black Lung — coal miners</div>
+        <div class="rpill">FECA — federal civil employees</div>
+        <div class="rpill">3A = current employee states</div>
+        <div class="rpill">3C = other states (30-day notice)</div>
+        <div class="rpill">Medical payments = unlimited</div>
+        <div class="rpill">No dollar limits in WC statute</div>
+        <div class="rpill">$100K/accident (EL)</div>
+        <div class="rpill">$100K/employee/disease (EL)</div>
+        <div class="rpill">$500K/policy/disease (EL)</div>
+        <div class="rpill">Premium: per $100 of payroll</div>
+        <div class="rpill">Premium discount: &gt;$5,000 standard</div>
+        <div class="rpill">Retro rating: min/max premium</div>
+        <div class="rpill">Dividends not guaranteed</div>
+        <div class="rpill">Exclusive remedy doctrine</div>
+        <div class="rpill">Dual capacity claims</div>
+        <div class="rpill">Second injury fund</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 14</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=14;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
