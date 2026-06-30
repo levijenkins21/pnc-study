@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Bonds</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box.teal{background:#0a1a1a;border-color:#1a3a3a}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  /* 3-party diagram */
+  .party-wrap{display:flex;align-items:center;gap:0;margin:12px 0}
+  .party-box{flex:1;border-radius:10px;padding:12px 10px;text-align:center}
+  .party-name{font-size:13px;font-weight:700;margin-bottom:4px}
+  .party-aka{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px}
+  .party-desc{font-size:11px;color:#aaa;line-height:1.4}
+  .party-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;font-size:18px;color:#444}
+  /* compare table */
+  .cmp-wrap{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1px solid #2a2a2a;margin-top:8px}
+  .cmp-col{flex:1;padding:12px 14px}
+  .cmp-col:first-child{border-right:1px solid #2a2a2a}
+  .cmp-head{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+  .cmp-row{font-size:12px;color:#aaa;padding:5px 0;border-bottom:1px solid #1a1a1a;line-height:1.4}
+  .cmp-row:last-child{border-bottom:none}
+  .cmp-row strong{color:#e2e2e2}
+  /* fidelity type rows */
+  .fid-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #1a1a1a}
+  .fid-row:last-child{border-bottom:none}
+  .fid-num{font-size:17px;font-weight:700;color:#5b8dee;flex-shrink:0;width:26px}
+  .fid-body{}
+  .fid-name{font-size:13px;font-weight:600;color:#e2e2e2;margin-bottom:2px}
+  .fid-def{font-size:12px;color:#aaa;line-height:1.5}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}.party-wrap{flex-direction:column;gap:6px}.party-arrow{transform:rotate(90deg)}.cmp-wrap{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:12.5%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · Bonds</div>
+      <h1>Bonds</h1>
+      <p class="sub">3 parties · Surety vs. Insurance · Fidelity bonds · Types of employee fidelity bonds · One-bite rule</p>
+    </div>
+  </div>
+
+  <!-- S2: 3 Parties -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>The 3 parties to a bond</h2>
+      <div class="party-wrap">
+        <div class="party-box" style="background:#0d1a2e;border:1px solid #1e3a6e">
+          <div class="party-name" style="color:#5b8dee">Principal</div>
+          <div class="party-aka">Also: Obligor</div>
+          <div class="party-desc">Makes the promise. <strong style="color:#e2e2e2">Purchases the bond.</strong> Goes through underwriting. Responsible for reimbursing surety if bond pays.</div>
+        </div>
+        <div class="party-arrow">→</div>
+        <div class="party-box" style="background:#0a1f0a;border:1px solid #1a3a1a">
+          <div class="party-name" style="color:#4aaa4a">Obligee</div>
+          <div class="party-aka">Also: Insured</div>
+          <div class="party-desc">The promise is made <strong style="color:#e2e2e2">to them.</strong> Requires the bond. <strong style="color:#e2e2e2">Bond is payable to them</strong> if principal defaults.</div>
+        </div>
+        <div class="party-arrow">→</div>
+        <div class="party-box" style="background:#130d2e;border:1px solid #2a1a5e">
+          <div class="party-name" style="color:#8a6aee">Surety</div>
+          <div class="party-aka">Also: Guarantor</div>
+          <div class="party-desc">The bonding company. Provides the <strong style="color:#e2e2e2">financial backing</strong> (bond penalty). Pays obligee if principal defaults.</div>
+        </div>
+      </div>
+      <div class="box amber">
+        <div class="box-label">Example</div>
+        <div class="box-val" style="font-size:12px">Building owner (obligee) requires contractor (principal) to finish by a date. Contractor buys a bond from a surety. If contractor misses the deadline → surety pays the owner the bond amount. Then contractor must <strong>reimburse the surety</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Surety vs Insurance -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Surety vs. insurance — key differences</h2>
+      <div class="cmp-wrap">
+        <div class="cmp-col" style="background:#0d1a2e">
+          <div class="cmp-head" style="color:#5b8dee">Insurance</div>
+          <div class="cmp-row"><strong>2-party</strong> agreement — insurer and insured</div>
+          <div class="cmp-row">Pays losses <strong>without recourse</strong> against the insured</div>
+          <div class="cmp-row">Expects losses to occur</div>
+          <div class="cmp-row">Insured does <strong>not reimburse</strong> the insurer</div>
+          <div class="cmp-row">Covers uncertainty of loss</div>
+        </div>
+        <div class="cmp-col" style="background:#130d2e">
+          <div class="cmp-head" style="color:#8a6aee">Surety</div>
+          <div class="cmp-row"><strong>3-party</strong> contract — principal, obligee, surety</div>
+          <div class="cmp-row"><strong>Does not expect to pay losses</strong> — guarantees performance</div>
+          <div class="cmp-row">If bond pays, principal <strong>must reimburse surety</strong></div>
+          <div class="cmp-row">Pays only up to the stated <strong>penalty</strong> (bond limit)</div>
+          <div class="cmp-row">Guarantees a specific outcome</div>
+        </div>
+      </div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Key exam point</div>
+        <div class="box-val">Surety bonds are <strong>not insurance in the traditional sense</strong>. The biggest difference: the principal (obligor) is responsible for <strong>reimbursing the surety</strong> for any amount paid — there is right of recourse against the principal.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: Fidelity Overview -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>Fidelity bonds — overview</h2>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box blue">
+          <div class="box-label">Surety Bonds</div>
+          <div class="box-val">Guarantee <strong>performance</strong> of an obligation</div>
+        </div>
+        <div class="box green">
+          <div class="box-label">Fidelity Bonds</div>
+          <div class="box-val">Guarantee <strong>honesty and trust</strong> — employee dishonesty coverage</div>
+        </div>
+      </div>
+      <div class="box" style="margin-bottom:10px">
+        <div class="box-label">What Fidelity Covers</div>
+        <div class="box-val">Losses caused by <strong>theft, embezzlement, forgery, misappropriation</strong>, or any other dishonest or fraudulent act by employees</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Key Features</div>
+      <ul>
+        <li>Written with a stated <strong>limit of liability</strong></li>
+        <li>Covers acts committed <strong>during the bond period</strong></li>
+        <li>Usually written with <strong>no expiration date</strong> — stays in force until cancelled</li>
+        <li>Discovery period: losses covered if discovered within <strong>1 year</strong> after bond terminates (or <strong>2 years for blanket position</strong>)</li>
+      </ul>
+      <div class="box red" style="margin-top:8px">
+        <div class="box-label">One-Bite Rule</div>
+        <div class="box-val">The moment an employer becomes aware of an employee's dishonesty that could lead to a claim → <strong>coverage for that employee terminates immediately.</strong> Applies even if the act occurred before the current bond period or with a different employer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Types of Fidelity Bonds -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Types of employee fidelity bonds</h2>
+      <div class="fid-row">
+        <div class="fid-num">1</div>
+        <div class="fid-body">
+          <div class="fid-name">Individual</div>
+          <div class="fid-def">Covers <strong>1 specifically named employee</strong></div>
+        </div>
+      </div>
+      <div class="fid-row">
+        <div class="fid-num">2</div>
+        <div class="fid-body">
+          <div class="fid-name">Name Schedule</div>
+          <div class="fid-def">Covers <strong>several named employees</strong> for <strong>varying amounts</strong> — each listed by name on the bond</div>
+        </div>
+      </div>
+      <div class="fid-row">
+        <div class="fid-num">3</div>
+        <div class="fid-body">
+          <div class="fid-name">Position Schedule</div>
+          <div class="fid-def">Covers anyone occupying a <strong>scheduled position</strong> — listed by <strong>job title</strong>, not name. Coverage follows the position, not the person.</div>
+        </div>
+      </div>
+      <div class="fid-row">
+        <div class="fid-num">4</div>
+        <div class="fid-body">
+          <div class="fid-name">Commercial Blanket</div>
+          <div class="fid-def">Covers <strong>all employees</strong>. Limit of liability on a <strong>per loss basis</strong> — no matter how many employees were involved in one loss.</div>
+        </div>
+      </div>
+      <div class="fid-row">
+        <div class="fid-num">5</div>
+        <div class="fid-body">
+          <div class="fid-name">Blanket Position</div>
+          <div class="fid-def">Covers <strong>all employees</strong>. Limit of liability on a <strong>per employee basis</strong> — regardless of how many employees were involved. Discovery period is <strong>2 years</strong> (vs. 1 year for others).</div>
+        </div>
+      </div>
+      <div class="box amber" style="margin-top:10px">
+        <div class="box-label">Commercial Blanket vs. Blanket Position</div>
+        <div class="box-val" style="font-size:12px">Both cover all employees — the difference is the limit basis. <strong>Blanket = per loss</strong> (1 payout for any loss regardless of # of employees involved). <strong>Blanket Position = per employee</strong> (each dishonest employee is its own limit).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Recap -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>Recap — bonds</h2>
+      <div class="recap-grid">
+        <div class="rpill">Principal = obligor, buys the bond</div>
+        <div class="rpill">Obligee = insured, receives payment</div>
+        <div class="rpill">Surety = guarantor, pays on default</div>
+        <div class="rpill">3-party contract (vs. 2-party insurance)</div>
+        <div class="rpill">Surety does not expect to pay losses</div>
+        <div class="rpill">Principal reimburses the surety</div>
+        <div class="rpill">Penalty = bond limit</div>
+        <div class="rpill">Surety = performance guarantee</div>
+        <div class="rpill">Fidelity = honesty/trust guarantee</div>
+        <div class="rpill">Covers: theft, embezzlement, forgery, misappropriation</div>
+        <div class="rpill">Usually no expiration — cancelled to terminate</div>
+        <div class="rpill">Discovery period: 1 year (2 years blanket position)</div>
+        <div class="rpill">One-bite rule — coverage ends on discovery</div>
+        <div class="rpill">Individual = 1 named employee</div>
+        <div class="rpill">Name schedule = several named, varying amounts</div>
+        <div class="rpill">Position schedule = job title based</div>
+        <div class="rpill">Commercial blanket = all employees, per loss</div>
+        <div class="rpill">Blanket position = all employees, per employee</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 6</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=6;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
