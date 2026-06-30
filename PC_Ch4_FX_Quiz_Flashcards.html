@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch4 FX Chapter Exam Flashcards</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem 1rem 4rem}
+  .top{width:100%;max-width:660px;margin-bottom:1rem}
+  .title{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+  h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.3rem}
+  .subtitle{font-size:12px;color:#555;margin-bottom:.8rem}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem}
+  .btn-sm{padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn-sm:hover{background:#222}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+  .prog-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .stats{font-size:12px;color:#555;display:flex;gap:16px;margin-bottom:1rem}
+  .stat-val{color:#e2e2e2;font-weight:600}
+  /* card */
+  .card-wrap{width:100%;max-width:660px;perspective:1200px;cursor:pointer;margin-bottom:1rem;user-select:none}
+  .card-inner{position:relative;min-height:340px;transition:transform .5s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;min-height:340px;border-radius:16px;padding:1.75rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:flex-start}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:.8rem}
+  .back .face-label{color:#1e3a6e}
+  .q-num{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem}
+  .q-text{font-size:15px;font-weight:500;color:#fff;line-height:1.55;margin-bottom:1.1rem}
+  .choices-list{display:flex;flex-direction:column;gap:7px}
+  .choice-item{font-size:13px;color:#888;line-height:1.4;padding:7px 10px;background:#1a1a1a;border:1px solid #242424;border-radius:8px}
+  .choice-item.correct-choice{background:#0a2e0a;border-color:#1a4a1a;color:#4aaa4a;font-weight:600}
+  .tap-hint{font-size:11px;color:#2a2a2a;text-align:center;margin-top:auto;padding-top:1rem}
+  /* back */
+  .answer-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#3a6aae;margin-bottom:.3rem}
+  .answer-text{font-size:17px;font-weight:700;color:#5b8dee;margin-bottom:1rem;line-height:1.3}
+  .explain-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#2a4a6e;margin-bottom:.4rem}
+  .explain-text{font-size:13px;color:#aaa;line-height:1.65}
+  /* nav */
+  .nav-row{width:100%;max-width:660px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+  .counter{font-size:13px;color:#555;text-align:center;flex:1}
+  .nav-btn{padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#222}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  /* know buttons */
+  .know-row{width:100%;max-width:660px;display:none;gap:10px;margin-bottom:1rem}
+  .card-wrap.flipped ~ .know-row{display:flex}
+  .know-btn{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;border:none;transition:opacity .15s}
+  .know-btn.yes{background:#0a2e0a;color:#4aaa4a;border:1px solid #1a4a1a}
+  .know-btn.no{background:#2e0a0a;color:#c05050;border:1px solid #4a1a1a}
+  .know-btn:hover{opacity:.8}
+  /* done screen */
+  .done-screen{display:none;width:100%;max-width:660px;background:#141414;border:1px solid #222;border-radius:16px;padding:2rem;text-align:center}
+  .done-screen.show{display:block}
+  @media(max-width:480px){.q-text{font-size:14px}.choice-item{font-size:12px}.answer-text{font-size:15px}.explain-text{font-size:12px}.face{padding:1.3rem}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="title">P&C Exam · Chapter 4</div>
+  <h1>FX Chapter Exam</h1>
+  <div class="subtitle">15 exam questions — tap to reveal the answer & explanation</div>
+  <div class="controls">
+    <button class="btn-sm" onclick="shuffle()">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="resetProgress()">↺ Reset</button>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+  <div class="stats">
+    <span>Card <span class="stat-val" id="cardNum">1</span> of <span class="stat-val" id="cardTotal">15</span></span>
+    <span>✓ <span class="stat-val" id="knewCount" style="color:#4aaa4a">0</span> knew it</span>
+    <span>✗ <span class="stat-val" id="stillCount" style="color:#c05050">0</span> still learning</span>
+  </div>
+</div>
+
+<div class="card-wrap" id="cardWrap" onclick="flip()">
+  <div class="card-inner" id="cardInner">
+    <div class="face front">
+      <div class="face-label">Tap to reveal answer</div>
+      <div class="q-num" id="qNum"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices-list" id="choicesList"></div>
+      <div class="tap-hint">tap card to flip</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Answer & Explanation</div>
+      <div class="answer-label">Correct Answer</div>
+      <div class="answer-text" id="answerText"></div>
+      <div class="explain-label">Why this matters</div>
+      <div class="explain-text" id="explainText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="know-row" id="knowRow">
+  <button class="know-btn yes" onclick="markKnew()">✓ Knew it</button>
+  <button class="know-btn no" onclick="markLearning()">✗ Still learning</button>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">← Prev</button>
+  <span class="counter" id="counter"></span>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div style="font-size:32px;margin-bottom:.5rem">🎉</div>
+  <div style="font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem">Deck complete!</div>
+  <div id="doneStats" style="font-size:14px;color:#aaa;margin-bottom:1.2rem"></div>
+  <button class="btn-sm" onclick="restart()" style="padding:10px 24px;font-size:14px">Start Over</button>
+  <button class="btn-sm" onclick="reviewLearning()" style="padding:10px 24px;font-size:14px;margin-left:8px">Review Still Learning</button>
+</div>
+
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    num: "Question 1",
+    q: "Which federal act provides benefits to injured civilians who are employed by the federal government?",
+    choices: ["The Longshore and Harbor Workers Act","The Federal Employees Compensation Act (FECA)","The Jones Act","The Defense Base Act"],
+    correct: 1,
+    answer: "B — Federal Employees Compensation Act (FECA)",
+    explain: "FECA is the federal government's own workers' compensation system for civilian federal employees. State WC laws don't apply to federal workers — FECA is their exclusive remedy for job-related injuries and illnesses. It covers medical treatment, disability pay, and death benefits."
+  },
+  {
+    num: "Question 2",
+    q: "In the split limit coverage in personal auto policies, which limit indicates the maximum amount the policy will pay for bodily injury per person?",
+    choices: ["The second limit","The third limit","The first limit","The combined single limit"],
+    correct: 2,
+    answer: "C — The first limit",
+    explain: "Split limits are written as BI per person / BI per accident / PD. In a 25/50/25 policy, the first number ($25,000) caps what any single injured claimant can receive. Even if one person's damages exceed that, the policy won't pay more than the per-person limit for that individual."
+  },
+  {
+    num: "Question 3",
+    q: "With respect to auto insurance, the term 'owned autos' includes all of the following EXCEPT:",
+    choices: ["Any private passenger auto titled to the named insured","Any private passenger auto leased to the named insured for more than six months","A pickup van titled to and used in the named insured's business","A pickup van acquired by the named insured during the policy period"],
+    correct: 2,
+    answer: "C — A pickup van titled to and used in the named insured's business",
+    explain: "Personal auto policies cover private passenger autos and pickups/vans used for personal (not business) purposes. A pickup used primarily in a business is a commercial vehicle and requires a commercial auto policy. Using a PAP for business vehicles is a common coverage gap."
+  },
+  {
+    num: "Question 4",
+    q: "In the event of a claim under a commercial general liability policy, the insured has all the following duties to the insurer EXCEPT:",
+    choices: ["Providing prompt written notice of the claim or suit","Assisting the insurer with the defense of the claim","Furnishing the insurer with copies of all legal papers received","Submitting to a medical exam when requested"],
+    correct: 3,
+    answer: "D — Submitting to a medical exam when requested",
+    explain: "Medical exams are a duty under the Personal Auto Policy (Part B - Medical Payments) and Workers Compensation, not the CGL. CGL duties focus on cooperation: prompt notice, assisting with defense, forwarding legal papers, and helping with subrogation. No medical exam duty exists under the CGL."
+  },
+  {
+    num: "Question 5",
+    q: "A professional liability policy will provide coverage for loss in all of the following cases, EXCEPT when the insured doctor was shown to be:",
+    choices: ["Improperly trained","Negligent","Criminally negligent","Incompetent"],
+    correct: 2,
+    answer: "C — Criminally negligent",
+    explain: "Professional liability (malpractice/E&O) covers civil negligence — being untrained, careless, or incompetent in performing professional duties. Criminal acts are universally excluded from liability policies. Criminal negligence rises to a level of conduct that the law treats as criminal, not merely a civil wrong — and no insurance policy covers intentional criminal acts."
+  },
+  {
+    num: "Question 6",
+    q: "An employee is injured while visiting the employer's out-of-state site. How will the workers compensation benefits be determined?",
+    choices: ["Benefits will be provided if the state was listed on the policy information page","The employee may elect to receive benefits from both the home state and the state in which the injury occurred","The legal system will determine which state's benefits apply to this particular loss","The state's benefits that pay the lowest amount will be selected by the insurance company"],
+    correct: 0,
+    answer: "A — Benefits provided if the state was listed on the policy information page",
+    explain: "Workers compensation is state-specific. The WC policy's information page (declarations) lists the states where the employer has coverage. Out-of-state injuries are only covered if that state appears on the policy. Employees cannot collect from two states simultaneously, and the courts don't choose — the policy language controls."
+  },
+  {
+    num: "Question 7",
+    q: "If a covered auto is involved in an auto accident in another state, what happens to the limits of policy liability in a personal auto policy?",
+    choices: ["They adjust to at least the minimum limits of the other state","They do not apply","They decrease based on the state law","They do not change"],
+    correct: 0,
+    answer: "A — They adjust to at least the minimum limits of the other state",
+    explain: "The PAP contains an out-of-state coverage provision: if you have an accident in a state requiring higher minimum liability limits than your policy, your coverage automatically increases to meet that state's minimums. This ensures you're always legally compliant wherever you drive without needing separate policies for each state."
+  },
+  {
+    num: "Question 8",
+    q: "The party to a surety or fidelity bond who promises to fulfill the obligation is the:",
+    choices: ["Surety","Principal","Obligee","Custodian"],
+    correct: 1,
+    answer: "B — Principal",
+    explain: "Three parties to a bond: the Principal purchases the bond and promises to perform the obligation; the Surety (insurance company) guarantees that promise and pays if the principal fails; the Obligee is the protected party who benefits from the bond. The principal is the one making the commitment — the surety just backs it up."
+  },
+  {
+    num: "Question 9",
+    q: "In a personal auto policy, the medical payments coverage is similar to:",
+    choices: ["Bodily injury coverage, because it pays the insured's doctor bills","Accident insurance, because it has the same limits","Accident insurance, because it pays medical expenses regardless of fault","Bodily injury coverage, because it provides legal protection if the insured causes injuries to others"],
+    correct: 2,
+    answer: "C — Accident insurance, because it pays medical expenses regardless of fault",
+    explain: "PAP Part B (Medical Payments) is a no-fault coverage — it pays medical bills for the named insured and any passengers injured in the vehicle, regardless of who caused the accident. This mirrors accident insurance, which triggers on the event itself, not on liability. Bodily injury coverage (Part A) is liability-based and pays others when you're at fault."
+  },
+  {
+    num: "Question 10",
+    q: "Which of the following would NOT qualify as a hired auto?",
+    choices: ["An auto borrowed from an employee","An auto rented for personal use","An auto hired by an employer","An auto leased from a commercial rental company"],
+    correct: 0,
+    answer: "A — An auto borrowed from an employee",
+    explain: "A 'hired auto' is any vehicle the business leases, rents, charters, or borrows from a source other than an employee. Borrowing from an employee is classified as a 'nonowned auto' — the employee already owns it and there's no fee-based hiring arrangement. This distinction matters because hired and nonowned auto coverages have different rules and limits."
+  },
+  {
+    num: "Question 11",
+    q: "Most fidelity bonds have a period of time in which losses which occurred while the bond was in force are covered even though not found until after the coverage has terminated. This is known as:",
+    choices: ["A discovery period","A retro period","An indemnity period","A look back period"],
+    correct: 0,
+    answer: "A — A discovery period",
+    explain: "Employee dishonesty and theft often go undetected for months or even years. The discovery period is a window after bond termination during which a policyholder can still file claims for losses that occurred while the bond was active. This is a key feature of fidelity bonds that distinguishes them from standard occurrence-based liability policies."
+  },
+  {
+    num: "Question 12",
+    q: "Which of the following would be covered under the Garage Liability Coverage Form?",
+    choices: ["Fellow employees","Product recalls","Loss of use","Insured's business premises"],
+    correct: 3,
+    answer: "D — Insured's business premises",
+    explain: "The Garage Liability Coverage Form covers bodily injury and property damage arising from garage operations, including on the business premises. Fellow employees are handled by Workers Compensation (not liability). Product recalls require separate product recall coverage. Loss of use is a consequential damage excluded from standard liability forms — the claimant must suffer direct physical damage first."
+  },
+  {
+    num: "Question 13",
+    q: "If an insured bakery is sued because its marketing states that the products of another bakery may not be safe, which coverage of a CGL policy will defend the suit?",
+    choices: ["Product liability","Completed operations","Personal and advertising injury liability","Premises and operations"],
+    correct: 2,
+    answer: "C — Personal and advertising injury liability",
+    explain: "CGL Coverage B (Personal & Advertising Injury) covers advertising injuries including trade libel, disparagement of goods, and slander of title. When a business's marketing falsely implies a competitor's products are unsafe, that's classic advertising injury — disparagement. Product liability and completed operations cover physical harm from your own products, not reputational harm to a competitor."
+  },
+  {
+    num: "Question 14",
+    q: "Rental Reimbursement is only available if the policy includes which coverage?",
+    choices: ["Named Nonowner Coverage","Extended Nonowned Coverage for Named Insured","Other Than Collision Coverage","Towing and Labor Costs"],
+    correct: 2,
+    answer: "C — Other Than Collision Coverage",
+    explain: "Rental Reimbursement is an endorsement to PAP Part D (Physical Damage). It can only be added if the policy already includes physical damage coverage — specifically Other Than Collision (OTC/comprehensive). The logic is that if your car is disabled by a covered physical damage loss, you need a rental. Without physical damage coverage, there's no covered trigger for needing a rental."
+  },
+  {
+    num: "Question 15",
+    q: "Which of the following is covered under the physical damage coverage of a personal auto policy?",
+    choices: ["A cellular phone in a locked vehicle","Custom furnishings or equipment in a pickup or van exceeding coverage of $1,500","A covered auto seized and destroyed by a government authority","Sound reproduction equipment permanently installed in the covered auto"],
+    correct: 3,
+    answer: "D — Sound reproduction equipment permanently installed in the covered auto",
+    explain: "PAP Part D covers permanently installed sound/audio equipment as part of the vehicle itself. Cell phones are excluded — they're not permanently installed vehicle equipment. Custom furnishings in pickups/vans are covered up to $1,500 only; excess is excluded. Government seizure or destruction is excluded as a governmental action, not a covered physical damage peril (fire, theft, collision, etc.)."
+  }
+];
+
+let deck = [...ALL_CARDS];
+let idx = 0;
+let knew = 0, still = 0;
+let marked = new Set();
+
+function render() {
+  const card = deck[idx];
+  document.getElementById('qNum').textContent = card.num;
+  document.getElementById('qText').textContent = card.q;
+  document.getElementById('answerText').textContent = card.answer;
+  document.getElementById('explainText').textContent = card.explain;
+
+  const cl = document.getElementById('choicesList');
+  cl.innerHTML = card.choices.map((c, i) =>
+    `<div class="choice-item${i === card.correct ? ' correct-choice' : ''}">${String.fromCharCode(65+i)}. ${c}</div>`
+  ).join('');
+
+  // unflip
+  const wrap = document.getElementById('cardWrap');
+  wrap.classList.remove('flipped');
+
+  document.getElementById('cardNum').textContent = idx + 1;
+  document.getElementById('cardTotal').textContent = deck.length;
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + deck.length;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === deck.length - 1;
+  document.getElementById('prog').style.width = ((idx + 1) / deck.length * 100) + '%';
+  document.getElementById('knewCount').textContent = knew;
+  document.getElementById('stillCount').textContent = still;
+}
+
+function flip() {
+  document.getElementById('cardWrap').classList.toggle('flipped');
+}
+
+function markKnew() {
+  if (!marked.has(idx)) { knew++; marked.add(idx); }
+  next();
+}
+
+function markLearning() {
+  if (!marked.has(idx)) { still++; marked.add(idx); }
+  next();
+}
+
+function next() {
+  if (idx < deck.length - 1) {
+    idx++;
+    render();
+  } else {
+    showDone();
+  }
+}
+
+function prev() {
+  if (idx > 0) { idx--; render(); }
+}
+
+function shuffle() {
+  deck = [...ALL_CARDS].sort(() => Math.random() - .5);
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  document.getElementById('cardWrap').style.display = '';
+  document.getElementById('knowRow').style.display = '';
+  document.getElementById('navRow') && (document.getElementById('navRow').style.display = '');
+  render();
+}
+
+function resetProgress() {
+  deck = [...ALL_CARDS];
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function restart() {
+  resetProgress();
+  document.getElementById('doneScreen').classList.remove('show');
+}
+
+function reviewLearning() {
+  const learning = ALL_CARDS.filter((_, i) => {
+    const origIdx = ALL_CARDS.indexOf(deck[i]);
+    return marked.has(i) && still > 0;
+  });
+  deck = deck.filter((_, i) => marked.has(i));
+  if (deck.length === 0) { deck = [...ALL_CARDS]; }
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function showDone() {
+  document.getElementById('doneStats').textContent =
+    'Knew it: ' + knew + ' · Still learning: ' + still + ' · Unmarked: ' + (deck.length - marked.size);
+  document.getElementById('doneScreen').classList.add('show');
+}
+
+render();
+</script>
+</body>
+</html>
