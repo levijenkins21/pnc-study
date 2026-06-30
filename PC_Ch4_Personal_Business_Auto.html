@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Personal Auto & Business Auto</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1.1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#e2e2e2;line-height:1.5}
+  .term{font-size:14px;font-weight:600;color:#5b8dee;margin-bottom:3px;margin-top:.9rem}
+  .def{font-size:13px;color:#aaa;line-height:1.6}
+  .def strong{color:#e2e2e2;font-weight:500}
+  .formula{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:14px 16px;text-align:center;font-size:14px;color:#7eaaee;line-height:2}
+  .formula span{color:#fff;font-weight:600}
+  .parts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .part{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:9px 11px;display:flex;gap:10px;align-items:flex-start}
+  .part-id{font-size:11px;font-weight:700;color:#5b8dee;flex-shrink:0;margin-top:1px;letter-spacing:.5px}
+  .part-name{font-size:12px;color:#ccc;line-height:1.4}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+  th{background:#1a1a1a;color:#888;font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid #2a2a2a}
+  td{padding:7px 10px;border-bottom:1px solid #1a1a1a;color:#bbb;vertical-align:top}
+  td:first-child{color:#5b8dee;font-weight:600;white-space:nowrap;font-size:13px}
+  tr:hover td{background:#161616}
+  .tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:5px;letter-spacing:.5px;font-weight:500}
+  .tag-b{background:#0d1a2e;color:#5b8dee;border:1px solid #1e3a6e}
+  .tag-g{background:#0a1f0a;color:#4aaa4a;border:1px solid #1a3a1a}
+  .tag-r{background:#1f0a0a;color:#aa4a4a;border:1px solid #3a1a1a}
+  .tag-y{background:#1a1200;color:#aaa04a;border:1px solid #3a2e00}
+  .cov-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+  .cov-row:last-child{border-bottom:none}
+  .cov-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}.parts-grid{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:4.5%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Section 1 & 2</div>
+      <h1>Automotive<br>Personal Auto & Business Auto</h1>
+      <p class="sub">PAP structure · Coverage parts A–F · Liability · Medical · UM/UIM · Physical Damage · Commercial Forms · Garage Coverage</p>
+    </div>
+  </div>
+
+  <!-- S2: PAP Overview -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>Personal Auto Policy (PAP) — overview</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:1rem">Combines <strong style="color:#e2e2e2">physical damage</strong> and <strong style="color:#e2e2e2">liability</strong> for private passenger vehicle owners. Covers 3 types of potential loss:</p>
+      <div class="grid3">
+        <div class="box blue"><div class="box-label">Loss Type 1</div><div class="box-val">Legal liability for injuries/property damage to others</div></div>
+        <div class="box blue"><div class="box-label">Loss Type 2</div><div class="box-val">Injury to the insured or family members</div></div>
+        <div class="box blue"><div class="box-label">Loss Type 3</div><div class="box-val">Damage to or loss of the auto itself</div></div>
+      </div>
+      <div class="parts-grid" style="margin-top:1rem">
+        <div class="part"><div class="part-id">PART A</div><div class="part-name">Liability Coverage</div></div>
+        <div class="part"><div class="part-id">PART B</div><div class="part-name">Medical Payments Coverage</div></div>
+        <div class="part"><div class="part-id">PART C</div><div class="part-name">Uninsured Motorist Coverage</div></div>
+        <div class="part"><div class="part-id">PART D</div><div class="part-name">Coverage for Damage to Your Auto</div></div>
+        <div class="part"><div class="part-id">PART E</div><div class="part-name">Duties After an Accident or Loss</div></div>
+        <div class="part"><div class="part-id">PART F</div><div class="part-name">General Provisions</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Key Definitions -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Key definitions</h2>
+      <div class="term">Bodily injury</div>
+      <div class="def">Bodily harm, sickness or disease, <strong>including death</strong> that results from the injury.</div>
+      <div class="term">Property damage</div>
+      <div class="def">Physical injury, destruction, or <strong>loss of use</strong> of tangible property.</div>
+      <div class="term">"You" and "Your"</div>
+      <div class="def">The <strong>named insured</strong> on the Declarations + their <strong>spouse if resident of same household</strong>. Departing spouse retains coverage for the earliest of: 90 days after leaving, effective date of their new policy, or end of policy period.</div>
+      <div class="term">Family member</div>
+      <div class="def">Person related by <strong>blood, marriage, or adoption</strong> who is a resident of the household — including ward or foster children.</div>
+      <div class="term">Occupying</div>
+      <div class="def">In, upon, <strong>getting in, on, out of, or off</strong> a vehicle.</div>
+    </div>
+  </div>
+
+  <!-- S4: Covered Autos & Newly Acquired -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>Your covered auto</h2>
+      <ul>
+        <li>Any vehicle <strong>shown in the declarations</strong></li>
+        <li>A <strong>newly acquired auto</strong></li>
+        <li>Any <strong>trailer owned</strong> by the insured</li>
+        <li>Any auto/trailer not owned but used as a <strong>temporary substitute</strong> while covered vehicle is out of use</li>
+      </ul>
+      <div style="margin-top:1rem;background:#1a1a1a;border-radius:10px;padding:12px 14px">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Newly Acquired Auto — Notification Deadlines</div>
+        <div class="grid2">
+          <div class="box blue">
+            <div class="box-label">Liability, Med Pay, UM/UIM</div>
+            <div class="box-val"><strong style="color:#5b8dee">14 days</strong> to notify insurer</div>
+          </div>
+          <div class="box amber">
+            <div class="box-label">Collision / OTC — if already on policy</div>
+            <div class="box-val"><strong style="color:#c9a030">14 days</strong> — broadest coverage applies</div>
+          </div>
+          <div class="box red" style="grid-column:1/-1">
+            <div class="box-label">Collision / OTC — NOT already on policy</div>
+            <div class="box-val"><strong style="color:#c05050">4 days</strong> to notify. If loss occurred before notifying: <strong style="color:#c05050">$500 deductible</strong> applies.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Types of Autos -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Types of autos</h2>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box green">
+          <div class="box-label">Owned</div>
+          <div class="box-val">Eligible vehicles <strong>titled by the insured</strong> or acquired during the policy period.</div>
+        </div>
+        <div class="box blue">
+          <div class="box-label">Nonowned</div>
+          <div class="box-val">Auto operated by or in custody of insured/family member, <strong>not titled to or furnished for regular use</strong> of the insured.</div>
+        </div>
+        <div class="box amber">
+          <div class="box-label">Hired</div>
+          <div class="box-val">Leased, hired, rented, or borrowed — <strong>excluding autos owned by employees.</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">Temporary Substitute</div>
+          <div class="box-val">Non-owned auto used while a covered auto is out for <strong>breakdown, repair, loss, or destruction.</strong></div>
+        </div>
+      </div>
+      <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px;font-size:12px;color:#777">
+        <strong style="color:#aaa">Hired vs. Nonowned:</strong> The key distinction is ownership by an employee — autos leased/hired/rented from employees are <em>nonowned</em>, not hired. Payment does not determine the classification.
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Collision vs OTC -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>Collision vs. other-than-collision</h2>
+      <div class="grid2">
+        <div class="box blue">
+          <div class="box-label" style="color:#5b8dee">Collision</div>
+          <div class="box-val" style="margin-top:6px;font-size:13px;color:#ccc"><strong style="color:#fff">Upset or impact</strong> of a covered vehicle with another vehicle or object.</div>
+        </div>
+        <div class="box green">
+          <div class="box-label" style="color:#4aaa4a">Other-Than-Collision (OTC)</div>
+          <div class="box-val" style="margin-top:4px">
+            <ul style="margin:0">
+              <li>Missiles or falling objects</li>
+              <li>Fire / Explosion or earthquake</li>
+              <li>Theft or larceny</li>
+              <li>Windstorm / Hail, water, or flood</li>
+              <li>Vandalism or malicious mischief</li>
+              <li>Riot or civil commotion</li>
+              <li>Contact with birds or animals</li>
+              <li>Breakage of glass</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:#1a1a1a;border-radius:8px;padding:10px 12px;font-size:12px;color:#777">
+        OTC was previously called <strong style="color:#aaa">comprehensive</strong>. It is a <strong style="color:#aaa">property insurance coverage.</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: Part A Liability -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>Part A — liability coverage</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Protects insured from legal liability when a covered auto is involved in an accident. Covers:</p>
+      <ul>
+        <li><strong>Bodily injury and property damage</strong> the insured is legally responsible for</li>
+        <li><strong>Defense costs</strong> — paid in addition to policy limits (as long as coverage applies)</li>
+        <li><strong>Costs for settling or defending</strong> — end when limits are exhausted</li>
+      </ul>
+      <div style="margin-top:1rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Who is an insured — Part A</div>
+        <ul>
+          <li>Insured or <strong>any family member</strong> using any auto or trailer</li>
+          <li>Any person using a covered auto <strong>with permission</strong></li>
+          <li>Any organization liable for the insured's acts or omissions</li>
+          <li>Any person/org liable for family member's acts (if they don't own/hire the auto)</li>
+        </ul>
+      </div>
+      <div style="margin-top:.9rem;background:#1a1a1a;border-radius:8px;padding:10px 12px;font-size:12px;color:#777">
+        <strong style="color:#aaa">Supplementary payments</strong> (paid in addition to limits): Up to $250 bail bonds · $200/day loss of earnings · Appeal bond premiums · Accrued interest on judgment
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Split vs Single Limits -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Liability limits — split vs. combined single</h2>
+      <div class="box blue" style="margin-bottom:1rem">
+        <div class="box-label">Split Limit — Example: 25 / 50 / 25</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;text-align:center">
+          <div style="background:#0a0f1e;border-radius:8px;padding:12px 8px">
+            <div style="font-size:22px;font-weight:700;color:#5b8dee">$25K</div>
+            <div style="font-size:10px;color:#555;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Bodily injury<br>per person</div>
+          </div>
+          <div style="background:#0a0f1e;border-radius:8px;padding:12px 8px">
+            <div style="font-size:22px;font-weight:700;color:#5b8dee">$50K</div>
+            <div style="font-size:10px;color:#555;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Bodily injury<br>per accident</div>
+          </div>
+          <div style="background:#0a0f1e;border-radius:8px;padding:12px 8px">
+            <div style="font-size:22px;font-weight:700;color:#5b8dee">$25K</div>
+            <div style="font-size:10px;color:#555;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Property<br>damage</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#444;margin-top:8px;text-align:center">Always expressed in this order: BI/person · BI/accident · PD</div>
+      </div>
+      <div class="box green">
+        <div class="box-label" style="color:#4aaa4a">Combined Single Limit</div>
+        <div class="box-val" style="margin-top:4px">One dollar amount = maximum coverage for <strong>all losses</strong> from one accident regardless of the number of people injured or amount of property damaged.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: Part B Medical Payments -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Part B — medical payments coverage</h2>
+      <ul>
+        <li>Pays <strong>reasonable medical and funeral expenses</strong> caused by an accident</li>
+        <li>Services must be rendered <strong>within 3 years</strong> of the accident</li>
+        <li>Applies <strong>per person</strong>, regardless of fault</li>
+        <li>Works similar to <strong>Personal Injury Protection (PIP)</strong></li>
+        <li>Payments available under liability or UM will <strong>reduce</strong> the amount payable under Part B</li>
+      </ul>
+      <div style="margin-top:.9rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Who is an insured — Part B</div>
+        <ul>
+          <li>Named insured or family member <strong>occupying any motor vehicle</strong> designed for public road use</li>
+          <li>Named insured or family member as a <strong>pedestrian struck</strong> by a motor vehicle</li>
+          <li>Any other person while <strong>occupying a covered auto</strong></li>
+        </ul>
+      </div>
+      <div class="box amber" style="margin-top:.9rem">
+        <div class="box-label">Example</div>
+        <div class="box-val" style="font-size:12px">$10,000 Med Pay limit. Two people injured: one with $12K in injuries, one with $10K. Part B pays <strong style="color:#c9a030">$10,000 each</strong> — up to the per-person limit.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: Part C UM/UIM -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>Part C — uninsured & underinsured motorists</h2>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">4 Categories of Uninsured Motor Vehicles</div>
+      <div class="grid2">
+        <div class="box red"><div class="box-val"><strong style="color:#e2e2e2">1.</strong> No liability bond or insurance at all</div></div>
+        <div class="box red"><div class="box-val"><strong style="color:#e2e2e2">2.</strong> Coverage is less than the state's financial responsibility law requires</div></div>
+        <div class="box red"><div class="box-val"><strong style="color:#e2e2e2">3.</strong> Hit-and-run — driver <strong>cannot be identified</strong></div></div>
+        <div class="box red"><div class="box-val"><strong style="color:#e2e2e2">4.</strong> Insurer <strong>denies coverage</strong> or is <strong>insolvent</strong></div></div>
+      </div>
+      <div style="margin-top:1rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Underinsured Motorist (UIM) Formula</div>
+        <div class="formula">
+          <span>Total Damage</span> – <span>At-Fault Driver's Limit</span> = <span>UIM Pays</span><br>
+          <span style="color:#7eaaee;font-size:12px">(up to your UIM policy limit)</span>
+        </div>
+        <div class="box amber" style="margin-top:8px">
+          <div class="box-label">Example: Bob hits Zoe. $65K damage. Bob's limit = $25K.</div>
+          <div class="box-val" style="font-size:12px">Gap = $40K. If Zoe has 100/150 UIM → covered fully. If Zoe has 30/50 UIM → pays $30K, leaving <strong style="color:#c9a030">$10K uncovered</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S11: Part D Physical Damage -->
+  <div class="slide" id="s11">
+    <div class="card">
+      <h2>Part D — coverage for damage to your auto</h2>
+      <ul>
+        <li>Covers <strong>direct and accidental loss</strong> to a covered or nonowned auto</li>
+        <li>Minus any applicable <strong>deductible</strong> shown in declarations</li>
+        <li>Multiple covered autos in same collision → <strong>only highest deductible applies</strong></li>
+        <li>Nonowned trailers limited to <strong>$1,500</strong></li>
+        <li>Permanently installed electronic equipment covered up to <strong>$1,000</strong></li>
+      </ul>
+      <div style="margin-top:.9rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Limit of Liability — Lesser of:</div>
+        <div class="grid2">
+          <div class="box"><div class="box-val"><strong>Actual cash value</strong> at time of loss (adjusted for depreciation)</div></div>
+          <div class="box"><div class="box-val">Amount necessary to <strong>repair or replace</strong> the vehicle</div></div>
+        </div>
+      </div>
+      <div style="margin-top:.9rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Transportation Expenses</div>
+        <ul>
+          <li><strong>$20/day up to $600</strong> for covered loss</li>
+          <li>Begins <strong>24 hours</strong> after loss (non-theft) / <strong>48 hours</strong> after theft</li>
+          <li>Not subject to deductible</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12: Part A Exclusions -->
+  <div class="slide" id="s12">
+    <div class="card">
+      <h2>Key exclusions — Part A (liability)</h2>
+      <div class="grid2">
+        <div class="box red"><div class="box-val">Intentional injury or damage</div></div>
+        <div class="box red"><div class="box-val">Property <strong>owned or being transported</strong> by insured</div></div>
+        <div class="box red"><div class="box-val">Vehicles used as <strong>public/livery conveyance</strong> (not carpools/charity)</div></div>
+        <div class="box red"><div class="box-val">Driver <strong>logged into TNP</strong> (rideshare platform)</div></div>
+        <div class="box red"><div class="box-val">Vehicle <strong>used without permission</strong></div></div>
+        <div class="box red"><div class="box-val">Vehicles with <strong>fewer than 4 wheels</strong> or designed for off-road</div></div>
+        <div class="box red"><div class="box-val">Vehicles at <strong>racing facility</strong> for racing or speed contest</div></div>
+        <div class="box red"><div class="box-val">Bodily injury to <strong>employee during employment</strong> (except domestic workers)</div></div>
+      </div>
+      <div style="margin-top:.7rem;font-size:12px;color:#555">TNP = Transportation Network Platform (e.g., rideshare apps)</div>
+    </div>
+  </div>
+
+  <!-- S13: Out-of-State & DOC -->
+  <div class="slide" id="s13">
+    <div class="card">
+      <h2>Out-of-state coverage & DOC endorsement</h2>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Out-of-State Coverage</div>
+      <ul>
+        <li>If another state's <strong>financial responsibility law requires higher limits</strong> → policy provides those higher limits automatically</li>
+        <li>If state requires <strong>nonresident insurance minimums</strong> → policy adjusts to meet them</li>
+        <li>No <strong>duplicate payments</strong> for the same loss</li>
+      </ul>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Drive Other Car (DOC) Endorsement</div>
+      <div class="grid2">
+        <div class="box">
+          <div class="box-label">Individual Named Insured</div>
+          <div class="box-val" style="font-size:12px">Extends <strong>liability + physical damage</strong> to nonowned vehicles driven by the insured</div>
+        </div>
+        <div class="box blue">
+          <div class="box-label">Drive Other Car (Commercial)</div>
+          <div class="box-val" style="font-size:12px">Added to a <strong>commercial auto policy</strong> to cover employees (usually executives) who drive nonowned/rented vehicles when they lack a personal auto policy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S14: Commercial Auto Structure -->
+  <div class="slide" id="s14">
+    <div class="card">
+      <h2>Commercial auto — coverage form structure</h2>
+      <div class="parts-grid">
+        <div class="part"><div class="part-id">SEC I</div><div class="part-name">Covered Autos — designation symbols</div></div>
+        <div class="part"><div class="part-id">SEC II</div><div class="part-name">Liability Coverage</div></div>
+        <div class="part"><div class="part-id">SEC III</div><div class="part-name">Physical Damage Coverage</div></div>
+        <div class="part"><div class="part-id">SEC IV</div><div class="part-name">Business Auto Conditions</div></div>
+        <div class="part"><div class="part-id">SEC V</div><div class="part-name">Definitions</div></div>
+      </div>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Coverage Forms Available</div>
+      <ul>
+        <li><strong>Business Auto</strong> — most commercial auto exposures (not truckers/garages)</li>
+        <li><strong>Business Auto Physical Damage</strong> — physical damage only for owned/hired autos</li>
+        <li><strong>Garage Coverage</strong> — businesses with autos in care/custody (dealers, repair shops, parking)</li>
+        <li><strong>Motor Carrier</strong> — businesses transporting owned or nonowned property</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S15: Business Auto Symbols -->
+  <div class="slide" id="s15">
+    <div class="card">
+      <h2>Business auto — coverage symbols</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Vehicles Covered</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Any auto — owned, leased, hired, or borrowed <span class="tag tag-b">LIABILITY ONLY</span></td></tr>
+          <tr><td>2</td><td>Owned autos only</td></tr>
+          <tr><td>3</td><td>Owned private passenger autos only</td></tr>
+          <tr><td>4</td><td>Owned autos other than private passenger</td></tr>
+          <tr><td>5</td><td>Owned autos subject to no-fault</td></tr>
+          <tr><td>6</td><td>Owned autos subject to compulsory UM law</td></tr>
+          <tr><td>7</td><td>Specifically described autos only <span class="tag tag-y">REQUIRES 30-DAY NOTICE for new autos</span></td></tr>
+          <tr><td>8</td><td>Hired autos only (not from employees/partners)</td></tr>
+          <tr><td>9</td><td>Nonowned autos only (incl. employee-owned used for business)</td></tr>
+          <tr><td>19</td><td>Mobile equipment subject to compulsory financial responsibility law</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:12px;color:#555">Symbols 1–6: newly acquired autos automatically covered. Symbol 7: must notify insurer within <strong style="color:#aaa">30 days</strong>.</div>
+    </div>
+  </div>
+
+  <!-- S16: Commercial Auto Physical Damage -->
+  <div class="slide" id="s16">
+    <div class="card">
+      <h2>Commercial auto — physical damage coverages</h2>
+      <div class="cov-row">
+        <div class="cov-icon" style="background:#0d1a2e">🛡️</div>
+        <div><strong>Comprehensive</strong> — any cause of loss except collision or overturn</div>
+      </div>
+      <div class="cov-row">
+        <div class="cov-icon" style="background:#0a1f0a">📋</div>
+        <div><strong>Specified causes of loss</strong> — fire, lightning, explosion, theft, vandalism, windstorm, hail, earthquake, sinking/burning/collision of the transporting conveyance</div>
+      </div>
+      <div class="cov-row">
+        <div class="cov-icon" style="background:#1a0d0d">💥</div>
+        <div><strong>Collision</strong> — impact with another object or overturn</div>
+      </div>
+      <div class="cov-row">
+        <div class="cov-icon" style="background:#1a1200">🔧</div>
+        <div><strong>Towing</strong> — labor costs at place of disablement; passenger-type autos only</div>
+      </div>
+      <div class="cov-row" style="border-bottom:none">
+        <div class="cov-icon" style="background:#0a1a1a">🔭</div>
+        <div><strong>Glass/Bird/Falling Objects</strong> — can opt to collect under collision if overturn caused it</div>
+      </div>
+      <div style="margin-top:.9rem">
+        <div class="grid2">
+          <div class="box"><div class="box-label">Transportation expenses (theft)</div><div class="box-val">$20/day · max $600 · 48-hr waiting period</div></div>
+          <div class="box"><div class="box-label">Loss of use</div><div class="box-val">$20/day · max $600 for rented/hired vehicle</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S17: Garage Coverage Form -->
+  <div class="slide" id="s17">
+    <div class="card">
+      <h2>Garage coverage form — overview</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">For businesses that sell, service, repair, park, or store vehicles. Not eligible under standard business auto forms.</p>
+      <div class="parts-grid">
+        <div class="part"><div class="part-id">SEC I</div><div class="part-name">Covered Autos (symbols 21–31)</div></div>
+        <div class="part"><div class="part-id">SEC II</div><div class="part-name">Liability — two parts: Covered Autos vs. Other Than Covered Autos</div></div>
+        <div class="part"><div class="part-id">SEC III</div><div class="part-name">Garagekeepers Liability</div></div>
+        <div class="part"><div class="part-id">SEC IV</div><div class="part-name">Physical Damage Coverage</div></div>
+        <div class="part"><div class="part-id">SEC V</div><div class="part-name">Garage Conditions</div></div>
+        <div class="part"><div class="part-id">SEC VI</div><div class="part-name">Definitions</div></div>
+      </div>
+      <div style="margin-top:1rem">
+        <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Eligible Businesses</div>
+        <div class="grid2" style="gap:6px">
+          <div style="font-size:12px;color:#aaa">• Franchised/nonfranchised auto dealers</div>
+          <div style="font-size:12px;color:#aaa">• Automotive repair shops</div>
+          <div style="font-size:12px;color:#aaa">• Service stations & car washes</div>
+          <div style="font-size:12px;color:#aaa">• Storage garages & parking facilities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S18: Garage Symbols -->
+  <div class="slide" id="s18">
+    <div class="card">
+      <h2>Garage coverage — auto symbols</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Vehicles Covered</th></tr></thead>
+        <tbody>
+          <tr><td>21</td><td>Any auto</td></tr>
+          <tr><td>22</td><td>Owned autos only</td></tr>
+          <tr><td>23</td><td>Owned private passenger autos only</td></tr>
+          <tr><td>24</td><td>Owned autos other than private passenger</td></tr>
+          <tr><td>25</td><td>Owned autos subject to no-fault</td></tr>
+          <tr><td>26</td><td>Owned autos subject to compulsory UM law</td></tr>
+          <tr><td>27</td><td>Specifically described autos <span class="tag tag-y">30-day notice</span></td></tr>
+          <tr><td>28</td><td>Hired autos only (not employee-owned)</td></tr>
+          <tr><td>29</td><td>Nonowned autos used in garage business</td></tr>
+          <tr><td>30</td><td>Autos left for service, repair, storage, safekeeping <span class="tag tag-g">Garagekeepers</span></td></tr>
+          <tr><td>31</td><td>Dealer's autos (physical damage only)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S19: Garagekeepers Coverage -->
+  <div class="slide" id="s19">
+    <div class="card">
+      <h2>Garagekeepers coverage — Section III</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Covers damage to <strong style="color:#e2e2e2">customer's autos</strong> left in the insured's care, custody, and control for service, repairs, parking, or storage. Triggered by <strong style="color:#5b8dee">Symbol 30</strong>.</p>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Coverage Options</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:.9rem">
+        <div class="box"><div class="box-label">Legal Liability (Standard)</div><div class="box-val" style="font-size:12px">Triggered only when insured is <strong>legally liable</strong> for the damage — default option.</div></div>
+        <div class="box blue"><div class="box-label">Direct Coverage Option</div><div class="box-val" style="font-size:12px">Triggered <strong>regardless of liability</strong> — must be activated on declarations + extra premium.</div></div>
+        <div class="box"><div class="box-label">Excess Option</div><div class="box-val" style="font-size:12px">Pays on excess basis over customer's own insurance, <strong>without regard to insured's legal liability.</strong></div></div>
+        <div class="box green"><div class="box-label">Primary Option</div><div class="box-val" style="font-size:12px">Pays as <strong>primary insurer</strong> regardless of other insurance available to pay for the loss.</div></div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Causes of Loss Covered</div>
+      <div class="grid3" style="gap:7px">
+        <div class="box"><div class="box-val" style="font-size:12px">Comprehensive (all except collision/overturn)</div></div>
+        <div class="box"><div class="box-val" style="font-size:12px">Specified causes (fire, theft, vandalism, etc.)</div></div>
+        <div class="box"><div class="box-val" style="font-size:12px">Collision (impact or overturn)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S20: Recap -->
+  <div class="slide" id="s20">
+    <div class="card">
+      <h2>Recap — key terms & concepts</h2>
+      <div class="recap-grid">
+        <div class="rpill">PAP — 6 Parts (A–F)</div>
+        <div class="rpill">Bodily injury / Property damage</div>
+        <div class="rpill">Your covered auto</div>
+        <div class="rpill">Newly acquired auto (14/4 days)</div>
+        <div class="rpill">Collision vs. OTC</div>
+        <div class="rpill">Owned / Nonowned / Hired</div>
+        <div class="rpill">Temporary substitute</div>
+        <div class="rpill">Split limits (BI/person · BI/acc · PD)</div>
+        <div class="rpill">Combined single limit</div>
+        <div class="rpill">Medical payments — 3 years</div>
+        <div class="rpill">Uninsured motorist — 4 categories</div>
+        <div class="rpill">UIM formula</div>
+        <div class="rpill">Transportation expenses ($20/$600)</div>
+        <div class="rpill">Drive Other Car (DOC)</div>
+        <div class="rpill">Business auto symbols (1–9, 19)</div>
+        <div class="rpill">Garage symbols (21–31)</div>
+        <div class="rpill">Garagekeepers — Symbol 30</div>
+        <div class="rpill">4 garagekeepers options</div>
+        <div class="rpill">No benefit to bailee</div>
+        <div class="rpill">Out-of-state coverage</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 20</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=20;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
