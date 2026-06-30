@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Commercial General Liability (CGL)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  .term{font-size:14px;font-weight:600;color:#5b8dee;margin-bottom:3px;margin-top:.9rem}
+  .def{font-size:13px;color:#aaa;line-height:1.6}
+  .def strong{color:#e2e2e2;font-weight:500}
+  .sec-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1a1a1a}
+  .sec-row:last-child{border-bottom:none}
+  .sec-id{font-size:12px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:70px;margin-top:1px}
+  .sec-name{font-size:13px;color:#ccc;line-height:1.4}
+  .decl-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  .decl-table th{background:#1a1a1a;color:#5b8dee;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid #2a2a2a}
+  .decl-table td{padding:8px 12px;border-bottom:1px solid #1a1a1a;color:#bbb}
+  .decl-table td:last-child{color:#4aaa4a;text-align:right;font-weight:600}
+  .decl-table tr:hover td{background:#161616}
+  .timeline{display:flex;flex-direction:column;gap:0;margin-top:8px}
+  .tl-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a1a}
+  .tl-row:last-child{border-bottom:none}
+  .tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .tl-label{font-size:12px;color:#aaa;line-height:1.5;flex:1}
+  .tl-label strong{color:#e2e2e2}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:6px;font-weight:500;letter-spacing:.3px}
+  .pill-b{background:#0d1a2e;color:#5b8dee;border:1px solid #1e3a6e}
+  .pill-g{background:#0a1f0a;color:#4aaa4a;border:1px solid #1a3a1a}
+  .pill-r{background:#1f0a0a;color:#c05050;border:1px solid #3a1a1a}
+  .pill-y{background:#1a1200;color:#c9a030;border:1px solid #3a2e00}
+  .pill-p{background:#130d2e;color:#8a6aee;border:1px solid #2a1a5e}
+  .cov-block{background:#141414;border:1px solid #222;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+  .cov-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:5px}
+  .cov-text{font-size:13px;color:#aaa;line-height:1.6}
+  .cov-text strong{color:#e2e2e2}
+  .tail-diagram{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+  .tail-row{display:flex;align-items:center;gap:8px}
+  .tail-bar{height:28px;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:600;letter-spacing:.5px;flex-shrink:0}
+  .tail-label{font-size:12px;color:#aaa;line-height:1.4}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:4.3%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · CGL</div>
+      <h1>Commercial General<br>Liability (CGL)</h1>
+      <p class="sub">2 forms: Occurrence & Claims-Made · Coverages A, B, C · Who is Insured · Limits · Conditions · ERP / Tail Coverage</p>
+    </div>
+  </div>
+
+  <!-- S2: Form Structure -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>CGL form structure — 6 sections</h2>
+      <div class="sec-row"><div class="sec-id">SECTION I</div><div class="sec-name">Coverages — <strong>A</strong> (BI & PD), <strong>B</strong> (Personal & Advertising Injury), <strong>C</strong> (Medical Payments)</div></div>
+      <div class="sec-row"><div class="sec-id">SECTION II</div><div class="sec-name">Who is an Insured</div></div>
+      <div class="sec-row"><div class="sec-id">SECTION III</div><div class="sec-name">Limits of Insurance</div></div>
+      <div class="sec-row"><div class="sec-id">SECTION IV</div><div class="sec-name">Commercial General Liability Conditions</div></div>
+      <div class="sec-row"><div class="sec-id">SECTION V</div><div class="sec-name">Extended Reporting Periods <span class="pill pill-y">Claims-Made only</span></div></div>
+      <div class="sec-row"><div class="sec-id">SECTION VI</div><div class="sec-name">Definitions</div></div>
+      <div class="box blue" style="margin-top:1rem">
+        <div class="box-label">2 Coverage Triggers</div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <div style="flex:1;background:#0a0f1e;border-radius:7px;padding:8px 10px;font-size:12px;color:#ccc"><span style="color:#5b8dee;font-weight:600">Occurrence</span><br>Most common. Policy in force when the <em>event occurred</em> responds.</div>
+          <div style="flex:1;background:#0a0f1e;border-radius:7px;padding:8px 10px;font-size:12px;color:#ccc"><span style="color:#8a6aee;font-weight:600">Claims-Made</span><br>Policy in force when the <em>claim is first made</em> responds.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Definitions Part 1 -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>Key definitions — Part 1</h2>
+      <div class="term">Occurrence</div>
+      <div class="def">An <strong>accident</strong>, including continuous or repeated exposure to the same harmful conditions. Covers events during the policy period and after if arising from the same circumstances.</div>
+      <div class="term">Bodily Injury</div>
+      <div class="def">Bodily injury, sickness, or disease — <strong>including resulting death</strong> — sustained by a person.</div>
+      <div class="term">Property Damage</div>
+      <div class="def">Physical injury to <strong>tangible property</strong> including loss of use. Also includes loss of use of property <em>not physically injured</em>. <strong>Electronic data is NOT tangible property.</strong></div>
+      <div class="term">Coverage Territory</div>
+      <div class="def">
+        <ul style="margin-top:4px">
+          <li>USA, territories, possessions, Puerto Rico, and Canada</li>
+          <li>International waters/airspace <strong>during travel</strong> to/from defined territories</li>
+          <li>Anywhere in the world if injury results from <strong>goods manufactured or sold</strong> in a coverage territory</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: Definitions Part 2 -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>Key definitions — Part 2</h2>
+      <div class="term">Personal and Advertising Injury</div>
+      <div class="def">Injury (including consequential BI) from: false arrest/detention/imprisonment · wrongful eviction or invasion of privacy · malicious prosecution · slander or libel · copyright/trade secret/slogan infringement in an ad · use of another's advertising idea · publication violating another's privacy.</div>
+      <div class="term">Employee</div>
+      <div class="def">Includes a <strong>leased worker</strong> (placed by a labor leasing firm). Does <strong>NOT</strong> include a <strong>temporary worker</strong> (furnished to substitute or meet short-term needs).</div>
+      <div class="term">Mobile Equipment</div>
+      <div class="def">Bulldozers, farm machinery, forklifts, crawler-tread vehicles, vehicles used to power cranes/shovels/drills, road construction/resurfacing equipment. <strong>Exception:</strong> if subject to compulsory insurance law → not mobile equipment.</div>
+      <div class="term">Auto</div>
+      <div class="def">Land motor vehicle, trailer, or semitrailer designed for public roads <strong>including attached machinery</strong>. Also includes any land vehicle requiring compulsory insurance where licensed or garaged.</div>
+    </div>
+  </div>
+
+  <!-- S5: Coverage A Insuring Agreement -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Coverage A — bodily injury & property damage</h2>
+      <div class="cov-block">
+        <div class="cov-label">Insuring Agreement</div>
+        <div class="cov-text">Insurer pays sums the insured is <strong>legally obligated to pay</strong> as damages for BI or PD within the coverage territory. Also has the <strong>right and duty to defend</strong> the insured in any covered suit.</div>
+      </div>
+      <ul style="margin-top:.5rem">
+        <li>Defense ends when <strong>limits of insurance are exhausted</strong></li>
+        <li>Insurer may investigate any occurrence at its <strong>own discretion</strong></li>
+        <li>Pays no more than <strong>policy limits</strong> regardless of claims</li>
+        <li>Covers premises, operations, products, and completed operations</li>
+      </ul>
+      <div class="box amber" style="margin-top:.9rem">
+        <div class="box-label">Key concept</div>
+        <div class="box-val">CGL coverage is not determined by <em>perils or causes of loss</em> — it's determined by <strong>exclusions</strong>. If no exclusion applies, the policy responds.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Coverage A Exclusions Part 1 -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>Coverage A — exclusions (1 of 2)</h2>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-label">Expected / Intentional</div><div class="box-val">No coverage for intentional injury — <em>except</em> reasonable force to protect persons/property.</div></div>
+        <div class="box red"><div class="box-label">Contractual Liability</div><div class="box-val">No coverage for assumed liability via contract — unless the insured would've been liable anyway, or it's an <em>insured contract</em> (leases, sidetrack agreements, municipal indemnification, elevator maintenance).</div></div>
+        <div class="box red"><div class="box-label">Liquor Liability</div><div class="box-val">Excluded if insured is in the business of <strong>manufacturing, selling, or serving</strong> alcohol. Social hosts are NOT excluded.</div></div>
+        <div class="box red"><div class="box-label">Workers Comp / Employers Liability</div><div class="box-val">No BI coverage for employees injured during employment — covered under WC policy.</div></div>
+        <div class="box red"><div class="box-label">Pollution</div><div class="box-val">Catastrophic exposure — <strong>excluded for nearly all causes.</strong></div></div>
+        <div class="box red"><div class="box-label">War</div><div class="box-val">Excluded whether <strong>declared or not.</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: Coverage A Exclusions Part 2 -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>Coverage A — exclusions (2 of 2)</h2>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-label">Aircraft / Auto / Watercraft</div><div class="box-val">Excluded — <em>except:</em> nonowned watercraft &lt;26 ft; watercraft ashore on insured's premises; parking a nonowned auto on insured's property; liability assumed via insured contract; mobile equipment operation.</div></div>
+        <div class="box red"><div class="box-label">Mobile Equipment</div><div class="box-val">No coverage for transportation by an insured's auto, or while used in a <strong>race or contest.</strong></div></div>
+        <div class="box red"><div class="box-label">Damage to Property</div><div class="box-val">No coverage for property <strong>owned, rented, loaned to, or in care/custody</strong> of the insured.</div></div>
+        <div class="box red"><div class="box-label">Insured's Product / Work</div><div class="box-val">No coverage for damage to the insured's own product or work — <em>exception:</em> work done by a <strong>subcontractor</strong> is covered.</div></div>
+        <div class="box red"><div class="box-label">Impaired Property</div><div class="box-val">No coverage for PD to impaired property caused by defect in insured's product/work or failure to perform per contract.</div></div>
+        <div class="box red"><div class="box-label">Electronic Data</div><div class="box-val">No coverage for loss of, damage to, corruption of, or inability to access electronic data.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Coverage B -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Coverage B — personal & advertising injury</h2>
+      <div class="cov-block">
+        <div class="cov-label">What it covers</div>
+        <div class="cov-text">Specific acts causing <strong>non-physical injury</strong> to third parties: false arrest · wrongful eviction · malicious prosecution · slander/libel · copyright or advertising idea infringement · invasion of privacy. Offense must occur within coverage territory and policy period.</div>
+      </div>
+      <div style="margin-top:.9rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Key Exclusions — Coverage B</div>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-val"><strong>Knowing violation</strong> of another's rights — intentional acts</div></div>
+        <div class="box red"><div class="box-val"><strong>Material published before policy period</strong></div></div>
+        <div class="box red"><div class="box-val"><strong>Known falsity</strong> of published material</div></div>
+        <div class="box red"><div class="box-val"><strong>Criminal acts</strong> by insured or at insured's direction</div></div>
+        <div class="box red"><div class="box-val"><strong>Infringement</strong> of copyright, patent, trademark, trade secret (not advertising idea)</div></div>
+        <div class="box red"><div class="box-val">Insureds in <strong>media, broadcasting, or Internet businesses</strong></div></div>
+        <div class="box red"><div class="box-val"><strong>Wrong price</strong> in advertising material</div></div>
+        <div class="box red"><div class="box-val"><strong>Electronic chatrooms/bulletin boards</strong> owned by insured</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: Coverage C Medical Payments -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Coverage C — medical payments</h2>
+      <div class="cov-block">
+        <div class="cov-label">What it covers</div>
+        <div class="cov-text">Necessary <strong>medical, surgical, ambulance, hospital, professional nursing, and funeral expenses</strong> for third parties. Paid <strong>without regard to fault</strong> — this is "goodwill" coverage.</div>
+      </div>
+      <div class="box amber" style="margin:10px 0">
+        <div class="box-label">Key Rule</div>
+        <div class="box-val">Expenses must be <strong>incurred and reported within 1 year (12 months)</strong> of the date of the accident.</div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Exclusions — Coverage C</div>
+      <div class="grid2" style="gap:6px">
+        <div class="box red"><div class="box-val">Any insured (except <strong>volunteer workers</strong>)</div></div>
+        <div class="box red"><div class="box-val">Employees or anyone <strong>hired by the insured</strong></div></div>
+        <div class="box red"><div class="box-val"><strong>Tenants</strong> of the insured</div></div>
+        <div class="box red"><div class="box-val">Benefits required under <strong>workers comp</strong> law</div></div>
+        <div class="box red"><div class="box-val">Persons injured in <strong>sports/athletic contests</strong></div></div>
+        <div class="box red"><div class="box-val">War, insurrection, rebellion, or revolution</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: Coverage Summary Table -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>Coverage summary — A, B, C</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <div class="box blue">
+          <div class="cov-label" style="color:#5b8dee">Coverage A — Bodily Injury & Property Damage</div>
+          <div class="cov-text">BI: injury, sickness, disease, or death of third parties from business activities.<br>PD: injury to, destruction of, or loss of use of others' property.</div>
+        </div>
+        <div class="box purple">
+          <div class="cov-label" style="color:#8a6aee">Coverage B — Personal & Advertising Injury</div>
+          <div class="cov-text">PI: mental anguish, false arrest, wrongful eviction, malicious prosecution, defamation, slander/libel, invasion of privacy.<br>AI: inadvertent libel, slander, defamation, or privacy violation in advertising.</div>
+        </div>
+        <div class="box green">
+          <div class="cov-label" style="color:#4aaa4a">Coverage C — Medical Payments</div>
+          <div class="cov-text">Medical, surgical, ambulance, hospital, nursing, funeral expenses for third parties — <strong>no fault required</strong>. Reported within 12 months of accident.</div>
+        </div>
+        <div class="box amber">
+          <div class="cov-label">Supplementary Payments — Coverages A & B</div>
+          <div class="cov-text">Paid <em>in addition</em> to limits: insurer expenses · bail bonds up to <strong>$250</strong> · loss of income up to <strong>$250/day</strong> · court costs · prejudgment and accrued interest.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S11: Who is an Insured -->
+  <div class="slide" id="s11">
+    <div class="card">
+      <h2>Section II — who is an insured</h2>
+      <div class="grid2" style="gap:7px">
+        <div class="box">
+          <div class="box-label">Individual (Sole Proprietor)</div>
+          <div class="box-val">Named insured + spouse — <strong>for business conduct only</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">Partnership / Joint Venture</div>
+          <div class="box-val">Named insured, members, partners + spouses — <strong>for business conduct</strong></div>
+        </div>
+        <div class="box">
+          <div class="box-label">LLC</div>
+          <div class="box-val">Named insured + members for business. <strong>Managers</strong> insured for duties as managers.</div>
+        </div>
+        <div class="box">
+          <div class="box-label">Other Organizations</div>
+          <div class="box-val">Named insured + <strong>executive officers, directors, stockholders</strong> for their duties</div>
+        </div>
+        <div class="box">
+          <div class="box-label">Trust</div>
+          <div class="box-val">Named insured + <strong>trustees</strong> for duties as trustees</div>
+        </div>
+        <div class="box blue">
+          <div class="box-label">Newly Acquired Organizations</div>
+          <div class="box-val">Auto-covered for up to <strong>90 days</strong> after acquisition (or policy expiration, whichever is earlier). Not partnerships, JVs, or LLCs.</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#555">Also insureds regardless of entity: employees/volunteers (scope of employment) · real estate agents · temporary custodians of property upon insured's death.</div>
+    </div>
+  </div>
+
+  <!-- S12: Limits of Liability -->
+  <div class="slide" id="s12">
+    <div class="card">
+      <h2>Section III — limits of insurance</h2>
+      <p style="font-size:12px;color:#555;margin-bottom:.9rem">Typical CGL Declarations page:</p>
+      <table class="decl-table">
+        <thead><tr><th>Coverage</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Each Occurrence Limit</td><td>$1,000,000</td></tr>
+          <tr><td style="padding-left:26px;color:#777;font-size:12px">↳ Damage to Property Rented to You</td><td>$100,000</td></tr>
+          <tr><td style="padding-left:26px;color:#777;font-size:12px">↳ Medical Expense Limit</td><td>$10,000</td></tr>
+          <tr><td>Personal & Advertising Injury Limit</td><td>$1,000,000</td></tr>
+          <tr><td><strong style="color:#e2e2e2">General Aggregate</strong></td><td>$2,000,000</td></tr>
+          <tr><td><strong style="color:#e2e2e2">Products/Completed Ops Aggregate</strong></td><td>$2,000,000</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">How limits work</div>
+      <ul style="margin:0">
+        <li>Limits apply regardless of number of insureds, claimants, or suits</li>
+        <li>Products/Completed Ops draws down a <strong>separate aggregate</strong></li>
+        <li>Medical payments are <strong>per person</strong> but subject to occurrence limit</li>
+        <li>Once <strong>general aggregate depletes</strong>, all coverage ends, including supplementary payments</li>
+        <li>Aggregate limits <strong>restore at policy anniversary</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S13: Conditions -->
+  <div class="slide" id="s13">
+    <div class="card">
+      <h2>Section IV — key conditions</h2>
+      <div class="timeline">
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Bankruptcy</strong> — does not relieve the insurer of its obligations</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Insured's Duties</strong> — notify insurer ASAP; send demands/summons immediately; authorize records; <strong>no voluntary payments</strong> without consent (at insured's own cost)</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Legal Action vs. Insurer</strong> — no party can join the insurer as a party in a suit; must fulfill all policy provisions before suing the insurer</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Other Insurance</strong> — pays on a <em>primary</em> basis (shared equally or pro rata), or <em>excess</em> basis when insured is added as additional insured on another policy</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Premium Audit</strong> — insurer may audit books/records at end of policy term</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Separation of Insureds</strong> — coverage applies to each insured separately; does not increase limits</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Subrogation</strong> — insured must transfer recovery rights to insurer; cannot impede those rights after a loss</div></div>
+        <div class="tl-row"><div class="tl-dot" style="background:#5b8dee"></div><div class="tl-label"><strong>Nonrenewal</strong> — typically <strong>30 days</strong> notice (may vary by state)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S14: Occurrence vs Claims-Made -->
+  <div class="slide" id="s14">
+    <div class="card">
+      <h2>Occurrence vs. claims-made</h2>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box blue">
+          <div class="box-label" style="color:#5b8dee">Occurrence Form</div>
+          <div class="box-val" style="margin-top:4px">Most common. Coverage triggered when the <strong>event occurs</strong> — even if claim is made years later.<br><br>Policy in force at time of injury responds.</div>
+        </div>
+        <div class="box purple">
+          <div class="box-label" style="color:#8a6aee">Claims-Made Form</div>
+          <div class="box-val" style="margin-top:4px">Coverage triggered when the <strong>claim is first made</strong>. Used for professional liability, products, employment, and environmental.<br><br>Policy in force when claim is reported responds.</div>
+        </div>
+      </div>
+      <div class="box amber">
+        <div class="box-label">Example — Martin & Sandy (brownie business)</div>
+        <div class="box-val" style="font-size:12px"><strong>Occurrence:</strong> Injury in 2020, suit filed in 2022 → <em>2020 policy</em> responds.<br><strong>Claims-Made (retro date 1/1/2018):</strong> Same scenario → <em>2022 policy</em> responds (injury after retro date). If injury was in 2017 → <strong style="color:#c9a030">no coverage</strong> (before retro date).</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#555">Claims-made used when occurrences can manifest slowly or span many years.</div>
+    </div>
+  </div>
+
+  <!-- S15: Claims-Made Features -->
+  <div class="slide" id="s15">
+    <div class="card">
+      <h2>Claims-made unique features</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Retroactive Date</div>
+        <div class="box-val">Entered on declarations. Any claim arising from an incident <strong>before this date</strong> is not covered — no matter when the claim is made.</div>
+      </div>
+      <div class="box purple" style="margin-bottom:10px">
+        <div class="box-label">Extended Reporting Period (ERP) — "Tail Coverage"</div>
+        <div class="box-val">Allows the insured to <strong>report a claim after policy expiration</strong> or cancellation. Claim must still have occurred on or after the retroactive date.<br><br><em>Think of it as: last policy period = HEAD · ERP = TAIL</em></div>
+      </div>
+      <div class="box" style="margin-bottom:10px">
+        <div class="box-label">Why it matters</div>
+        <div class="box-val" style="font-size:12px">Example: Attorney retires, cancels policy. ERP allows claims to still be reported against the last policy in force — even though coverage is no longer active.</div>
+      </div>
+      <div class="box amber">
+        <div class="box-label">Claim Information on Claims-Made</div>
+        <div class="box-val" style="font-size:12px">
+          <strong>Quantitative</strong> — amounts claimed are known (filed claims)<br>
+          <strong>Nonquantitative</strong> — occurrences reported but claims not yet filed; future amounts unknown
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S16: ERP Breakdown -->
+  <div class="slide" id="s16">
+    <div class="card">
+      <h2>Extended reporting periods (ERP)</h2>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Basic ERP — No Additional Premium</div>
+      <div class="tail-diagram">
+        <div class="tail-row">
+          <div class="tail-bar" style="background:#0d1a2e;color:#5b8dee;width:120px">MINI TAIL</div>
+          <div class="tail-label"><strong>Unknown claim</strong> — only <strong>60 days</strong> after policy expiration. If notice received after day 60 → no coverage.</div>
+        </div>
+        <div class="tail-row">
+          <div class="tail-bar" style="background:#130d2e;color:#8a6aee;width:120px">MIDI TAIL</div>
+          <div class="tail-label"><strong>Known claim</strong> — reported within <strong>60 days</strong> of expiration → extended coverage for up to <strong>5 years</strong> after policy expiration.</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Supplemental ERP — Must Be Purchased by Endorsement</div>
+      <ul>
+        <li>Provides <strong>unlimited time</strong> to report a claim</li>
+        <li>Must elect within <strong>60 days</strong> of policy expiration</li>
+        <li>Does not take effect until <strong>premium is paid</strong></li>
+        <li>Insurer can charge up to <strong>200% of annual premium</strong></li>
+        <li>Excess over any other valid insurance</li>
+        <li><strong>Resets both aggregate limits</strong> (General and Products/Completed Ops) to declarations amounts</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S17: Exposures and Damage to Property -->
+  <div class="slide" id="s17">
+    <div class="card">
+      <h2>Exposures & damage to property limits</h2>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box blue">
+          <div class="box-label">Premises & Operations</div>
+          <div class="box-val">Ownership, maintenance, or use of the insured's <strong>premises</strong> and all <strong>business operations</strong>. All liability from either is covered (subject to exclusions).</div>
+        </div>
+        <div class="box green">
+          <div class="box-label">Products & Completed Operations</div>
+          <div class="box-val">BI or PD occurring <strong>away from the insured's premises</strong> after the job is done or the product is sold. Coverage is <strong>optional</strong> (included for some risks).</div>
+        </div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Limits Structure</div>
+      <ul>
+        <li><strong>Per Occurrence Limit</strong> — maximum per accident regardless of number of claimants</li>
+        <li><strong>General Aggregate</strong> — maximum for ALL losses (Cov A, B, C) during policy period</li>
+        <li><strong>Products/Completed Ops Aggregate</strong> — separate from general aggregate</li>
+        <li><strong>Fire Damage Legal Liability</strong> — specific limit for fire damage to rented/temporarily occupied premises caused by insured's negligence</li>
+        <li>Aggregates <strong>restore at policy anniversary</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S18: Recap -->
+  <div class="slide" id="s18">
+    <div class="card">
+      <h2>Recap — CGL key concepts</h2>
+      <div class="recap-grid">
+        <div class="rpill">2 forms: Occurrence & Claims-Made</div>
+        <div class="rpill">Coverage A — BI & PD</div>
+        <div class="rpill">Coverage B — Personal & Advertising Injury</div>
+        <div class="rpill">Coverage C — Medical Payments</div>
+        <div class="rpill">Occurrence = event triggers policy</div>
+        <div class="rpill">Claims-Made = report date triggers</div>
+        <div class="rpill">Retroactive date</div>
+        <div class="rpill">Mini tail (60 days, unknown claim)</div>
+        <div class="rpill">Midi tail (5 years, known claim)</div>
+        <div class="rpill">Supplemental ERP = unlimited / ≤200% premium</div>
+        <div class="rpill">Supplementary payments (in addition to limits)</div>
+        <div class="rpill">Newly acquired org → 90 days</div>
+        <div class="rpill">General Aggregate = Cov A + B + C</div>
+        <div class="rpill">Products/Completed Ops = separate aggregate</div>
+        <div class="rpill">Med Payments: 1-year reporting deadline</div>
+        <div class="rpill">Electronic data NOT tangible property</div>
+        <div class="rpill">Liquor liability exclusion (sellers only)</div>
+        <div class="rpill">Subcontractor work exception (Coverage A)</div>
+        <div class="rpill">Separation of insureds — doesn't increase limits</div>
+        <div class="rpill">Nonrenewal notice: 30 days</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 18</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=18;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
