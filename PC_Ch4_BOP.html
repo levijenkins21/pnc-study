@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch.4: Businessowners Policy (BOP)</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:700px}
+  .top-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:6px}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:4px;margin-bottom:1.5rem}
+  .prog-fill{height:4px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .slide{display:none;min-height:400px;flex-direction:column}
+  .slide.active{display:flex}
+  .card{background:#141414;border:1px solid #222;border-radius:14px;padding:1.75rem;flex:1;display:flex;flex-direction:column}
+  .card.accent{background:#0d1a2e;border-color:#1e3a6e}
+  h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3}
+  h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #222}
+  .sub{font-size:14px;color:#777;line-height:1.6;margin-top:4px}
+  ul{list-style:none;padding:0}
+  ul li{font-size:13px;color:#aaa;line-height:1.65;padding:5px 0 5px 1.2rem;position:relative}
+  ul li::before{content:"–";position:absolute;left:0;color:#444}
+  ul li strong{color:#e2e2e2;font-weight:500}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px}
+  .box.blue{background:#0d1a2e;border-color:#1e3a6e}
+  .box.green{background:#0a1f0a;border-color:#1a3a1a}
+  .box.amber{background:#1a1200;border-color:#3a2e00}
+  .box.red{background:#1f0a0a;border-color:#3a1a1a}
+  .box.purple{background:#130d2e;border-color:#2a1a5e}
+  .box-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+  .box-val{font-size:13px;color:#bbb;line-height:1.5}
+  .box-val strong{color:#e2e2e2}
+  .term{font-size:14px;font-weight:600;color:#5b8dee;margin-bottom:3px;margin-top:.9rem}
+  .def{font-size:13px;color:#aaa;line-height:1.6}
+  .def strong{color:#e2e2e2;font-weight:500}
+  .diff-row{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
+  .diff-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:10px}
+  .diff-content{font-size:13px;color:#aaa;line-height:1.5;flex:1}
+  .diff-content strong{color:#e2e2e2}
+  .notice-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a1a}
+  .notice-row:last-child{border-bottom:none}
+  .notice-days{font-size:20px;font-weight:700;flex-shrink:0;width:54px;text-align:center}
+  .notice-text{font-size:12px;color:#aaa;line-height:1.5;flex:1}
+  .notice-text strong{color:#e2e2e2}
+  .cond-row{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+  .cond-row:last-child{border-bottom:none}
+  .cond-name{color:#5b8dee;font-weight:600;flex-shrink:0;min-width:120px;font-size:12px}
+  .cond-text{color:#aaa;line-height:1.5;font-size:12px}
+  .cond-text strong{color:#e2e2e2}
+  .limits-vis{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+  .lv-row{display:flex;align-items:center;gap:10px}
+  .lv-bar{height:32px;border-radius:7px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+  .lv-text{font-size:12px;color:#aaa;line-height:1.4}
+  .lv-text strong{color:#e2e2e2}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .rpill{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:7px;padding:6px 10px;font-size:12px;color:#5b8dee}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.2rem}
+  .counter{font-size:13px;color:#555}
+  .nav-btns{display:flex;gap:8px}
+  .btn{padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn:hover{background:#222;border-color:#3a3a3a}
+  .btn:disabled{opacity:.3;cursor:default}
+  @media(max-width:480px){.grid2,.grid3{grid-template-columns:1fr}h1{font-size:20px}.card{padding:1.25rem}.notice-days{font-size:16px;width:42px}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="top-label">P&C Exam · Chapter 4</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:7.7%"></div></div>
+
+  <!-- S1: Title -->
+  <div class="slide active" id="s1">
+    <div class="card accent" style="justify-content:center;text-align:center;gap:10px">
+      <div style="font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase">Chapter 4 · BOP</div>
+      <h1>Businessowners Policy<br>(BOP)</h1>
+      <p class="sub">Section II — Liability · Who is Insured · Limits · Conditions<br>Section III — Common Policy Conditions</p>
+    </div>
+  </div>
+
+  <!-- S2: BOP Liability Overview -->
+  <div class="slide" id="s2">
+    <div class="card">
+      <h2>BOP Section II — business liability</h2>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="box-label">Key difference from CGL</div>
+        <div class="box-val">BOP liability is <strong>included in every policy</strong> — it cannot be written on a monoline (standalone) basis.</div>
+      </div>
+      <ul>
+        <li>Usually written with an <strong>occurrence trigger</strong></li>
+        <li>Covers <strong>BI, PD, and personal & advertising injury</strong> within coverage territory and policy period</li>
+        <li>Supplementary payments paid <strong>in addition to</strong> the limit of insurance</li>
+        <li>Insurer's <strong>duty to defend ends</strong> when limits are exhausted</li>
+      </ul>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Medical Expenses — BOP</div>
+      <ul>
+        <li>Pays medical, dental, hospital, and funeral services</li>
+        <li>Must be incurred within <strong>1 year</strong> from date of accident</li>
+        <li>Injury by accident <strong>on or next to insured's premises</strong>, or due to insured's operations</li>
+        <li>No fault required — similar to CGL's Coverage C</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S3: BOP Exclusions vs CGL -->
+  <div class="slide" id="s3">
+    <div class="card">
+      <h2>BOP exclusions — differences from CGL</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Most BOP exclusions mirror the CGL. These are the notable differences:</p>
+
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">Watercraft Exclusion</div>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="box">
+          <div class="box-label">CGL exception</div>
+          <div class="box-val">Nonowned watercraft <strong>less than 26 feet</strong></div>
+        </div>
+        <div class="box green">
+          <div class="box-label">BOP exception</div>
+          <div class="box-val">Nonowned watercraft <strong>less than 51 feet</strong> — more generous</div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:8px;text-transform:uppercase">BOP-Only Exclusions (not in CGL)</div>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-label">Professional Services</div><div class="box-val">No BI, PD, or personal/advertising injury from <strong>rendering or failing to render professional services</strong></div></div>
+        <div class="box red"><div class="box-label">Criminal Acts</div><div class="box-val">Explicitly excluded in BOP — intentional criminal acts of the insured</div></div>
+        <div class="box red"><div class="box-label">Employer's Liability</div><div class="box-val">No BI to <strong>employee, or their spouse/children/siblings</strong> during employment. Exception: liability assumed in an insured contract.</div></div>
+        <div class="box red"><div class="box-label">Nuclear Energy</div><div class="box-val">Nuclear energy liability exclusion applies to <strong>all liability coverages</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: BOP Exclusions Same as CGL -->
+  <div class="slide" id="s4">
+    <div class="card">
+      <h2>BOP exclusions — same as CGL</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">These exclusions work the same as in the CGL — just review your CGL notes:</p>
+      <div class="grid2" style="gap:7px">
+        <div class="box red"><div class="box-val">Expected or intentional injury<br><em style="font-size:11px;color:#666">(except reasonable force)</em></div></div>
+        <div class="box red"><div class="box-val">Contractual liability<br><em style="font-size:11px;color:#666">(except insured contracts)</em></div></div>
+        <div class="box red"><div class="box-val">Liquor liability<br><em style="font-size:11px;color:#666">(sellers/manufacturers only)</em></div></div>
+        <div class="box red"><div class="box-val">Workers compensation / similar laws</div></div>
+        <div class="box red"><div class="box-val">Pollution<br><em style="font-size:11px;color:#666">(hostile fire smoke/fumes excepted)</em></div></div>
+        <div class="box red"><div class="box-val">Aircraft / auto<br><em style="font-size:11px;color:#666">(watercraft exception differs)</em></div></div>
+        <div class="box red"><div class="box-val">Mobile equipment in races/transport</div></div>
+        <div class="box red"><div class="box-val">War (declared or undeclared)</div></div>
+        <div class="box red"><div class="box-val">Damage to insured's own property / product / work</div></div>
+        <div class="box red"><div class="box-val">Impaired property or property not physically injured</div></div>
+        <div class="box red"><div class="box-val">Recall of products / work</div></div>
+        <div class="box red"><div class="box-val">Electronic data</div></div>
+        <div class="box red"><div class="box-val">Recording & distribution violations<br><em style="font-size:11px;color:#666">(TCPA, CAN-SPAM, FCRA)</em></div></div>
+        <div class="box red"><div class="box-val">Personal & advertising injury exclusions<br><em style="font-size:11px;color:#666">(same as CGL Coverage B)</em></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Who is an Insured -->
+  <div class="slide" id="s5">
+    <div class="card">
+      <h2>Who is an insured — BOP</h2>
+      <div class="grid2" style="gap:7px;margin-bottom:10px">
+        <div class="box"><div class="box-label">Individual / Sole Proprietor</div><div class="box-val">Named insured + spouse — <strong>for business conduct only</strong></div></div>
+        <div class="box"><div class="box-label">Partnership / Joint Venture</div><div class="box-val">Named insured, members, partners + spouses — <strong>for business conduct</strong></div></div>
+        <div class="box"><div class="box-label">LLC</div><div class="box-val">Named insured + members. Managers insured for <strong>duties as managers</strong></div></div>
+        <div class="box"><div class="box-label">Corporation / Other Org</div><div class="box-val">Named insured + executive officers/directors (duties) + stockholders (liability as stockholders)</div></div>
+        <div class="box"><div class="box-label">Trust</div><div class="box-val">Named insured + trustees for <strong>duties as trustees</strong></div></div>
+      </div>
+      <div style="font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">Also Insureds</div>
+      <ul style="margin:0">
+        <li><strong>Volunteers</strong> performing duties related to the insured business</li>
+        <li><strong>Employees</strong> in the course of employment</li>
+        <li>Any person (not employee/volunteer) acting as <strong>real estate manager</strong></li>
+        <li>Person/org with <strong>temporary custody</strong> of property if named insured dies</li>
+        <li><strong>Legal representative</strong> if named insured dies — for duties as such</li>
+      </ul>
+      <div style="margin-top:8px;font-size:12px;color:#555">No person/org insured for conduct of any current or past partnership, JV, or LLC <em>not shown as named insured</em> in declarations.</div>
+    </div>
+  </div>
+
+  <!-- S6: BOP Limits of Insurance -->
+  <div class="slide" id="s6">
+    <div class="card">
+      <h2>BOP limits of insurance</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Unlike CGL (which states dollar aggregate limits), BOP aggregates are defined as <strong>multiples of the occurrence limit</strong>:</p>
+      <div class="limits-vis">
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#1e3a6e;width:130px">OCCURRENCE LIMIT</div>
+          <div class="lv-text">Listed on declarations — <strong>maximum per occurrence</strong> regardless of claimants</div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#0a3a0a;width:130px">GENERAL AGGREGATE</div>
+          <div class="lv-text">= <strong>2× the occurrence limit</strong> — covers BI, PD, personal & advertising injury, and medical expenses (non-products)</div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#1a0d3a;width:130px">PRODUCTS / COMP OPS</div>
+          <div class="lv-text">= <strong>2× the occurrence limit</strong> — separate aggregate for products and completed operations</div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-bar" style="background:#3a2a00;width:130px">FIRE DAMAGE LEGAL</div>
+          <div class="lv-text">Separate limit for fire damage to rented/temp-occupied premises — can be included in either aggregate based on claim type</div>
+        </div>
+      </div>
+      <ul style="margin-top:6px">
+        <li>Medical expenses paid <strong>per person</strong>, subject to occurrence limit</li>
+        <li>Limits apply <strong>separately to each consecutive annual period</strong> and any remaining period under 12 months</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S7: General Conditions -->
+  <div class="slide" id="s7">
+    <div class="card">
+      <h2>BOP general conditions — liability</h2>
+      <div class="cond-row"><div class="cond-name">Bankruptcy</div><div class="cond-text">Bankruptcy or insolvency does <strong>not relieve the insurer</strong> of any obligation</div></div>
+      <div class="cond-row"><div class="cond-name">Duties After Loss</div><div class="cond-text">Promptly notify insurer; provide written notice of claims; notify of legal papers received; <strong>cooperate in investigation</strong></div></div>
+      <div class="cond-row"><div class="cond-name">Legal Action vs. Insurer</div><div class="cond-text">No party can join insurer in suit against insured. Must comply with all policy terms before suing. Settlement cannot exceed limits or include uncovered items.</div></div>
+      <div class="cond-row"><div class="cond-name">Separation of Insureds</div><div class="cond-text">Limit paid <strong>once per occurrence</strong> regardless of number of claimants or insureds — does not increase limits</div></div>
+      <div style="margin-top:1rem;font-size:11px;letter-spacing:1.5px;color:#5b8dee;margin-bottom:6px;text-transform:uppercase">BOP Definitions to Know</div>
+      <div class="grid2" style="gap:7px">
+        <div class="box blue">
+          <div class="box-label">Insured Product</div>
+          <div class="box-val" style="font-size:12px">Goods/products manufactured, sold, handled, or distributed by the insured or others trading under the insured's name. Includes containers, materials, parts, equipment.</div>
+        </div>
+        <div class="box blue">
+          <div class="box-label">Insured Contract</div>
+          <div class="box-val" style="font-size:12px">Lease of premises · sidetrack agreement · easement/license agreement · municipal indemnification · elevator maintenance · tort liability assumed in a contract pertaining to insured business.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: Cancellation Notice Periods -->
+  <div class="slide" id="s8">
+    <div class="card">
+      <h2>Section III — cancellation notice periods</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:.9rem">Insured can cancel anytime by written notice. Insurer must give advance notice — required timing depends on the reason:</p>
+      <div class="notice-row">
+        <div class="notice-days" style="color:#c05050">5<span style="font-size:12px;font-weight:400;color:#555;display:block">days</span></div>
+        <div class="notice-text"><strong>Special building conditions apply:</strong> Vacant/unoccupied 60+ consecutive days · Permanent repairs not contracted within 30 days of initial payment · Outstanding vacate/demolition order · Fixed/salvageable items removed · No utilities for 30+ days · Property taxes unpaid for 1+ year</div>
+      </div>
+      <div class="notice-row">
+        <div class="notice-days" style="color:#c9a030">10<span style="font-size:12px;font-weight:400;color:#555;display:block">days</span></div>
+        <div class="notice-text"><strong>Nonpayment of premium</strong></div>
+      </div>
+      <div class="notice-row">
+        <div class="notice-days" style="color:#4aaa4a">30<span style="font-size:12px;font-weight:400;color:#555;display:block">days</span></div>
+        <div class="notice-text"><strong>Any other reason</strong> (may vary by state)</div>
+      </div>
+      <div style="margin-top:10px;background:#1a1a1a;border-radius:8px;padding:10px 12px;font-size:12px;color:#555">
+        <strong style="color:#aaa">Important:</strong> Insurer only has to prove the notice was <em>mailed</em> to the first named insured — not that it was received. Return premium refund goes to <strong style="color:#aaa">first named insured</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: Other Common Conditions -->
+  <div class="slide" id="s9">
+    <div class="card">
+      <h2>Section III — other common conditions</h2>
+      <div class="cond-row"><div class="cond-name">Changes</div><div class="cond-text">Policy = entire contract. Changes only by <strong>written request of first named insured</strong> + insurer approval</div></div>
+      <div class="cond-row"><div class="cond-name">Concealment / Fraud</div><div class="cond-text">Policy void if any insured <strong>commits fraud</strong> or intentionally conceals/misrepresents a material fact about policy, property, interest, or claim</div></div>
+      <div class="cond-row"><div class="cond-name">Exam of Books</div><div class="cond-text">Insurer may examine books/records during policy period and up to <strong>3 years after policy ends</strong></div></div>
+      <div class="cond-row"><div class="cond-name">Inspections</div><div class="cond-text">Insurer may inspect premises/operations at any reasonable time — for insurability, rating, and loss control. <strong>Does not guarantee safety or compliance.</strong></div></div>
+      <div class="cond-row"><div class="cond-name">Liberalization</div><div class="cond-text">If insurer adopts a revision that <strong>broadens coverage without additional premium</strong> within <strong>45 days prior to or during</strong> the policy period → applies immediately</div></div>
+      <div class="cond-row"><div class="cond-name">Other Insurance</div><div class="cond-text">If loss is covered by other insurance → insurer pays only the <strong>excess</strong> over the other coverage (regardless of collectibility)</div></div>
+      <div class="cond-row"><div class="cond-name">Premiums</div><div class="cond-text"><strong>First named insured</strong> is responsible for paying premium; receives any refunds</div></div>
+      <div class="cond-row"><div class="cond-name">Subrogation</div><div class="cond-text">Insurer has right to recover claim payment from <strong>negligent third parties</strong></div></div>
+      <div class="cond-row"><div class="cond-name">Transfer of Rights</div><div class="cond-text">Cannot transfer rights/duties without <strong>written consent of insurer</strong>. Upon death → automatically transferred to <strong>legal representative</strong></div></div>
+    </div>
+  </div>
+
+  <!-- S10: BOP vs CGL Quick Compare -->
+  <div class="slide" id="s10">
+    <div class="card">
+      <h2>BOP vs. CGL — key differences</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <div style="display:flex;gap:8px">
+          <div style="font-size:11px;font-weight:700;color:#5b8dee;width:150px;flex-shrink:0;text-transform:uppercase;letter-spacing:1px;padding-top:2px">Feature</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1">
+            <div style="font-size:11px;font-weight:700;color:#4aaa4a;text-transform:uppercase;letter-spacing:1px">BOP</div>
+            <div style="font-size:11px;font-weight:700;color:#8a6aee;text-transform:uppercase;letter-spacing:1px">CGL</div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Monoline</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div><strong style="color:#c05050">No</strong> — always packaged</div>
+              <div><strong style="color:#4aaa4a">Yes</strong> — can stand alone</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Watercraft exception</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div>Nonowned <strong style="color:#e2e2e2">&lt;51 feet</strong></div>
+              <div>Nonowned <strong style="color:#e2e2e2">&lt;26 feet</strong></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Aggregate limit</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div><strong style="color:#e2e2e2">2× occurrence limit</strong></div>
+              <div>Stated dollar amount (e.g., $2M)</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Liberalization</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div><strong style="color:#e2e2e2">45 days</strong></div>
+              <div>Not a standard CGL condition</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Professional services</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div>Explicitly <strong style="color:#c05050">excluded</strong></div>
+              <div>Covered via separate endorsement</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;gap:8px">
+            <div style="font-size:12px;color:#5b8dee;width:150px;flex-shrink:0;font-weight:500">Book/records audit</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;font-size:12px;color:#aaa">
+              <div><strong style="color:#e2e2e2">3 years</strong> after policy ends</div>
+              <div>End of policy term</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S11: Recap -->
+  <div class="slide" id="s11">
+    <div class="card">
+      <h2>Recap — BOP key concepts</h2>
+      <div class="recap-grid">
+        <div class="rpill">BOP liability cannot be monoline</div>
+        <div class="rpill">Occurrence trigger (usually)</div>
+        <div class="rpill">Med payments: 1 year from accident</div>
+        <div class="rpill">Watercraft exception: &lt;51 feet</div>
+        <div class="rpill">Professional services excluded</div>
+        <div class="rpill">Nuclear energy excluded (all liability)</div>
+        <div class="rpill">Employer's liability — spouse/children/siblings</div>
+        <div class="rpill">General aggregate = 2× occurrence limit</div>
+        <div class="rpill">Products/Completed Ops = 2× occurrence limit</div>
+        <div class="rpill">Fire damage legal: separate limit</div>
+        <div class="rpill">Cancellation: 5 / 10 / 30 days</div>
+        <div class="rpill">10 days = nonpayment</div>
+        <div class="rpill">5 days = special building conditions</div>
+        <div class="rpill">30 days = any other reason</div>
+        <div class="rpill">Liberalization: 45 days</div>
+        <div class="rpill">Book/record audit: 3 years after policy</div>
+        <div class="rpill">Insurer proves notice was mailed (not received)</div>
+        <div class="rpill">Insured contract: same 6 types as CGL</div>
+        <div class="rpill">Subrogation — transfer rights to insurer</div>
+        <div class="rpill">First named insured pays premium & gets refunds</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <span class="counter" id="counter">1 / 11</span>
+    <div class="nav-btns">
+      <button class="btn" id="prevBtn" onclick="go(-1)" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur=1,total=11;
+function go(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(1,Math.min(total,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('counter').textContent=cur+' / '+total;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===total;
+  document.getElementById('prog').style.width=Math.round((cur/total)*100)+'%';
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
