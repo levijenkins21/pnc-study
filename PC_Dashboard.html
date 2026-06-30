@@ -35,6 +35,27 @@
   .btn-sm { padding: 4px 10px; font-size: 11px; }
   .divider { border: none; border-top: 1px solid #1a1a1a; margin: 1.5rem 0; }
   .note { font-size: 12px; color: #444; text-align: center; margin-top: 2rem; line-height: 1.6; }
+  /* notes section */
+  .notes-section { margin-bottom: 2rem; }
+  .notes-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; cursor: pointer; user-select: none; }
+  .notes-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
+  .notes-body { display: none; }
+  .notes-body.open { display: block; }
+  .notes-card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1rem 1.1rem; }
+  .notes-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+  .notes-add-row { display: flex; gap: 8px; }
+  .notes-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; color: #e2e2e2; font-size: 13px; padding: 8px 12px; font-family: inherit; outline: none; transition: border-color .15s; }
+  .notes-input:focus { border-color: #3a3a3a; }
+  .notes-add-btn { padding: 8px 16px; font-size: 12px; font-weight: 500; cursor: pointer; border-radius: 8px; border: 1px solid #1e3a6e; background: #0d1a2e; color: #5b8dee; white-space: nowrap; }
+  .notes-add-btn:hover { background: #112040; }
+  .notes-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .note-item { display: flex; align-items: flex-start; gap: 10px; background: #1a1a1a; border: 1px solid #242424; border-radius: 8px; padding: 10px 12px; }
+  .note-dot { width: 6px; height: 6px; border-radius: 50%; background: #5b8dee; flex-shrink: 0; margin-top: 5px; }
+  .note-text { font-size: 13px; color: #ccc; line-height: 1.5; flex: 1; word-break: break-word; }
+  .note-meta { font-size: 10px; color: #444; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .note-del { font-size: 14px; color: #333; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0 2px; transition: color .15s; }
+  .note-del:hover { color: #c05050; }
+  .notes-empty { font-size: 12px; color: #333; padding: 8px 0; }
 </style>
 </head>
 <body>
@@ -49,6 +70,24 @@
     <div class="stat"><span class="stat-val" id="total-count">0</span><span class="stat-label">Total sections</span></div>
     <div class="stat"><span class="stat-val" id="pct">0%</span><span class="stat-label">Complete</span></div>
   </div>
+
+  <!-- Notes Section -->
+  <div class="notes-section">
+    <div class="notes-header" onclick="toggleNotes()">
+      <span class="notes-title">📋 My Notes</span>
+      <span id="notes-toggle-icon" style="font-size:11px;color:#444">▼</span>
+    </div>
+    <div class="notes-body" id="notesBody">
+      <div class="notes-card">
+        <div class="notes-add-row">
+          <input class="notes-input" id="noteInput" type="text" placeholder="Add a note, reminder, or anything on your mind…" onkeydown="if(event.key==='Enter')addNote()">
+          <button class="notes-add-btn" onclick="addNote()">+ Add</button>
+        </div>
+        <div class="notes-list" id="notesList"></div>
+      </div>
+    </div>
+  </div>
+  <hr class="divider" style="margin-top:0">
 
   <div id="chapters"></div>
 
@@ -187,6 +226,61 @@ function render() {
 function toggle(i) {
   const el = document.getElementById('ch-' + i);
   el.classList.toggle('open');
+}
+
+// ── Notes ──────────────────────────────────────────────────────
+function getNotes() {
+  try { return JSON.parse(localStorage.getItem('pc_notes') || '[]'); } catch { return []; }
+}
+function saveNotes(arr) {
+  localStorage.setItem('pc_notes', JSON.stringify(arr));
+}
+function addNote() {
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const notes = getNotes();
+  const now = new Date();
+  const label = (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  notes.unshift({ text, ts: label, id: Date.now() });
+  saveNotes(notes);
+  input.value = '';
+  renderNotes();
+}
+function deleteNote(id) {
+  const notes = getNotes().filter(n => n.id !== id);
+  saveNotes(notes);
+  renderNotes();
+}
+function renderNotes() {
+  const notes = getNotes();
+  const el = document.getElementById('notesList');
+  if (!el) return;
+  if (notes.length === 0) {
+    el.innerHTML = '<div class="notes-empty">No notes yet — add your first one above.</div>';
+    return;
+  }
+  el.innerHTML = notes.map(n =>
+    `<div class="note-item">
+      <div class="note-dot"></div>
+      <span class="note-text">${n.text.replace(/</g,'&lt;')}</span>
+      <span class="note-meta">${n.ts}</span>
+      <span class="note-del" onclick="deleteNote(${n.id})" title="Delete">✕</span>
+    </div>`
+  ).join('');
+}
+function toggleNotes() {
+  const body = document.getElementById('notesBody');
+  const icon = document.getElementById('notes-toggle-icon');
+  body.classList.toggle('open');
+  icon.textContent = body.classList.contains('open') ? '▲' : '▼';
+  if (body.classList.contains('open')) renderNotes();
+}
+// Auto-open notes if there are any saved
+if (getNotes().length > 0) {
+  document.getElementById('notesBody').classList.add('open');
+  document.getElementById('notes-toggle-icon').textContent = '▲';
+  renderNotes();
 }
 
 render();
