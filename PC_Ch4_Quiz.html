@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Chapter 4 Quiz</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem 1rem 3rem}
+  .top{width:100%;max-width:640px;margin-bottom:1rem}
+  .label{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+  h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem}
+  .meta{font-size:12px;color:#555;margin-bottom:1rem}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+  .prog-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .qcounter{font-size:12px;color:#444;margin-bottom:1.2rem}
+  /* question card */
+  .q-card{width:100%;max-width:640px;background:#141414;border:1px solid #222;border-radius:16px;padding:1.75rem;margin-bottom:1rem}
+  .section-tag{font-size:10px;letter-spacing:1.5px;color:#5b8dee;text-transform:uppercase;margin-bottom:.5rem}
+  .q-text{font-size:16px;font-weight:500;color:#fff;line-height:1.5;margin-bottom:1.4rem}
+  /* choices */
+  .choices{display:flex;flex-direction:column;gap:10px}
+  .choice{padding:13px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;font-size:14px;color:#ccc;cursor:pointer;line-height:1.45;transition:border-color .15s,background .15s;text-align:left}
+  .choice:hover{border-color:#3a3a3a;background:#222}
+  .choice.correct{background:#0a2e0a;border-color:#1a4a1a;color:#4aaa4a}
+  .choice.wrong{background:#2e0a0a;border-color:#4a1a1a;color:#c05050}
+  .choice.reveal-correct{background:#0a2e0a;border-color:#1a4a1a;color:#4aaa4a}
+  .choice:disabled,.choice.done{cursor:default;pointer-events:none}
+  /* feedback */
+  .feedback{display:none;margin-top:1.1rem;padding:1rem 1.1rem;border-radius:10px;font-size:13px;line-height:1.6}
+  .feedback.correct{background:#0a1f0a;border:1px solid #1a3a1a;color:#4aaa4a;display:block}
+  .feedback.wrong{background:#1f0a0a;border:1px solid #3a1a1a;color:#c05050;display:block}
+  .feedback-body{color:#aaa;margin-top:.4rem;font-size:13px;color:#bbb}
+  /* nav */
+  .nav-row{width:100%;max-width:640px;display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:.5rem}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#222}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112040}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  /* score screen */
+  .score-screen{display:none;width:100%;max-width:640px}
+  .score-screen.show{display:block}
+  .score-card{background:#141414;border:1px solid #222;border-radius:16px;padding:2rem;text-align:center;margin-bottom:1.2rem}
+  .score-num{font-size:52px;font-weight:700;margin-bottom:.3rem}
+  .score-label{font-size:13px;color:#555;margin-bottom:1.5rem}
+  .grade{font-size:16px;font-weight:600;margin-bottom:1.5rem}
+  .score-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  /* review */
+  .review-list{width:100%;max-width:640px}
+  .review-item{background:#141414;border:1px solid #222;border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:8px}
+  .review-item.miss{border-color:#3a1a1a}
+  .ri-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:.5rem}
+  .ri-icon{font-size:14px;flex-shrink:0;margin-top:2px}
+  .ri-q{font-size:13px;color:#ccc;line-height:1.45;flex:1}
+  .ri-answer{font-size:12px;color:#555;margin-top:.3rem}
+  .ri-answer span{color:#aaa}
+  @media(max-width:480px){.q-text{font-size:15px}.choice{font-size:13px;padding:11px 13px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="label">P&C Exam · Chapter 4</div>
+  <h1>Chapter Quiz</h1>
+  <div class="meta" id="quizMeta">40 questions · all sections</div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+  <div class="qcounter" id="qcounter">Question 1 of 40</div>
+</div>
+
+<div id="quizArea">
+  <div class="q-card" id="qCard">
+    <div class="section-tag" id="qSection"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback">
+      <div id="feedbackHead"></div>
+      <div class="feedback-body" id="feedbackBody"></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn primary" id="nextBtn" onclick="nextQ()" disabled>Next →</button>
+  </div>
+</div>
+
+<div class="score-screen" id="scoreScreen">
+  <div class="score-card">
+    <div class="score-num" id="scoreNum"></div>
+    <div class="score-label" id="scoreLabel"></div>
+    <div class="grade" id="gradeText"></div>
+    <div class="score-actions">
+      <button class="nav-btn" onclick="restartQuiz()">↺ Retake Quiz</button>
+      <button class="nav-btn primary" onclick="showReview()">Review Answers</button>
+    </div>
+  </div>
+  <div class="review-list" id="reviewList" style="display:none"></div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── AUTOMOTIVE ────────────────────────────────────────────────
+  {
+    s:"Auto",
+    q:"A Personal Auto Policy (PAP) has 6 parts. Which part covers Uninsured Motorist?",
+    choices:["Part B","Part C","Part D","Part F"],
+    correct:1,
+    explain:"Part A = Liability, Part B = Medical Payments, Part C = Uninsured Motorist, Part D = Physical Damage, Part E = Duties After Loss, Part F = General Provisions."
+  },
+  {
+    s:"Auto",
+    q:"Under PAP Part D, how many days does an insured have to notify the insurer about a newly acquired auto to maintain physical damage coverage if they do NOT already have physical damage on any vehicle?",
+    choices:["14 days","30 days","4 days","24 hours"],
+    correct:2,
+    explain:"If you already have physical damage on any covered auto, newly acquired autos get 14 days. If you do NOT have physical damage coverage, only 4 days — and a $500 deductible applies if loss occurs before notification."
+  },
+  {
+    s:"Auto",
+    q:"Your PAP has split limits of 25/50/25. Three people are injured by your fault with damages of $30K, $15K, and $10K. How much does your BI coverage pay total?",
+    choices:["$55,000","$50,000","$25,000","$45,000"],
+    correct:1,
+    explain:"The per-person limit is $25K, so: $25K (capped) + $15K + $10K = $50K. The $50K per-accident limit is not breached. The first claimant is capped at $25K even though damages were $30K."
+  },
+  {
+    s:"Auto",
+    q:"Under PAP transportation expenses, when do payments begin after a THEFT loss?",
+    choices:["Immediately","24 hours after the loss","48 hours after the loss","72 hours after the loss"],
+    correct:2,
+    explain:"For theft losses, transportation expense begins 48 hours after the theft. For all other covered losses, it begins 24 hours after the loss. Maximum is $20/day up to $600."
+  },
+  {
+    s:"Auto",
+    q:"Business auto Symbol 9 covers which type of auto?",
+    choices:["Any auto","Owned autos only","Nonowned autos only","Specifically described autos only"],
+    correct:2,
+    explain:"Symbol 9 = Nonowned autos only. This includes employee-owned personal vehicles used on business. Symbol 1 = Any auto. Symbol 7 = Specifically described autos. Symbol 8 = Hired autos only."
+  },
+  {
+    s:"Auto",
+    q:"What is a Garagekeepers policy designed to cover?",
+    choices:["Employee autos parked at the insured's garage","Customer autos in the insured's care, custody, and control","Property damage caused by garage employees","Theft of tools from the garage premises"],
+    correct:1,
+    explain:"Garagekeepers covers damage to customer autos left for service, repair, parking, or storage. It does NOT cover employee autos or garage tools/equipment."
+  },
+  {
+    s:"Auto",
+    q:"Under the PAP, which of the following is NOT a category of 'uninsured motor vehicle'?",
+    choices:["A vehicle with limits below state minimum","A hit-and-run vehicle where the driver is unidentified","A vehicle owned by the insured's employer","A vehicle whose insurer denied coverage"],
+    correct:2,
+    explain:"The 4 UM categories: (1) No liability insurance, (2) Below minimum limits, (3) Hit-and-run with unidentified driver, (4) Insurer denied coverage or is insolvent. An employer-owned vehicle is NOT an uninsured motor vehicle under the PAP."
+  },
+  // ── CGL ───────────────────────────────────────────────────────
+  {
+    s:"CGL",
+    q:"Under a claims-made CGL, the retroactive date is January 1. An incident occurred on December 15 of the prior year. A claim is filed this policy year. Is there coverage?",
+    choices:["Yes, because the claim was made during the policy period","No, because the incident occurred before the retroactive date","Yes, if the supplemental ERP was purchased","No, because this is an occurrence-based incident"],
+    correct:1,
+    explain:"The retroactive date excludes claims arising from incidents BEFORE that date. Since the incident occurred on December 15 and the retroactive date is January 1 of the following year, there is no coverage."
+  },
+  {
+    s:"CGL",
+    q:"A contractor finishes a job in Year 1. Under an occurrence CGL, a claim is filed in Year 4 for faulty work discovered that year. Which policy responds?",
+    choices:["The Year 4 policy","The Year 1 policy — when the event occurred","No policy — too much time has passed","A claims-made policy would cover this; occurrence wouldn't"],
+    correct:1,
+    explain:"Occurrence trigger: the policy in force WHEN THE OCCURRENCE HAPPENED responds, not when the claim is filed. The Year 1 policy pays."
+  },
+  {
+    s:"CGL",
+    q:"CGL Coverage C (Medical Payments) must be reported within what time period?",
+    choices:["2 years from accident","During the policy period only","1 year from the date of the accident","3 years — same as audit period"],
+    correct:2,
+    explain:"Medical payments must be incurred AND reported within 1 year of the accident date. This coverage pays without regard to fault."
+  },
+  {
+    s:"CGL",
+    q:"The Supplemental Extended Reporting Period (ERP) must be elected within how many days of policy expiration?",
+    choices:["30 days","90 days","60 days","180 days"],
+    correct:2,
+    explain:"The supplemental ERP must be elected within 60 days of policy expiration. It provides unlimited reporting time and resets both aggregates. Premium can be up to 200% of the annual premium."
+  },
+  {
+    s:"CGL",
+    q:"CGL supplementary payments are paid:",
+    choices:["From the policy's aggregate limits","In addition to the policy limits","Only for claims under $1,000","Only for defense costs after judgment"],
+    correct:1,
+    explain:"Supplementary payments (bail bonds up to $250, loss of earnings up to $250/day, court costs, interest) are paid IN ADDITION to the liability limits — they do not erode the policy aggregate."
+  },
+  {
+    s:"CGL",
+    q:"A bar is sued after a patron they served caused a drunk driving accident. Under the standard CGL, is there coverage for the bar?",
+    choices:["Yes — CGL covers all liquor-related claims","No — liquor liability is excluded for businesses in the alcohol trade","Yes — if the bar was not negligent","No — only under Part B (Personal Injury)"],
+    correct:1,
+    explain:"The liquor liability exclusion applies to businesses that manufacture, sell, distribute, or serve alcohol. The bar must purchase a separate dram shop / liquor liability policy. The exclusion does NOT apply to social hosts."
+  },
+  {
+    s:"CGL",
+    q:"The CGL 'mini tail' (basic ERP) covers which situation?",
+    choices:["Known claims not yet filed — for up to 5 years","Unknown claims — for 60 days after policy expiration","Any claim filed within 1 year of expiration","Claims filed and loss sustained within the policy period"],
+    correct:1,
+    explain:"Mini tail = 60 days for UNKNOWN claims that arise after expiration. Midi tail = 5 years for claims REPORTED within 60 days of expiration. Both are part of the Basic ERP and included at no extra cost."
+  },
+  // ── BOP ───────────────────────────────────────────────────────
+  {
+    s:"BOP",
+    q:"Which statement about BOP liability coverage is TRUE?",
+    choices:["It can be written without property coverage","It covers professional services by default","It cannot be written on a standalone (monoline) basis","It has separate aggregate limits from the CGL"],
+    correct:2,
+    explain:"BOP liability is a PACKAGE product — it MUST be combined with property coverage and cannot be written monoline. This is a key distinction from the CGL, which can be written standalone."
+  },
+  {
+    s:"BOP",
+    q:"The BOP excludes watercraft liability. What is the BOP exception that allows some watercraft?",
+    choices:["Nonowned watercraft less than 26 feet","Nonowned watercraft less than 51 feet not used for hire","All watercraft under 100 feet","Owned watercraft under 26 feet"],
+    correct:1,
+    explain:"BOP excepts nonowned watercraft less than 51 feet NOT used for hire. The CGL's watercraft exception is more restrictive — less than 26 feet. BOP gives more room here."
+  },
+  {
+    s:"BOP",
+    q:"The BOP occurrence limit is $300,000. What is the General Aggregate under the BOP?",
+    choices:["$300,000","$600,000","$1,000,000","Same as CGL — stated on declarations"],
+    correct:1,
+    explain:"BOP aggregates = 2× the occurrence limit. $300K × 2 = $600K. Products/Completed Ops aggregate is also 2× the occurrence limit."
+  },
+  {
+    s:"BOP",
+    q:"An insurer wants to cancel a BOP because the building has been vacant for 65 days and no repairs have been contracted. How many days advance notice is required?",
+    choices:["5 days","10 days","30 days","60 days"],
+    correct:0,
+    explain:"Building condition cancellations require only 5 days notice. These conditions include vacancy over 60 days, no repairs contracted within 30 days, demolition orders, utilities off 30+ days, or unpaid taxes 1+ year."
+  },
+  {
+    s:"BOP",
+    q:"The BOP Liberalization clause automatically broadens coverage if a policy improvement is issued within how many days of the policy effective date?",
+    choices:["30 days","60 days","45 days","90 days"],
+    correct:2,
+    explain:"BOP Liberalization clause: if the insurer broadens coverage without additional premium within 45 days before or during the policy period, the improvement automatically applies to all similar in-force policies."
+  },
+  // ── WORKERS COMP ─────────────────────────────────────────────
+  {
+    s:"WC",
+    q:"Which of the following is NOT one of the three common law defenses that historically protected employers from employee injury claims?",
+    choices:["Fellow servant rule","Contributory negligence","Assumption of risk","Exclusive remedy doctrine"],
+    correct:3,
+    explain:"The three common law defenses are (1) Fellow servant rule, (2) Contributory negligence, (3) Assumption of risk. Exclusive remedy is a MODERN doctrine created BY workers compensation statutes, not a common law defense."
+  },
+  {
+    s:"WC",
+    q:"Under WC Part 3C (Other States Coverage), if operations are ALREADY UNDERWAY in a new state on the policy's effective date, when must the insurer be notified?",
+    choices:["14 days","30 days","60 days","At next renewal"],
+    correct:1,
+    explain:"If work is already underway in a new state when the policy takes effect, the insurer must be notified within 30 days or the 3C coverage does NOT apply. New operations started after the effective date are covered automatically."
+  },
+  {
+    s:"WC",
+    q:"Workers compensation medical benefits are:",
+    choices:["Limited to $100,000 per injury","Paid for up to 5 years","Unlimited — no dollar or time cap","Limited to $500,000 per policy period"],
+    correct:2,
+    explain:"WC medical benefits are UNLIMITED — no dollar or time limit for necessary medical and surgical care. This is one of the most significant features of workers compensation."
+  },
+  {
+    s:"WC",
+    q:"What are the BASIC Employers Liability limits on a standard WC policy?",
+    choices:["$100K per accident / $100K per disease / $1M disease aggregate","$500K per accident / $500K per disease / $1M disease aggregate","$100K per accident / $100K per disease / $500K disease aggregate","$250K per accident / $250K per disease / $500K disease aggregate"],
+    correct:2,
+    explain:"Basic EL limits: $100,000 per accident (BI by accident), $100,000 per employee (BI by disease), $500,000 policy aggregate for all disease claims during the policy term."
+  },
+  {
+    s:"WC",
+    q:"The Federal Employers Liability Act (FELA) is most accurately described as:",
+    choices:["A monopolistic WC program for all federal employees","Coverage for longshoremen and harbor workers","A tort law allowing railroad employees to sue employers for negligence","Compensation for black lung disease in miners"],
+    correct:2,
+    explain:"FELA (1908) allows RAILROAD EMPLOYEES to sue their employer for negligence. It eliminates contributory negligence and assumption of risk as total bars to recovery. It is NOT a workers compensation law — it is a tort remedy."
+  },
+  {
+    s:"WC",
+    q:"Under experience modification rating, an experience mod of 1.25 means:",
+    choices:["The employer gets a 25% premium discount","The employer pays 25% less than standard premium","The employer pays 25% MORE than standard premium","The employer had 25% fewer claims than expected"],
+    correct:2,
+    explain:"Experience mod above 1.0 = DEBIT mod = higher premium. 1.25 means the employer pays 25% MORE than standard premium. Below 1.0 = CREDIT mod = discount. The mod compares actual vs. expected losses."
+  },
+  // ── CRIME ────────────────────────────────────────────────────
+  {
+    s:"Crime",
+    q:"Under a crime policy, which coverage trigger is similar to the 'claims-made' concept?",
+    choices:["Loss sustained form","Discovery form","Occurrence form","Claims-reported form"],
+    correct:1,
+    explain:"Discovery form = covers losses DISCOVERED during the policy period, regardless of when they occurred (like claims-made). Loss sustained form = covers losses that occur AND are discovered during the policy period (like occurrence)."
+  },
+  {
+    s:"Crime",
+    q:"What distinguishes robbery from burglary?",
+    choices:["Robbery requires forced entry; burglary does not","Burglary requires a victim to be present; robbery does not","Robbery requires a victim to be present; burglary requires visible signs of forced entry","Both require forced entry; robbery also requires a victim"],
+    correct:2,
+    explain:"Robbery = taking from the CARE AND CUSTODY OF A PERSON, with force or threat of force, witnessed by that person — victim must be present. Burglary = forced entry/exit with visible signs — no victim required."
+  },
+  {
+    s:"Crime",
+    q:"Under the one-bite rule in fidelity/crime coverage, what happens when an employer discovers an employee's dishonesty?",
+    choices:["The employer gets one more claim before coverage terminates for that employee","Coverage terminates for that employee immediately upon discovery","The insurer must provide 30 days notice before canceling coverage for that employee","The policy is cancelled entirely"],
+    correct:1,
+    explain:"The one-bite rule: the MOMENT the employer discovers dishonesty that could give rise to a claim, coverage for THAT SPECIFIC EMPLOYEE terminates immediately. Even prior acts at a former employer trigger this."
+  },
+  {
+    s:"Crime",
+    q:"Forgery or Alteration coverage under a crime policy covers:",
+    choices:["Incoming checks made payable to the insured","Outgoing checks, drafts, or promissory notes issued by the insured","All paper documents processed by the insured","Electronic funds transfers only"],
+    correct:1,
+    explain:"Forgery/Alteration covers OUTGOING instruments — checks, drafts, and promissory notes made or drawn by the insured. It does NOT cover incoming checks forged payable to the insured. Electronic signatures are treated the same as handwritten."
+  },
+  {
+    s:"Crime",
+    q:"A crime policy covers employee dishonesty. How long after termination is a former employee still considered an 'employee' under the policy definition?",
+    choices:["14 days","60 days","30 days","90 days"],
+    correct:2,
+    explain:"Under crime policy employee definition: an individual is still considered an 'employee' for 30 days after their employment ends. This allows coverage for losses discovered shortly after termination."
+  },
+  {
+    s:"Crime",
+    q:"Under a Commercial Blanket Bond, the limit of liability applies:",
+    choices:["Per employee involved","Per loss — regardless of how many employees were involved","Per branch location","Per calendar year aggregate"],
+    correct:1,
+    explain:"Commercial Blanket Bond: limit applies PER LOSS regardless of how many employees participated in the theft. Blanket Position Bond: limit applies PER EMPLOYEE. Both cover all employees."
+  },
+  // ── PROFESSIONAL LIABILITY ────────────────────────────────────
+  {
+    s:"PL",
+    q:"Professional liability policies are DIFFERENT from umbrella policies regarding consent to settle because:",
+    choices:["Professional liability requires insured consent to settle; umbrellas do not","Umbrellas require insured consent; professional liability does not","Both require insured consent","Neither requires insured consent"],
+    correct:0,
+    explain:"Professional liability: insurer CANNOT settle without INSURED'S CONSENT — the professional's reputation is at stake. Umbrella: insurer CAN settle without consent. This is a frequently tested distinction."
+  },
+  {
+    s:"PL",
+    q:"Directors & Officers (D&O) coverage is triggered by:",
+    choices:["An occurrence or accident","A wrongful act","A claims-made trigger only when suit is filed","Property damage caused by directors"],
+    correct:1,
+    explain:"D&O is triggered by WRONGFUL ACTS — misstatements, neglect, breach of duty by directors and officers acting in their official capacity. It does not use the term 'occurrence' or 'accident.'"
+  },
+  {
+    s:"PL",
+    q:"Which coverage fills the gap for employment-related claims that are NOT covered by either the CGL or Workers Compensation?",
+    choices:["D&O","E&O","EPLI","Cyber Liability"],
+    correct:2,
+    explain:"EPLI (Employment Practices Liability) covers discrimination, harassment, wrongful termination, failure to promote, and defamation — losses that are NOT covered by CGL (which excludes employment practices) or WC (which covers work injuries only)."
+  },
+  {
+    s:"PL",
+    q:"Under ISO cyber liability, how many separate coverage agreements are there, each with its own aggregate limit?",
+    choices:["3","4","5","6"],
+    correct:2,
+    explain:"ISO cyber liability has 5 agreements, each with its own aggregate: (1) Website publishing, (2) Network security, (3) Restoration of electronic data, (4) Cyber extortion, (5) Business income/extra expense. Written claims-made. Worldwide by endorsement."
+  },
+  // ── UMBRELLA & EXCESS ────────────────────────────────────────
+  {
+    s:"Umbrella",
+    q:"What is the key structural difference between an umbrella policy and an excess liability policy?",
+    choices:["Umbrellas cost more; excess policies are cheaper","Excess policies are standalone; umbrellas must follow the underlying policy form","Umbrellas can stand alone and cover gaps; excess policies strictly follow the underlying policy form","Umbrellas only cover commercial risks; excess only covers personal risks"],
+    correct:2,
+    explain:"UMBRELLA = stand-alone, can differ from underlying, can fill gaps (with SIR). EXCESS = follow-form only, mirrors the underlying policy exactly, no gap coverage, just more limits above the underlying."
+  },
+  {
+    s:"Umbrella",
+    q:"When does the SIR (Self-Insured Retention) apply under a personal umbrella?",
+    choices:["For every claim — it acts as a deductible","Only when the umbrella covers a loss that is NOT covered by any underlying policy","When the underlying policy limits are exhausted","For claims that exceed the umbrella's own limits"],
+    correct:1,
+    explain:"SIR applies ONLY when the umbrella covers a loss that the primary/underlying insurance does NOT cover at all (a gap). When the primary applies and is exhausted, the umbrella pays from dollar one above primary — no SIR."
+  },
+  {
+    s:"Umbrella",
+    q:"UM/UIM coverage on a personal umbrella policy is:",
+    choices:["Automatically included at no charge","Excluded — but can be added by endorsement where state-required","Included only on commercial umbrellas","Mandatory in all states"],
+    correct:1,
+    explain:"UM/UIM is EXCLUDED from the personal umbrella by default. It can be reinstated by ENDORSEMENT in states that require it. This is an important gap that the umbrella does NOT automatically fill."
+  },
+  {
+    s:"Umbrella",
+    q:"If an insured allows their underlying auto policy to lapse, what does the umbrella pay for a covered auto claim?",
+    choices:["The full umbrella limit with no reduction","The umbrella pays nothing — all coverage suspends with underlying lapse","Only what the umbrella would have paid assuming the underlying was in force","Only the SIR amount"],
+    correct:2,
+    explain:"If underlying insurance lapses, the umbrella pays only what it WOULD HAVE PAID if the underlying were in force. In effect, the insured absorbs the lapsed underlying limits out of pocket first."
+  },
+  // ── BONDS ────────────────────────────────────────────────────
+  {
+    s:"Bonds",
+    q:"In a surety bond arrangement, who is the 'obligee'?",
+    choices:["The bonding company that guarantees performance","The person who makes the promise and purchases the bond","The person to whom the promise is made — who receives the benefit if default occurs","The state that requires the bond"],
+    correct:2,
+    explain:"Obligee = the one TO WHOM the promise is made; they require the bond. Principal = makes the promise, buys the bond. Surety = the bonding company that guarantees the principal's promise."
+  },
+  {
+    s:"Bonds",
+    q:"What is the most significant difference between a surety bond and a standard insurance policy?",
+    choices:["Surety bonds have no premium; insurance does","Surety bonds involve 3 parties; the surety expects to be reimbursed by the principal if it pays","Insurance can be cancelled mid-term; bonds cannot","Surety bonds cover only property; insurance covers all risks"],
+    correct:1,
+    explain:"Surety = 3-party arrangement; the surety does NOT expect to pay losses (bonded principals are underwritten); if the surety pays the obligee, it has RIGHT OF RECOURSE against the principal for reimbursement. Insurance = 2-party; no recourse against the insured."
+  },
+  {
+    s:"Bonds",
+    q:"A fidelity bond using the 'position schedule' form covers:",
+    choices:["All employees up to a per-loss limit","Specifically named employees for individual amounts","Anyone occupying a scheduled position title, not a specific person","Only the bonded principal named on the form"],
+    correct:2,
+    explain:"Position Schedule Bond covers anyone in a SCHEDULED POSITION (by job title). Coverage follows the position, not the person — useful when there's employee turnover. Discovery period for blanket position bonds = 2 years."
+  }
+];
+
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let answered = false;
+
+function loadQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('qSection').textContent = q.s;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('prog').style.width = Math.round((current / QUESTIONS.length) * 100) + '%';
+  document.getElementById('qcounter').textContent = 'Question ' + (current + 1) + ' of ' + QUESTIONS.length;
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('nextBtn').textContent = current < QUESTIONS.length - 1 ? 'Next →' : 'See Results';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.style.display = 'none';
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = q.choices.map((c, i) =>
+    `<button class="choice" onclick="select(${i})">${String.fromCharCode(65+i)}. ${c}</button>`
+  ).join('');
+}
+
+function select(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  answers[current] = idx;
+  const buttons = document.querySelectorAll('.choice');
+  buttons.forEach((b, i) => {
+    b.classList.add('done');
+    if (i === q.correct) b.classList.add('reveal-correct');
+    else if (i === idx && idx !== q.correct) b.classList.add('wrong');
+  });
+  const isCorrect = idx === q.correct;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.style.display = 'block';
+  document.getElementById('feedbackHead').textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect — ' + String.fromCharCode(65 + q.correct) + ' is right.';
+  document.getElementById('feedbackBody').textContent = q.explain;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQ() {
+  if (current < QUESTIONS.length - 1) {
+    current++;
+    loadQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    showScore();
+  }
+}
+
+function showScore() {
+  document.getElementById('quizArea').style.display = 'none';
+  const ss = document.getElementById('scoreScreen');
+  ss.classList.add('show');
+  const score = answers.filter((a, i) => a === QUESTIONS[i].correct).length;
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  document.getElementById('scoreNum').textContent = score + '/' + QUESTIONS.length;
+  document.getElementById('scoreNum').style.color = pct >= 70 ? '#4aaa4a' : pct >= 50 ? '#e8b84b' : '#c05050';
+  document.getElementById('scoreLabel').textContent = pct + '% correct';
+  let grade, color;
+  if (pct >= 90) { grade = 'Excellent — Exam Ready! 🎯'; color = '#4aaa4a'; }
+  else if (pct >= 80) { grade = 'Strong — Almost there! 📚'; color = '#5b8dee'; }
+  else if (pct >= 70) { grade = 'Passing — Keep studying 📖'; color = '#e8b84b'; }
+  else { grade = 'Keep grinding — review missed topics 💪'; color = '#c05050'; }
+  document.getElementById('gradeText').textContent = grade;
+  document.getElementById('gradeText').style.color = color;
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('qcounter').textContent = 'Finished — ' + score + '/' + QUESTIONS.length + ' correct';
+}
+
+function showReview() {
+  const rl = document.getElementById('reviewList');
+  rl.style.display = rl.style.display === 'none' ? 'block' : 'none';
+  if (rl.innerHTML) return;
+  rl.innerHTML = QUESTIONS.map((q, i) => {
+    const chosen = answers[i];
+    const correct = q.correct;
+    const hit = chosen === correct;
+    return `<div class="review-item ${hit ? '' : 'miss'}">
+      <div class="ri-top">
+        <span class="ri-icon">${hit ? '✓' : '✗'}</span>
+        <span class="ri-q"><strong>${q.s}</strong> — ${q.q}</span>
+      </div>
+      <div class="ri-answer">Correct: <span>${String.fromCharCode(65+correct)}. ${q.choices[correct]}</span></div>
+      ${!hit && chosen !== null ? `<div class="ri-answer">Your answer: <span style="color:#c05050">${String.fromCharCode(65+chosen)}. ${q.choices[chosen]}</span></div>` : ''}
+      <div style="font-size:12px;color:#555;margin-top:.4rem">${q.explain}</div>
+    </div>`;
+  }).join('');
+}
+
+function restartQuiz() {
+  current = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('reviewList').innerHTML = '';
+  document.getElementById('quizArea').style.display = 'block';
+  loadQuestion();
+  window.scrollTo(0, 0);
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
