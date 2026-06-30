@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Chapter 4 Flashcards</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem}
+  .top{width:100%;max-width:640px;margin-bottom:1rem}
+  .title{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+  h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.7rem}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem}
+  select{background:#1a1a1a;border:1px solid #2a2a2a;color:#e2e2e2;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+  .btn-sm{padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn-sm:hover{background:#222}
+  .btn-sm.active{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+  .prog-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .stats{font-size:12px;color:#555;display:flex;gap:16px;margin-bottom:1rem}
+  .stat-val{color:#e2e2e2;font-weight:600}
+  /* card */
+  .card-wrap{width:100%;max-width:640px;perspective:1000px;cursor:pointer;margin-bottom:1rem}
+  .card-inner{position:relative;min-height:280px;transition:transform .45s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;min-height:280px;border-radius:16px;padding:2rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:.6rem}
+  .back .face-label{color:#1e3a6e}
+  .term{font-size:22px;font-weight:600;color:#fff;line-height:1.3;text-align:center}
+  .section-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5b8dee;margin-top:.7rem;text-align:center}
+  .definition{font-size:15px;color:#ccc;line-height:1.65;text-align:center}
+  .tap-hint{font-size:11px;color:#333;text-align:center;margin-top:.5rem}
+  /* nav */
+  .nav-row{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+  .counter{font-size:13px;color:#555;text-align:center;flex:1}
+  .nav-btn{padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#222}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  /* know buttons */
+  .know-row{width:100%;max-width:640px;display:none;gap:10px;margin-bottom:1rem}
+  .card-wrap.flipped ~ .know-row{display:flex}
+  .know-btn{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;border:none;transition:opacity .15s}
+  .know-btn.yes{background:#0a2e0a;color:#4aaa4a;border:1px solid #1a4a1a}
+  .know-btn.no{background:#2e0a0a;color:#c05050;border:1px solid #4a1a1a}
+  .know-btn:hover{opacity:.8}
+  /* done screen */
+  .done-screen{display:none;width:100%;max-width:640px;background:#141414;border:1px solid #222;border-radius:16px;padding:2rem;text-align:center}
+  .done-screen.show{display:block}
+  @media(max-width:480px){.term{font-size:18px}.definition{font-size:14px}.face{padding:1.5rem}.controls{gap:6px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="title">P&C Exam · Chapter 4</div>
+  <h1>Flashcards</h1>
+  <div class="controls">
+    <select id="sectionFilter" onchange="filterSection()">
+      <option value="all">All Sections</option>
+      <option value="Auto">Automotive</option>
+      <option value="CGL">CGL</option>
+      <option value="BOP">BOP</option>
+      <option value="WC">Workers Comp</option>
+      <option value="Crime">Crime</option>
+      <option value="PL">Professional Liability</option>
+      <option value="Umbrella">Umbrella & Excess</option>
+      <option value="Bonds">Bonds</option>
+    </select>
+    <button class="btn-sm" onclick="shuffle()">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="resetProgress()">↺ Reset</button>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+  <div class="stats">
+    <span>Card <span class="stat-val" id="cardNum">1</span> of <span class="stat-val" id="cardTotal">0</span></span>
+    <span>✓ <span class="stat-val" id="knewCount" style="color:#4aaa4a">0</span> knew it</span>
+    <span>✗ <span class="stat-val" id="stillCount" style="color:#c05050">0</span> still learning</span>
+  </div>
+</div>
+
+<div class="card-wrap" id="cardWrap" onclick="flip()">
+  <div class="card-inner" id="cardInner">
+    <div class="face front">
+      <div class="face-label">Tap to reveal definition</div>
+      <div class="term" id="termText"></div>
+      <div class="section-tag" id="sectionText"></div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Definition</div>
+      <div class="definition" id="defText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="know-row" id="knowRow">
+  <button class="know-btn yes" onclick="markKnew()">✓ Knew it</button>
+  <button class="know-btn no" onclick="markLearning()">✗ Still learning</button>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">← Prev</button>
+  <span class="counter" id="counter"></span>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div style="font-size:32px;margin-bottom:.5rem">🎉</div>
+  <div style="font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem">Deck complete!</div>
+  <div id="doneStats" style="font-size:14px;color:#aaa;margin-bottom:1.2rem"></div>
+  <button class="btn-sm" onclick="restart()" style="padding:10px 24px;font-size:14px">Start Over</button>
+  <button class="btn-sm" onclick="reviewLearning()" style="padding:10px 24px;font-size:14px;margin-left:8px">Review Still Learning</button>
+</div>
+
+<script>
+const ALL_CARDS = [
+  // ─── AUTOMOTIVE ───────────────────────────────────────────────
+  {s:"Auto", t:"PAP (Personal Auto Policy)", d:"Combines physical damage and liability coverage for private passenger vehicles. Has 6 parts: A (Liability), B (Medical Payments), C (Uninsured Motorist), D (Physical Damage), E (Duties After Loss), F (General Provisions)."},
+  {s:"Auto", t:"Collision (PAP)", d:"Upset or impact of a covered vehicle with another vehicle or object. One of the two physical damage coverages under Part D."},
+  {s:"Auto", t:"Other-Than-Collision (OTC)", d:"Formerly called comprehensive. Covers fire, theft, vandalism, windstorm, hail, glass breakage, contact with animals, missiles/falling objects. All physical damage perils except collision."},
+  {s:"Auto", t:"Split Limits", d:"Liability expressed as three separate amounts: BI per person / BI per accident / Property Damage. Example: 25/50/25 means $25K per person, $50K per accident, $25K PD."},
+  {s:"Auto", t:"Combined Single Limit (CSL)", d:"One dollar amount covering all BI and PD from one accident, regardless of how many people are injured or how much property is damaged."},
+  {s:"Auto", t:"Newly Acquired Auto — 14/4 Rule", d:"Liability, Med Pay, UM/UIM: 14 days to notify. Physical damage if already on policy: 14 days. Physical damage if NOT already on policy: only 4 days — if loss occurs before notifying, a $500 deductible applies."},
+  {s:"Auto", t:"Uninsured Motorist (UM) — 4 Categories", d:"Vehicles that: (1) have no liability insurance, (2) carry less than state minimum, (3) are hit-and-run (driver unidentified), or (4) insurer denied coverage or is insolvent."},
+  {s:"Auto", t:"UIM Formula", d:"Total damage minus the at-fault driver's policy limit equals what UIM pays — up to your own UIM policy limit. Example: $65K damage, at-fault has $25K → UIM covers up to $40K gap."},
+  {s:"Auto", t:"Transportation Expenses (PAP Part D)", d:"$20/day maximum $600. Begins 24 hours after a non-theft covered loss, 48 hours after theft. Not subject to deductible."},
+  {s:"Auto", t:"Temporary Substitute (PAP)", d:"A non-owned auto used while a covered auto is out of normal use due to breakdown, repair, loss, or destruction. Automatically qualifies as a covered auto."},
+  {s:"Auto", t:"Business Auto Symbol 1", d:"Any auto — broadest coverage symbol. Covers any owned, leased, hired, or borrowed auto. Used for liability only."},
+  {s:"Auto", t:"Business Auto Symbol 7", d:"Specifically described autos only. New autos must be reported within 30 days to be covered (unlike symbols 1-6 which auto-cover newly acquired autos)."},
+  {s:"Auto", t:"Business Auto Symbol 9", d:"Nonowned autos only — includes employee-owned vehicles used for business. Covers autos not owned or hired by the insured."},
+  {s:"Auto", t:"Garagekeepers Coverage — Symbol 30", d:"Covers damage to customer autos left in the insured's care, custody, and control for service, repair, parking, or storage. Applies only to garage businesses. Activated by Symbol 30."},
+  {s:"Auto", t:"Garagekeepers — 4 Options", d:"(1) Legal Liability: only when insured is at fault. (2) Direct: regardless of liability. (3) Excess: over customer's own insurance. (4) Primary: pays as primary insurer regardless of other coverage."},
+  {s:"Auto", t:"DOC Endorsement", d:"Drive Other Car — extends coverage to nonowned vehicles for executives or employees who lack a personal auto policy. Added to a commercial auto policy."},
+  {s:"Auto", t:"Hired Auto (Business Auto)", d:"Autos leased, hired, rented, or borrowed — excluding autos owned by employees, partners, or members of the household."},
+  // ─── CGL ─────────────────────────────────────────────────────
+  {s:"CGL", t:"Occurrence (CGL)", d:"An accident including continuous or repeated exposure to the same harmful conditions. The policy in force when the event occurred responds — even if the claim is filed years later."},
+  {s:"CGL", t:"Claims-Made Trigger", d:"The policy in force when the claim is first made responds. Used for professional liability, products, employment-related, and environmental liability. The policy period when the claim is reported matters."},
+  {s:"CGL", t:"Retroactive Date", d:"A date on a claims-made policy before which no claim will be covered, regardless of when it is reported. Claims arising from incidents before this date are excluded."},
+  {s:"CGL", t:"Mini Tail (Basic ERP)", d:"For unknown claims — only 60 days of extended reporting after policy expiration. If you first learn of the claim on day 61, no coverage."},
+  {s:"CGL", t:"Midi Tail (Basic ERP)", d:"For known claims reported within 60 days of policy expiration — coverage extends up to 5 years after the policy expiration date. No additional premium."},
+  {s:"CGL", t:"Supplemental ERP", d:"Purchased by endorsement. Provides unlimited time to report. Must elect within 60 days of expiration. Premium up to 200% of annual premium. Resets both aggregates to their original limits."},
+  {s:"CGL", t:"CGL Coverage A", d:"Bodily Injury and Property Damage Liability — pays sums the insured is legally obligated to pay. Insurer has right and duty to defend. Defense ends when limits are exhausted."},
+  {s:"CGL", t:"CGL Coverage B", d:"Personal and Advertising Injury — covers libel, slander, false arrest, wrongful eviction, malicious prosecution, copyright/slogan infringement in ads, invasion of privacy."},
+  {s:"CGL", t:"CGL Coverage C", d:"Medical Payments — goodwill coverage paid without regard to fault. Must be incurred and reported within 1 year of the date of the accident."},
+  {s:"CGL", t:"CGL General Aggregate", d:"Maximum the policy pays for ALL Coverage A, B, and C losses during the policy period. Products/completed operations draws a separate aggregate. Resets at policy anniversary."},
+  {s:"CGL", t:"Products/Completed Ops Aggregate", d:"Separate from the general aggregate. Covers BI or PD occurring away from the insured's premises after a product is sold or work is completed. Can be optional for some risks."},
+  {s:"CGL", t:"CGL Supplementary Payments", d:"Paid IN ADDITION to policy limits: bail bonds up to $250, loss of earnings up to $250/day, court costs, prejudgment and accrued interest. End when aggregate limits are exhausted."},
+  {s:"CGL", t:"Liquor Liability Exclusion (CGL)", d:"Excludes liability for businesses that manufacture, sell, distribute, or serve alcohol. Does NOT apply to social hosts. Bars and restaurants need a separate dram shop/liquor liability policy."},
+  {s:"CGL", t:"Newly Acquired Organization (CGL)", d:"Automatically covered for up to 90 days after acquisition or policy expiration, whichever is earlier. Does NOT apply to newly formed partnerships, JVs, or LLCs."},
+  {s:"CGL", t:"Electronic Data (CGL)", d:"NOT considered tangible property under the CGL. Damage to, loss of, or inability to access electronic data is excluded from property damage coverage."},
+  {s:"CGL", t:"Subcontractor Exception (Cov A)", d:"The 'insured's work' exclusion does not apply if the work was performed by a subcontractor. Damage to work done by subs for the insured IS covered."},
+  // ─── BOP ─────────────────────────────────────────────────────
+  {s:"BOP", t:"BOP Liability — Monoline Rule", d:"BOP liability coverage CANNOT be written on a standalone (monoline) basis — it is always packaged with property coverage. This is a key difference from the CGL."},
+  {s:"BOP", t:"BOP Watercraft Exception", d:"BOP excludes aircraft/auto/watercraft, but excepts nonowned watercraft LESS THAN 51 FEET not used for hire. CGL's exception is only less than 26 feet — BOP is more generous."},
+  {s:"BOP", t:"BOP Aggregate Limits", d:"General Aggregate = 2× the occurrence limit. Products/Completed Ops Aggregate = 2× the occurrence limit. Unlike CGL, which states a specific dollar aggregate on the declarations."},
+  {s:"BOP", t:"BOP Cancellation — 5 Days", d:"Building conditions trigger 5-day notice: vacant/unoccupied 60+ consecutive days; no permanent repairs contracted within 30 days of initial loss payment; demolition/vacate order; utilities off 30+ days; taxes unpaid 1+ year."},
+  {s:"BOP", t:"BOP Cancellation — 10 Days", d:"Nonpayment of premium — insurer must give 10 days advance written notice of cancellation."},
+  {s:"BOP", t:"BOP Cancellation — 30 Days", d:"Any other reason for cancellation — insurer must give 30 days advance notice (may vary by state)."},
+  {s:"BOP", t:"Liberalization Clause (BOP)", d:"If the insurer broadens coverage without additional premium within 45 days before or during the policy period, the broader coverage applies automatically."},
+  {s:"BOP", t:"BOP Exam of Books", d:"The insurer may audit the insured's books and records during the policy period and for up to 3 years after the policy is no longer in force."},
+  {s:"BOP", t:"BOP Professional Services Exclusion", d:"Explicitly excludes BI, PD, and personal/advertising injury arising from rendering or failing to render professional services. This exclusion is in BOP but NOT in the CGL (CGL handles it differently)."},
+  {s:"BOP", t:"Insured Contract (BOP)", d:"A contract the insured can assume tort liability under: (1) lease of premises, (2) sidetrack agreement, (3) easement/license, (4) municipal indemnification obligation, (5) elevator maintenance, (6) tort liability assumed in a business contract."},
+  // ─── WORKERS COMP ────────────────────────────────────────────
+  {s:"WC", t:"Fellow Servant Rule", d:"Common law defense: if the injury was caused by a FELLOW EMPLOYEE'S negligence, it was NOT considered the employer's negligence. Allowed employers to avoid liability."},
+  {s:"WC", t:"Contributory Negligence", d:"Common law defense: if the injured employee was even PARTIALLY responsible for the injury, they were COMPLETELY barred from recovering any damages."},
+  {s:"WC", t:"Assumption of Risk", d:"Common law defense: the employee KNEW the risks of the job in advance and had been compensated for those risks through their salary. Blocked many legitimate claims."},
+  {s:"WC", t:"FELA (1908)", d:"Federal Employers Liability Act — covers RAILROAD EMPLOYEES. Allows injured workers to sue employer for negligence. Removes the common law defenses of contributory negligence and assumption of risk."},
+  {s:"WC", t:"3A States (WC Policy)", d:"States listed on the WC information page where the employer CURRENTLY HAS EMPLOYEES. Mandatory coverage with no dollar limits stated — policy pays whatever that state's statute requires."},
+  {s:"WC", t:"3C States (Other States Coverage)", d:"Covers new or incidental operations in non-monopolistic states automatically. If work is already underway on the effective date, insurer must be notified within 30 days or no coverage applies."},
+  {s:"WC", t:"WC Medical Payments", d:"UNLIMITED — no dollar or time limits for necessary medical and surgical expenses under workers compensation. Except possibly for certain specific types of care."},
+  {s:"WC", t:"Employers Liability Limits", d:"Basic limits: $100,000 per accident (bodily injury); $100,000 per employee (disease); $500,000 policy limit for all disease claims during the policy term."},
+  {s:"WC", t:"Exclusive Remedy Doctrine", d:"Under compulsory WC laws, injured employees are BARRED from suing the employer outside of WC. Workers compensation is the only (exclusive) remedy available."},
+  {s:"WC", t:"Second Injury Fund", d:"State funds that pay additional benefits when an employee with a PRIOR DISABILITY suffers a second injury that worsens the total disability. Encourages employers to hire disabled workers."},
+  {s:"WC", t:"Experience Modification Factor", d:"Developed by a rating bureau (e.g., NCCI). Compares employer's actual loss experience to expected. Below 1.0 = credit/discount. Above 1.0 = debit/surcharge. Applied to the standard premium."},
+  {s:"WC", t:"WC Premium Rating", d:"Rate per $100 of payroll × job classification rate. Estimated payroll used at policy issuance; final premium determined by AUDIT. Premium discount applies when standard premium exceeds $5,000."},
+  {s:"WC", t:"Retrospective Rating", d:"Final premium based on ACTUAL LOSS EXPERIENCE during the policy term. Subject to a minimum and maximum premium. Formula guaranteed in the contract. Used for large commercial accounts."},
+  // ─── CRIME ───────────────────────────────────────────────────
+  {s:"Crime", t:"Loss Sustained Form (Crime)", d:"Coverage trigger similar to occurrence — covers losses that OCCUR AND ARE DISCOVERED during the policy period. The loss must happen while the policy is in force."},
+  {s:"Crime", t:"Discovery Form (Crime)", d:"Coverage trigger similar to claims-made — covers losses DISCOVERED during the policy period, regardless of when they actually occurred."},
+  {s:"Crime", t:"Theft", d:"The broadest crime term — ANY ACT OF STEALING. Encompasses both burglary and robbery. Any taking of property without consent."},
+  {s:"Crime", t:"Burglary", d:"Forced entry INTO OR OUT OF premises with felonious intent. Policy requires VISIBLE SIGNS OF FORCED ENTRY OR EXIT following a loss. Requires breaking and entering — no victim present needed."},
+  {s:"Crime", t:"Robbery", d:"Taking property from the CARE AND CUSTODY OF A PERSON by causing or threatening bodily harm, or committing an obviously unlawful act WITNESSED BY THAT PERSON. Always requires a victim present."},
+  {s:"Crime", t:"Safe Burglary", d:"Unlawful taking of covered property from WITHIN A LOCKED SAFE OR VAULT inside a premises, or the actual taking of the safe or vault FROM the premises."},
+  {s:"Crime", t:"Mysterious Disappearance", d:"Property gone with NO APPARENT EXPLANATION — considered the probability of theft. MOST PROPERTY POLICIES DENY claims based on mysterious disappearance alone."},
+  {s:"Crime", t:"Crime Employee Definition", d:"Includes: (1) natural person in service + 30 days after termination, (2) temporary employees from staffing firms, (3) managers/directors/trustees acting in employee capacity, (4) former employees working as consultants."},
+  {s:"Crime", t:"One-Bite Rule (Fidelity)", d:"The moment an employer discovers an employee's dishonesty that could lead to a claim, COVERAGE FOR THAT EMPLOYEE TERMINATES IMMEDIATELY. Applies even if the act was before the current bond period or at a prior employer."},
+  {s:"Crime", t:"Employee Theft Coverage", d:"The ONLY crime coverage that overrides the general exclusion for employee acts. Covers money, securities, and other property stolen by employees. Auto-cancels for any employee when dishonesty is discovered."},
+  {s:"Crime", t:"Commercial Blanket Bond", d:"Covers ALL employees. Limit of liability applies on a PER LOSS BASIS — regardless of how many employees were involved in the loss."},
+  {s:"Crime", t:"Blanket Position Bond", d:"Covers ALL employees. Limit of liability applies on a PER EMPLOYEE BASIS. Discovery period is 2 YEARS (vs. 1 year for other fidelity bonds)."},
+  {s:"Crime", t:"Forgery or Alteration", d:"Worldwide coverage for loss from forgery/alteration of OUTGOING checks, drafts, or promissory notes. Requires insured to submit the actual forged instrument as proof. Electronic signatures = handwritten signatures."},
+  // ─── PROFESSIONAL LIABILITY ───────────────────────────────────
+  {s:"PL", t:"Consent to Settle (Pro Liability)", d:"Insurer CANNOT settle a claim without the INSURED'S CONSENT. If the insured disputes negligence, they can require the insurer to defend in court to protect their professional reputation. Opposite of umbrella policies."},
+  {s:"PL", t:"Pro Liability vs. General Liability", d:"General liability excludes intentional acts. Professional liability can cover SOME INTENTIONAL ACTS (e.g., surgeon amputates wrong leg — intended the act but wrong patient). Criminal acts still excluded."},
+  {s:"PL", t:"Errors & Omissions (E&O)", d:"Protects INSURANCE AGENTS AND BROKERS from losses when clients sue due to incorrect advice, failure to place requested coverage, or failure to inform of important issues. Written claims-made."},
+  {s:"PL", t:"D&O Coverage Trigger", d:"WRONGFUL ACTS — misstatements, neglect, breach of duty by directors and officers while acting in official capacity. NOT triggered by accident or occurrence. Covers past and present directors/officers."},
+  {s:"PL", t:"D&O — What it Won't Pay", d:"Directors & Officers policies will NOT pay FINES, PENALTIES, or PUNITIVE DAMAGES. Only pays damages the corporation would legally be required to reimburse the director or officer."},
+  {s:"PL", t:"EPLI", d:"Employment Practices Liability — covers discrimination, harassment, wrongful termination, demotion, failure to promote, defamation. NOT covered by CGL or WC employers liability. Fills the gap for employer capacity claims."},
+  {s:"PL", t:"Cyber Liability — 5 Agreements", d:"(1) Website publishing liability, (2) Network security liability, (3) Replacement/restoration of electronic data, (4) Cyber extortion (includes ransom), (5) Business income & extra expense. Each has its own aggregate. Claims-made. Worldwide by endorsement."},
+  {s:"PL", t:"Funds Transfer Fraud", d:"Covers loss from FRAUDULENT INSTRUCTIONS received by a financial institution to pay from the insured's transfer account. Computer fraud is EXCLUDED from this coverage (separate rider handles that)."},
+  {s:"PL", t:"Liquor Liability (Dram Shop)", d:"Bars, restaurants, and alcohol sellers/manufacturers need this because CGL and BOP EXCLUDE liquor liability for businesses in the alcohol trade. Covers BI/PD to others caused by an intoxicated customer."},
+  // ─── UMBRELLA & EXCESS ───────────────────────────────────────
+  {s:"Umbrella", t:"Umbrella vs. Excess", d:"UMBRELLA = stand-alone, can differ from underlying policies, can cover gaps primary doesn't cover (triggers SIR). EXCESS = follow-form, mirrors the underlying policy exactly, only increases the dollar limits."},
+  {s:"Umbrella", t:"Self-Insured Retention (SIR)", d:"Acts like a deductible but ONLY applies when the umbrella covers a loss the underlying/primary policy does NOT cover. There is no deductible to access the umbrella when primary coverage is in effect."},
+  {s:"Umbrella", t:"Personal Umbrella — Minimum", d:"Commonly provides a minimum of $1,000,000 in additional coverage above the underlying policies. The insured must maintain minimum limits on all underlying policies."},
+  {s:"Umbrella", t:"Umbrella — Consent to Settle", d:"The umbrella insurer CAN settle any claim WITHOUT the insured's consent. This is the OPPOSITE of professional liability, where insured consent is required before settlement."},
+  {s:"Umbrella", t:"UM/UIM in Umbrella", d:"Uninsured/underinsured motorist coverage is EXCLUDED from the personal umbrella policy. However, it can be reinstated by ENDORSEMENT in states where such coverage is required."},
+  {s:"Umbrella", t:"Underlying Policy Lapse", d:"If the insured fails to maintain underlying insurance, the umbrella pays only what it WOULD HAVE PAID if that underlying insurance had been in effect. The insurer must be notified immediately of any lapse."},
+  {s:"Umbrella", t:"Umbrella Defense — No Primary", d:"When there is NO underlying coverage in effect for a covered loss, the umbrella insurer provides defense AT THE INSURER'S EXPENSE using COUNSEL OF THE INSURER'S CHOICE."},
+  // ─── BONDS ───────────────────────────────────────────────────
+  {s:"Bonds", t:"Principal (Bond)", d:"The person who MAKES THE PROMISE and PURCHASES the bond. Goes through underwriting. If the surety pays out, the principal is RESPONSIBLE FOR REIMBURSING the surety."},
+  {s:"Bonds", t:"Obligee (Bond)", d:"The person TO WHOM the promise is made. Requires the bond. If the principal defaults, the BOND IS PAYABLE TO the obligee as compensation for damages."},
+  {s:"Bonds", t:"Surety", d:"The GUARANTOR — the bonding company. Provides the financial backing (bond penalty). Pays the obligee if principal defaults. Has RIGHT OF RECOURSE against the principal to recover the amount paid."},
+  {s:"Bonds", t:"Bond Penalty", d:"The STATED LIMIT of the bond — the maximum amount the surety will pay in the event of a default. The surety is not liable for more than this amount."},
+  {s:"Bonds", t:"Surety vs. Insurance", d:"Insurance = 2-party (insurer/insured), no recourse against insured, expects losses. Surety = 3-party (principal/obligee/surety), principal REIMBURSES surety, does NOT expect to pay losses. Guarantees performance."},
+  {s:"Bonds", t:"Fidelity Bond", d:"Guarantees HONESTY AND TRUST — not performance. Covers employee dishonesty: theft, embezzlement, forgery, misappropriation. Usually no expiration date. Discovery period: 1 year (2 years for blanket position)."},
+  {s:"Bonds", t:"Name Schedule Bond", d:"Covers SEVERAL SPECIFICALLY NAMED EMPLOYEES, each listed on the bond for VARYING AMOUNTS. Coverage follows the individual by name."},
+  {s:"Bonds", t:"Position Schedule Bond", d:"Covers anyone occupying a SCHEDULED POSITION by JOB TITLE, not by name. Coverage follows the position, not the person. Good when turnover is common."},
+];
+
+let deck = [];
+let cur = 0;
+let knew = 0;
+let learning = 0;
+let flipped = false;
+
+function filterSection() {
+  const val = document.getElementById('sectionFilter').value;
+  deck = val === 'all' ? [...ALL_CARDS] : ALL_CARDS.filter(c => c.s === val);
+  cur = 0; knew = 0; learning = 0;
+  showCard();
+  updateStats();
+}
+
+function shuffle() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  cur = 0; knew = 0; learning = 0;
+  showCard();
+  updateStats();
+}
+
+function resetProgress() {
+  filterSection();
+}
+
+function showCard() {
+  const done = document.getElementById('doneScreen');
+  const wrap = document.getElementById('cardWrap');
+  const navRow = document.querySelector('.nav-row');
+  const knowRow = document.getElementById('knowRow');
+
+  if (cur >= deck.length) {
+    done.classList.add('show');
+    wrap.style.display = 'none';
+    navRow.style.display = 'none';
+    knowRow.style.display = 'none';
+    document.getElementById('doneStats').textContent =
+      `Knew it: ${knew} · Still learning: ${learning} · Total: ${deck.length}`;
+    return;
+  }
+
+  done.classList.remove('show');
+  wrap.style.display = 'block';
+  navRow.style.display = 'flex';
+
+  const card = deck[cur];
+  document.getElementById('termText').textContent = card.t;
+  document.getElementById('sectionText').textContent = card.s;
+  document.getElementById('defText').textContent = card.d;
+
+  // Reset flip
+  flipped = false;
+  wrap.classList.remove('flipped');
+  knowRow.style.display = 'none';
+
+  // Update progress
+  document.getElementById('cardNum').textContent = cur + 1;
+  document.getElementById('cardTotal').textContent = deck.length;
+  document.getElementById('prog').style.width = Math.round(((cur) / deck.length) * 100) + '%';
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur >= deck.length - 1;
+  document.getElementById('counter').textContent = (cur + 1) + ' / ' + deck.length;
+}
+
+function flip() {
+  flipped = !flipped;
+  const wrap = document.getElementById('cardWrap');
+  const knowRow = document.getElementById('knowRow');
+  if (flipped) {
+    wrap.classList.add('flipped');
+    knowRow.style.display = 'flex';
+  } else {
+    wrap.classList.remove('flipped');
+    knowRow.style.display = 'none';
+  }
+}
+
+function markKnew() {
+  knew++;
+  updateStats();
+  next();
+}
+
+function markLearning() {
+  learning++;
+  updateStats();
+  next();
+}
+
+function updateStats() {
+  document.getElementById('knewCount').textContent = knew;
+  document.getElementById('stillCount').textContent = learning;
+}
+
+function next() {
+  cur++;
+  showCard();
+}
+
+function prev() {
+  if (cur > 0) { cur--; showCard(); }
+}
+
+function restart() {
+  cur = 0; knew = 0; learning = 0;
+  document.getElementById('doneScreen').classList.remove('show');
+  document.getElementById('cardWrap').style.display = 'block';
+  document.querySelector('.nav-row').style.display = 'flex';
+  showCard();
+  updateStats();
+}
+
+function reviewLearning() {
+  // Filter to cards that were marked "still learning" — for now just shuffle and restart
+  shuffle();
+}
+
+// Init
+filterSection();
+</script>
+</body>
+</html>
