@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Policy Provisions & Contract Law</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:380px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.8rem;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem}
+  .face-term{font-size:20px;font-weight:700;color:#fff;margin-bottom:.7rem;line-height:1.2}
+  .face-def{font-size:13px;color:#aaa;line-height:1.7}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:14px;font-weight:600;color:#fff;margin-bottom:.8rem;line-height:1.35}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:10px 13px;margin-bottom:.7rem;font-size:13px;color:#aaa;line-height:1.6}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:10px 13px}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:4px}
+  .hook-text{font-size:13px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="top-label">Key Facts · Policy Provisions</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label: "Policy Structure",
+    term: "The Four Parts of a Policy — D-I-C-E",
+    def: "Every policy has four parts, remembered by the acronym <strong>D-I-C-E</strong>:<br><br><strong>D</strong>eclarations · <strong>I</strong>nsuring Agreement · <strong>C</strong>onditions · <strong>E</strong>xclusions",
+    examQ: "What are the four parts of an insurance policy?",
+    answer: "<strong>D-I-C-E: Declarations, Insuring Agreement, Conditions, Exclusions.</strong> Every policy exam question about policy structure starts here.",
+    hook: "Roll the DICE before you buy a policy. D-I-C-E = Declarations, Insuring, Conditions, Exclusions. Four sides, four parts."
+  },
+  {
+    label: "Policy Structure · Declarations",
+    term: "Declarations Page",
+    def: "The <strong>declarations page</strong> lists:<br>• Named insured<br>• Policy limits<br>• Premium<br>• Policy period<br><br>The <strong>limits of liability</strong> are found on the declarations page.",
+    examQ: "Where are the limits of liability found on a policy?",
+    answer: "On the <strong>declarations page</strong> (the 'dec page'). It's the ID card of the policy — who you are, what you're covered for, how much, and when.",
+    hook: "DEC page = ID page. It DEClares everything: who, how much, how long, what you pay. Limits are DECLARED here."
+  },
+  {
+    label: "Policy Structure · Insuring Agreement",
+    term: "Insuring Agreement",
+    def: "The <strong>insuring agreement</strong> describes the <strong>coverages provided</strong> by the policy.",
+    examQ: "Which part of the policy describes what is covered?",
+    answer: "The <strong>insuring agreement</strong> — it's the promise the insurer makes to pay for certain losses.",
+    hook: "INsuring Agreement = what's IN the policy. If it's covered, it's in the insuring agreement. Think of it as the insurer's promise."
+  },
+  {
+    label: "Policy Structure · Conditions",
+    term: "Conditions",
+    def: "The <strong>conditions</strong> section lists the <strong>obligations of both parties</strong> — the insurer and the insured.<br><br>Cancellation provisions are also found in the conditions section.",
+    examQ: "Where are cancellation provisions found in a policy?",
+    answer: "In the <strong>conditions</strong> section. Conditions spell out what both the insurer AND insured must do — including how the policy can be cancelled.",
+    hook: "CONDitions = CONtract rules for both sides. Can't cancel without following the CONDITIONS. Both parties are bound here."
+  },
+  {
+    label: "Policy Structure · Exclusions",
+    term: "Exclusions",
+    def: "The <strong>exclusions</strong> section lists the <strong>perils that are NOT covered</strong> by the policy.",
+    examQ: "Which part of a policy lists what is NOT covered?",
+    answer: "The <strong>exclusions</strong> section — it carves out what the insurer will NOT pay for.",
+    hook: "EXclusions = EXit signs — these are the doors that say 'no coverage here.' What's EXcluded is EXited from the policy."
+  },
+  {
+    label: "Provisions & Clauses",
+    term: "Coverage Dispute → Arbitration",
+    def: "If the insurer and insured <strong>disagree</strong> about whether a liability policy provides coverage, the claim goes to <strong>arbitration</strong>.<br><br>Arbitration involves <strong>three arbitrators</strong>.",
+    examQ: "How many arbitrators are involved when a liability coverage dispute goes to arbitration?",
+    answer: "<strong>Three arbitrators.</strong> Disputes about whether a liability policy covers a claim go to arbitration — not court — with a panel of 3.",
+    hook: "Three's company in arbitration. Can't agree? You get THREE referees. Remember: 3 arbitrators, not 1, not 2."
+  },
+  {
+    label: "Provisions & Clauses",
+    term: "Prompt Notice of Claim",
+    def: "The insured must <strong>promptly notify the insurer</strong> about a claim.",
+    examQ: "What is the insured's obligation when a loss occurs?",
+    answer: "The insured must <strong>promptly</strong> notify the insurer. Failure to give timely notice can jeopardize coverage.",
+    hook: "When something happens, TELL THEM FAST. Delay = Danger to your claim. Prompt = as soon as reasonably possible."
+  },
+  {
+    label: "Provisions & Clauses",
+    term: "Other Insurance Clause = Pro-Rata Liability Clause",
+    def: "The <strong>other insurance clause</strong> is also known as the <strong>pro-rata liability clause</strong>.<br><br><strong>Pro-rata does NOT mean equal</strong> — it means <strong>proportionate</strong>.",
+    examQ: "What does pro-rata mean in the context of other insurance?",
+    answer: "Pro-rata means each insurer pays its <strong>proportionate share</strong> based on its policy limits relative to the total coverage — NOT an equal 50/50 split.",
+    hook: "Pro-Rata = PROportion, not equal halves. If you have $100K and $200K policies, they don't split 50/50 — they split 1/3 and 2/3. PROportionate."
+  },
+  {
+    label: "Federal Regulations",
+    term: "Fair Credit Reporting Act (FCRA)",
+    def: "The <strong>Fair Credit Reporting Act</strong> protects consumers against the circulation of <strong>inaccurate or obsolete personal or financial information</strong>.",
+    examQ: "What does the Fair Credit Reporting Act protect consumers from?",
+    answer: "Inaccurate or obsolete personal or financial information being circulated — think wrong credit history, old data, or errors on background checks used by insurers.",
+    hook: "FCRA = Fair Credit = protect your FACTS. The F in FCRA = Facts must be accurate. Outdated or wrong info about you must be corrected."
+  },
+  {
+    label: "Federal Regulations",
+    term: "Gramm-Leach-Bliley Act",
+    def: "The <strong>Gramm-Leach-Bliley Act</strong> requires that a customer receive a <strong>privacy notice</strong>:<br>• At the time the <strong>customer relationship is initially established</strong><br>• And <strong>annually</strong> thereafter",
+    examQ: "When must a privacy notice be given under the Gramm-Leach-Bliley Act?",
+    answer: "<strong>Twice pattern: at the start AND every year after.</strong> When you become a customer, you get notice. Every year after that, you get notice again.",
+    hook: "GLB = Give a Letter at the Beginning + yearly. G-L-B: Get the Letter at the Beginning. Then every year on the anniversary."
+  },
+  {
+    label: "Federal Regulations",
+    term: "Terrorism Risk Insurance Act (TRIA)",
+    def: "The <strong>Terrorism Risk Insurance Act (TRIA)</strong> applies to <strong>commercial policies only</strong>.",
+    examQ: "Does TRIA apply to personal or commercial policies?",
+    answer: "<strong>Commercial only.</strong> TRIA was created after 9/11 to keep terrorism coverage available for businesses. It does not apply to personal lines.",
+    hook: "TRIA = businesses only. Terrorism hits skyscrapers and offices — TRIA is for TRADE and business. Personal homes are not covered under TRIA."
+  }
+];
+
+let deck = [], current = 0, gotIt = 0, stillLearning = 0, isFlipped = false, hasFlipped = false;
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+
+function show(){
+  document.getElementById('doneScreen').classList.remove('visible');
+  document.querySelector('.scene').style.display='';
+  document.querySelector('.progress-row').style.display='';
+  document.querySelector('.stats-row').style.display='';
+  document.getElementById('flipHint').style.display='';
+  document.getElementById('btnRow').style.display='';
+}
+
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];
+  isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+
+function flip(){
+  isFlipped=!isFlipped;
+  document.getElementById('card').classList.toggle('flipped',isFlipped);
+  if(isFlipped&&!hasFlipped){
+    hasFlipped=true;
+    const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';
+    document.getElementById('flipHint').textContent='How did you do?';
+  }
+}
+
+function mark(knew){
+  if(knew){gotIt++;deck[current]._missed=false}
+  else{stillLearning++;deck[current]._missed=true}
+  current++;renderCard();
+}
+
+function showDone(){
+  document.querySelector('.scene').style.display='none';
+  document.querySelector('.progress-row').style.display='none';
+  document.querySelector('.stats-row').style.display='none';
+  document.getElementById('flipHint').style.display='none';
+  document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;
+  document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+
+resetDeck();
+</script>
+</body>
+</html>
