@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Commercial Lines</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:400px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.4rem;flex-shrink:0}
+  .face-term{font-size:17px;font-weight:700;color:#fff;margin-bottom:.6rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:13px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.6rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:9px 12px;margin-bottom:.6rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:9px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:12px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Commercial Lines</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {label:"CPP · Commercial Package Policy",term:"CPP — Cancellation & Premium Audit",def:"The common conditions section of a CPP permits <strong>either the insured or the insurer</strong> to cancel the policy.<br><br>CPPs are subject to <strong>premium audit for 3 years</strong> after policy expiration.",examQ:"For how long after expiration is a CPP subject to premium audit?",answer:"<strong>3 years</strong> after policy expiration. Either party may cancel per the common conditions section.",hook:"CPP audit = 3 years after expiration. Think: Three-Year Tax Audit. The IRS has 3 years, so does the insurer."},
+  {label:"CPP · Commercial Package Policy",term:"Business Income = Time-Element Coverage",def:"<strong>Business income insurance</strong> is a type of <strong>time-element coverage</strong> — the loss is measured by the time the business is unable to operate.",examQ:"What category of coverage is business income insurance?",answer:"<strong>Time-element coverage.</strong> The longer the business is shut down, the larger the loss — time drives the claim amount.",hook:"Time-element = the CLOCK is the measuring stick. Business income pays for the TIME you can't operate, not just the damage."},
+  {label:"Commercial Property",term:"Optional Endorsements vs. Loss Condition",def:"On commercial property, the following are <strong>optional endorsements</strong>:<br>• Replacement cost coverage<br>• Ordinance or law coverage<br>• Value reporting forms<br><br><strong>Valuation</strong> is a <strong>loss condition</strong> in the policy — not optional.",examQ:"Which of these is a loss condition (not optional) on a commercial property policy — replacement cost, ordinance/law, or valuation?",answer:"<strong>Valuation</strong> is a loss condition. Replacement cost, ordinance/law, and value reporting forms are all optional endorsements.",hook:"Valuation is BUILT IN as a loss condition. The others are add-ons. You can choose HOW to value — but valuation itself is always there."},
+  {label:"Commercial Property",term:"Unattached Signs = Business Personal Property",def:"On commercial property insurance, <strong>signs that are not attached to the building</strong> are covered as <strong>business personal property</strong>.",examQ:"How are unattached signs classified on a commercial property policy?",answer:"As <strong>business personal property</strong> — not as part of the building structure.",hook:"Sign on the wall = building. Sign on a post in the parking lot = personal property. If it's not bolted to the building, it's BPP."},
+  {label:"Commercial Property",term:"Leasehold Interest Coverage Form",def:"The commercial property <strong>leasehold interest coverage form</strong> protects an insured for the <strong>value of their lease</strong> in the event it is canceled as a result of <strong>physical loss or damage</strong> to the property by a covered cause of loss.",examQ:"What does the leasehold interest coverage form protect?",answer:"The value of the insured's <strong>lease agreement</strong> if it gets canceled due to a covered physical loss or damage to the property.",hook:"Leasehold = the VALUE of your lease deal. If you had a great rent deal and a fire cancels your lease, this covers what you lost."},
+  {label:"Commercial Property",term:"Causes of Loss Forms — Basic, Broad, Special",def:"The commercial property causes of loss forms are:<br>• <strong>Basic</strong><br>• <strong>Broad</strong><br>• <strong>Special</strong>",examQ:"What are the three commercial property causes of loss forms?",answer:"<strong>Basic, Broad, and Special.</strong> Each expands coverage — Basic is narrowest, Special is widest (open perils).",hook:"BBS — Basic, Broad, Special. Like TV packages: Basic, Basic+, and Premium. Special = open perils (the best)."},
+  {label:"Commercial Property",term:"Coverage Territory + Legal Actions Deadline",def:"Coverage territory: <strong>U.S., Puerto Rico, and Canada</strong>.<br><br>Legal actions clause: the insured has a maximum of <strong>2 years</strong> to file a lawsuit against the insurer.",examQ:"How long does an insured have to file a lawsuit against a commercial property insurer?",answer:"<strong>2 years</strong> from the date of loss. Coverage territory is limited to the U.S., Puerto Rico, and Canada.",hook:"2 years to sue on commercial property. Two years, two countries + Puerto Rico. Miss the deadline, lose the right."},
+  {label:"Commercial Property",term:"Trees, Shrubs & Plants — $500 Each",def:"Commercial fire policies cover trees, shrubs, and plants up to <strong>$500 each</strong>.",examQ:"What is the per-item limit for trees, shrubs, and plants on a commercial fire policy?",answer:"<strong>$500 per item.</strong> Each tree, shrub, or plant is capped at $500 — not per occurrence, per item.",hook:"$500 per plant on commercial. Five hundred bucks per tree — not per yard. Individual cap, not total."},
+  {label:"BOP · Overview",term:"BOP Liability — What's Covered, What's Not",def:"A BOP covers: <strong>BI, PD, personal injury liability, advertising liability, fire legal liability, and medical payments</strong>.<br><br>A BOP does <strong>NOT cover employers liability</strong>.<br><br>An unendorsed BOP does <strong>NOT cover auto liability</strong> (including nonowned auto).",examQ:"What liability coverage is automatically excluded from an unendorsed BOP?",answer:"<strong>Employers liability AND auto liability</strong> (including nonowned autos). Both require separate coverage.",hook:"BOP = everything BUT employers and auto. Think BOP covers you everywhere EXCEPT the parking lot (auto) and your staff's injuries (WC/employers)."},
+  {label:"BOP · Vacancy",term:"BOP — 60-Day Vacancy Rules",def:"If a building has been <strong>vacant for more than 60 consecutive days</strong>:<br>• No coverage for <strong>vandalism, sprinkler leakage, glass breakage, water damage, or theft</strong><br>• The insurer <strong>may cancel the policy</strong>",examQ:"After 60 days of vacancy, which coverages are suspended on a BOP?",answer:"<strong>Vandalism, sprinkler leakage, glass breakage, water damage, and theft</strong> — all suspended. The insurer can also cancel.",hook:"60 empty days = VSGwT gone: Vandalism, Sprinkler, Glass, water, Theft. Two months vacant and those five coverages vanish."},
+  {label:"BOP · Watercraft",term:"BOP Watercraft Coverage",def:"A BOP may cover a watercraft that is:<br>• <strong>Less than 51 feet in length</strong> AND<br>• <strong>Not used to carry people or property for a fee</strong>, OR<br>• <strong>On shore at the insured's owned premises</strong>",examQ:"What size watercraft can be covered under a BOP?",answer:"Less than <strong>51 feet</strong>, not operated for hire — or any size if it's just sitting on shore at the insured's property.",hook:"51 feet is the cutoff — under 51 and not for hire = BOP covers it. Think: 51 feet is roughly a 15-meter boat. Bigger than that, you need marine coverage."},
+  {label:"BOP · Business Income",term:"BOP Business Income — No Dollar Limit, 12 Months",def:"On a BOP, <strong>loss of business income</strong> is covered <strong>without a dollar limit</strong> for a maximum of <strong>12 months</strong>.",examQ:"What is the time limit on BOP business income coverage?",answer:"<strong>12 months maximum</strong>, with no dollar cap. The time is the limit, not the amount.",hook:"BOP business income: unlimited dollars, 12-month clock. One year to get back on your feet — the money's not capped, just the time."},
+  {label:"BOP · Ineligible Businesses",term:"Who Can't Get a BOP",def:"The following are <strong>NOT eligible</strong> for a BOP:<br>• <strong>Manufacturing companies</strong><br>• <strong>Banks or credit unions</strong>",examQ:"Which types of businesses are NOT eligible for a BOP?",answer:"<strong>Manufacturers and financial institutions</strong> (banks, credit unions). BOP is designed for small-to-mid-size service and retail businesses.",hook:"No Manufacturers, no Money banks. BOP is for the MIDDLE — not the factory floor, not the vault. Think Main Street, not Wall Street or a factory."},
+  {label:"BOP · Special Rules",term:"BOP Double Coverage = Pro-Rated Claim",def:"If an insured buys a <strong>special policy to cover specific property</strong> in addition to a BOP, a claim will be <strong>pro-rated</strong> between the two policies.",examQ:"What happens when a BOP and a special property policy both cover the same item?",answer:"The claim is <strong>pro-rated</strong> — each policy pays its proportionate share based on its limits relative to the total coverage.",hook:"Two policies = split the bill. Same as other insurance pro-rata. The BOP doesn't disappear — it splits with the special policy."},
+  {label:"BOP · Protective Safeguards",term:"Protective Safeguards Warranty",def:"The <strong>protective safeguards warranty</strong> (endorsement) requires the insured to <strong>maintain the sprinkler system or alarm system in good working order</strong>.<br><br>If systems are not properly maintained, the insurer may <strong>deny a claim</strong>.",examQ:"What does the protective safeguards endorsement require of the insured?",answer:"The insured must keep <strong>sprinkler and alarm systems maintained</strong>. Failure to maintain = insurer can deny the claim.",hook:"Safeguards warranty = maintain or get denied. Think: the insurer gave you a deal BECAUSE you have sprinklers — let them break, lose the claim."},
+  {label:"BOP · Coverage Basics",term:"BOP = All-Risk, 80% Coinsurance, Replacement Cost",def:"An unendorsed BOP:<br>• Covers on an <strong>all-risk basis</strong><br>• Has an <strong>80% coinsurance clause</strong><br>• Is written on a <strong>replacement cost basis</strong><br>• <strong>Covers theft</strong>",examQ:"What coinsurance percentage applies to a standard BOP?",answer:"<strong>80% coinsurance</strong>. The BOP is all-risk, replacement cost, and includes theft — a broad package.",hook:"BOP = 80% coinsurance, all-risk, replacement cost + theft. Remember: 80 is the BOP number. Under 80% insured = you eat the shortfall."},
+  {label:"BOP · Tenant Coverage",term:"BOP for Tenants — Improvements & Betterments",def:"A BOP written for a <strong>tenant</strong> will <strong>automatically cover tenant improvements and betterments</strong>.",examQ:"What does a tenant's BOP automatically cover regarding the space they occupy?",answer:"<strong>Improvements and betterments</strong> made by the tenant — upgrades to the space they rent are automatically included.",hook:"Tenant BOP = your upgrades are covered. You paid to renovate someone else's space — the BOP covers what you put in."},
+  {label:"BOP · Inflation Guard",term:"BOP Inflation Guard = 8% Per Anniversary",def:"On a BOP, the <strong>inflation guard endorsement</strong> automatically increases policy limits on each <strong>policy anniversary date by 8%</strong>.",examQ:"By what percentage does the BOP inflation guard increase limits each year?",answer:"<strong>8% per year</strong>, automatically on each policy anniversary date.",hook:"8% every birthday. BOP inflation guard = 8 on the anniversary. Think: your limits get an 8% raise every year the policy renews."},
+  {label:"BOP / CGL · Aggregate Limit",term:"Aggregate Limit of Liability",def:"The <strong>aggregate limit of liability</strong> in a CGL and BOP is the <strong>most the insurer will pay for ALL occurrences during the policy period</strong>.",examQ:"What does the aggregate limit represent on a CGL or BOP policy?",answer:"The <strong>total maximum payout for all claims combined</strong> during the policy period — not per occurrence.",hook:"Aggregate = the GRAND TOTAL cap. One big pile of money for the whole year. Once it's gone, it's gone — no matter how many claims."}
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
