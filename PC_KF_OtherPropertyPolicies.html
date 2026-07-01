@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Other Property Policies</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:400px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.4rem;flex-shrink:0}
+  .face-term{font-size:17px;font-weight:700;color:#fff;margin-bottom:.6rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:13px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.6rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:9px 12px;margin-bottom:.6rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:9px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:12px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Other Property Policies</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label:"Earthquake",
+    term:"Earthquake Deductible — $250 Minimum",
+    def:"The <strong>minimum deductible on earthquake coverage is $250</strong>.<br><br>The deductible is generally structured as a <strong>percentage of the policy limit</strong>, not a flat dollar amount.",
+    examQ:"What is the minimum deductible on an earthquake policy?",
+    answer:"<strong>$250 minimum</strong>. Typically expressed as a percentage of the policy limit — so a larger home means a larger deductible dollar amount.",
+    hook:"Earthquake minimum = $250. Quarter means minimum — like 25 cents is the smallest coin you'd use. Two-fifty is the floor on earthquake deductibles."
+  },
+  {
+    label:"Boatowners · Umbrella",
+    term:"Boat Policy = Primary Over Personal Umbrella",
+    def:"If an insured has both a <strong>boatowners policy with liability</strong> and a <strong>personal umbrella policy</strong>, the <strong>boatowners liability is primary</strong> — the umbrella kicks in after the boat policy limits are exhausted.",
+    examQ:"Which policy is primary when an insured has both a boatowners liability policy and a personal umbrella?",
+    answer:"The <strong>boatowners policy is primary</strong>. The personal umbrella is excess and pays only after boat policy limits are used up.",
+    hook:"Boat goes first, umbrella follows. Think of the boat policy as your rain jacket — you wear it first. The umbrella only opens after the jacket fails."
+  },
+  {
+    label:"Farm Policy · Exclusions",
+    term:"Farm Policy — No Growing Crops, No Highway Autos",
+    def:"Farm policies do <strong>NOT cover</strong>:<br>• <strong>Growing crops</strong><br>• <strong>Autos driven on public highways</strong>",
+    examQ:"What two major items are excluded from farm policies?",
+    answer:"<strong>Growing crops</strong> and <strong>highway vehicles</strong>. Crops need crop insurance; highway autos need a separate auto policy.",
+    hook:"Farm policy = everything BUT the crops in the ground and the truck on the road. Fields and highways need their own coverage."
+  },
+  {
+    label:"Farm Policy · Definitions",
+    term:"Farm Dwelling ≠ Agricultural Building",
+    def:"On a farm policy, the <strong>definition of a dwelling</strong> does <strong>NOT include</strong> any building used for <strong>agricultural purposes</strong>.",
+    examQ:"Does the farm policy dwelling definition include a barn or grain silo?",
+    answer:"<strong>No.</strong> Buildings used for agricultural purposes are NOT part of the dwelling definition — they're covered separately under farm structures.",
+    hook:"Your house is your house. The barn is not your house. Farm policy keeps the living space and the working space totally separate."
+  },
+  {
+    label:"Farm Policy · Eligibility",
+    term:"Farm Risks — NOT Covered on DP or HO Forms",
+    def:"<strong>Farm risks cannot be insured on a Dwelling Policy (DP) or Homeowners Policy (HO) form.</strong> They require a dedicated farm policy.",
+    examQ:"Can a farmer insure a farm property under a standard HO form?",
+    answer:"<strong>No.</strong> Farm risks require a separate farm policy — DP and HO forms are not designed to cover them.",
+    hook:"Farm = Farm policy only. You wouldn't use a recipe for cookies to bake bread. DP and HO are the wrong forms for the farm."
+  },
+  {
+    label:"Inland Marine · Overview",
+    term:"Nationwide Definition — NAIC's Eligible Risk List",
+    def:"A list of risks eligible for inland marine insurance published by the <strong>NAIC (National Association of Insurance Commissioners)</strong> is known as the <strong>Nationwide Definition</strong>.",
+    examQ:"What is the Nationwide Definition in the context of inland marine?",
+    answer:"The <strong>Nationwide Definition</strong> is the NAIC's official list of risks eligible for inland marine coverage.",
+    hook:"Nationwide Definition = NAIC's approved list. Nation → NAIC. If NAIC says it's inland marine eligible, it's on the Nationwide list."
+  },
+  {
+    label:"Inland Marine · Equipment Breakdown",
+    term:"Equipment Breakdown — Inspection Optional",
+    def:"On equipment breakdown insurance, the insurer <strong>may inspect the insured's equipment</strong>, but they are <strong>not required to do so</strong>.",
+    examQ:"Is the insurer required to inspect equipment under an equipment breakdown policy?",
+    answer:"<strong>No — inspection is optional.</strong> The insurer has the right to inspect but is under no obligation to do so.",
+    hook:"Insurer CAN inspect but doesn't HAVE to. Think: the right to look, not the duty. Same as an insurer's right to inspect a home — optional, not mandatory."
+  },
+  {
+    label:"Inland Marine · Floaters",
+    term:"Scheduled Personal Property Endorsement — High-Value Items",
+    def:"The <strong>scheduled personal property endorsement</strong> is used to insure personal property with <strong>high values</strong>, such as:<br>• Furs<br>• Antiques<br>• Jewelry",
+    examQ:"What endorsement is used to cover high-value personal property like jewelry and antiques?",
+    answer:"The <strong>scheduled personal property endorsement</strong> — items are individually listed (scheduled) with agreed values.",
+    hook:"Schedule = list by name. Expensive things get their own spot on the schedule — furs, antiques, jewelry all get a line item."
+  },
+  {
+    label:"Inland Marine · Floaters",
+    term:"Data Processing Floater = Computer Equipment",
+    def:"To properly insure <strong>computer equipment</strong>, an individual would purchase a <strong>data processing floater</strong>.",
+    examQ:"What type of inland marine coverage protects computer equipment?",
+    answer:"A <strong>data processing floater</strong> — it's the specific inland marine form designed for computers and related equipment.",
+    hook:"Data processing floater = computer coverage. Data → computers. The floater floats the coverage wherever the computer goes."
+  },
+  {
+    label:"Inland Marine · Floaters",
+    term:"Fine Arts Floater — 90-Day Auto Coverage for New Pieces",
+    def:"A <strong>fine arts floater</strong> provides <strong>automatic coverage for 90 days</strong> on newly acquired fine art pieces.",
+    examQ:"How long does a fine arts floater automatically cover newly acquired artwork?",
+    answer:"<strong>90 days</strong> — newly acquired fine art is automatically covered for 90 days before it must be formally scheduled.",
+    hook:"Fine arts = 90 days automatic. Think: you bought a painting — you have 3 months (90 days) to report it before it's uninsured. Three months to call your agent."
+  },
+  {
+    label:"Inland Marine · Floaters",
+    term:"Scheduled Personal Property Floater — ACV Basis",
+    def:"A <strong>scheduled personal property floater</strong> provides coverage on an <strong>actual cash value (ACV) basis</strong>.",
+    examQ:"On what valuation basis does a scheduled personal property floater pay losses?",
+    answer:"<strong>Actual cash value (ACV)</strong> — replacement cost minus depreciation. Not replacement cost.",
+    hook:"Scheduled personal property floater = ACV. Don't confuse with fine arts, which pays agreed value. Floater = ACV; Fine arts = agreed value."
+  },
+  {
+    label:"Inland Marine · Claims",
+    term:"Pair or Set Loss — Two Settlement Options",
+    def:"When a <strong>loss to a pair or set</strong> occurs (e.g., one earring of a pair), the insurer may:<br>1. <strong>Repair or replace</strong> the set to restore it to pre-loss value, OR<br>2. <strong>Pay the difference</strong> in value before and after the loss<br><br>Difference = (Full set value) − (Value of remaining items)",
+    examQ:"How does an insurer calculate the payout for a loss to a pair or set?",
+    answer:"Option 1: repair/replace the set. Option 2: pay <strong>(full set value) minus (value of what remains)</strong>. The insurer chooses which option.",
+    hook:"Pair or set = insurer picks repair or pay the gap. One earring lost from a $400 pair — insurer either replaces both or pays you what the solo earring cost them."
+  },
+  {
+    label:"NFIP · Basics",
+    term:"FIA Sets Flood Rates — Community Must Cooperate",
+    def:"The <strong>Federal Insurance Administration (FIA)</strong> sets flood insurance rates.<br><br>To qualify for NFIP coverage, a <strong>community must cooperate with the FIA</strong>.",
+    examQ:"Who sets flood insurance rates under the NFIP?",
+    answer:"The <strong>FIA (Federal Insurance Administration)</strong>. Communities must cooperate with the FIA to be eligible for NFIP.",
+    hook:"FIA = flood rate setter. FIA → Federal Insurance Administration. No community cooperation = no NFIP access for anyone in that town."
+  },
+  {
+    label:"NFIP · Basics",
+    term:"Flood Defined — Temporary Inundation of Dry Land",
+    def:"Under NFIP, <strong>flood</strong> is defined as the <strong>temporary inundation of normally dry land</strong>.",
+    examQ:"How does the NFIP define a flood?",
+    answer:"<strong>Temporary inundation of normally dry land.</strong> It must be land that is normally dry — not a river bed or a swamp.",
+    hook:"Flood = DRY land that gets WET temporarily. Normally dry is the key phrase. If it's already wet, it's not a flood."
+  },
+  {
+    label:"NFIP · Exclusions",
+    term:"Flood Won't Cover Wharves, Piers, or Docks",
+    def:"NFIP flood insurance <strong>does NOT cover</strong>:<br>• <strong>Wharves</strong><br>• <strong>Piers</strong><br>• <strong>Docks</strong>",
+    examQ:"Does NFIP flood insurance cover a pier or dock?",
+    answer:"<strong>No.</strong> Wharves, piers, and docks are specifically excluded from NFIP flood coverage.",
+    hook:"Flood won't save the dock. Think: things that TOUCH water by design don't get flood coverage. The dock lives in water — flood insurance is for dry land."
+  },
+  {
+    label:"NFIP · Exclusions",
+    term:"No Sewer Backup or Seepage Under NFIP",
+    def:"NFIP flood insurance does <strong>NOT cover</strong>:<br>• <strong>Sewer backup</strong><br>• <strong>Seepage through walls</strong>",
+    examQ:"Does NFIP cover water damage from a sewer backup?",
+    answer:"<strong>No.</strong> Sewer backup and seepage through walls are both excluded from NFIP flood coverage.",
+    hook:"NFIP = no sewer, no seep. Flood coverage is for water coming IN from outside — not water pushing up through pipes or creeping through walls."
+  },
+  {
+    label:"NFIP · Claims",
+    term:"Flood Claims Paid by the Federal Government",
+    def:"Flood insurance is sold by <strong>both the government and participating private insurers</strong>, but <strong>all claims are paid by the federal government</strong>.",
+    examQ:"Who pays claims under the NFIP — the private insurer or the federal government?",
+    answer:"The <strong>federal government</strong> pays all NFIP claims, even when the policy is sold through a private insurer.",
+    hook:"Private insurer sells it, Uncle Sam pays it. The private agent is just the middleman — the federal government is always writing the check on NFIP claims."
+  },
+  {
+    label:"NFIP · Limits",
+    term:"NFIP Max — $250,000 Single-Family Home",
+    def:"The maximum coverage permitted under the <strong>regular NFIP program</strong> is <strong>$250,000 for a single-family home</strong>.",
+    examQ:"What is the maximum NFIP coverage for a single-family home?",
+    answer:"<strong>$250,000</strong> — that is the ceiling on the regular NFIP program for a single-family residence.",
+    hook:"$250K NFIP max on a house. Quarter million = single-family flood cap. Need more? Buy excess flood coverage separately."
+  },
+  {
+    label:"NFIP · Eligibility",
+    term:"Community Must Participate in NFIP for Coverage",
+    def:"To be <strong>eligible for federal flood insurance</strong>, the <strong>community must participate in the NFIP</strong>.<br><br>If the community does not participate, residents cannot buy NFIP coverage — even if they want it.",
+    examQ:"What must a community do for its residents to be eligible for NFIP flood insurance?",
+    answer:"The <strong>community must participate in the NFIP</strong>. No participation = no NFIP access for anyone in that community.",
+    hook:"Community in = residents eligible. Community out = no flood insurance for anyone. It's an all-or-nothing town decision — not an individual choice."
+  }
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
