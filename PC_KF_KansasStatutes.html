@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Kansas Statutes Common to All Lines</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:430px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.5rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.4rem;flex-shrink:0}
+  .face-term{font-size:15px;font-weight:700;color:#fff;margin-bottom:.5rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:12.5px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.5rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:8px 12px;margin-bottom:.5rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:8px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:11.5px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Kansas Statutes — All Lines</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label:"Commissioner · Role",
+    term:"Commissioner — Elected, 4-Year Term, Enforces But Doesn't Write",
+    def:"The <strong>Commissioner of Insurance</strong> is the head of the Kansas Department of Insurance, <strong>elected by the people for a 4-year term</strong>.<br><br>The Commissioner <strong>administers and enforces</strong> insurance laws but does <strong>NOT</strong>: write laws, make rates, or create policy forms.",
+    examQ:"Does the Kansas Insurance Commissioner write insurance laws or set rates?",
+    answer:"<strong>No.</strong> The Commissioner enforces the law — the state legislature writes it. The Commissioner does not make rates or policy forms.",
+    hook:"Commissioner = the COP, not the lawmaker. Cops enforce the law; they don't write it. Same here — 4-year elected term, enforce and protect, never legislate."
+  },
+  {
+    label:"Commissioner · Powers",
+    term:"Commissioner Powers — Hearings, Subpoenas, Books & Records",
+    def:"The Commissioner may:<br>• <strong>Hold hearings</strong><br>• <strong>Subpoena witnesses</strong><br>• <strong>Examine relevant books and records</strong><br>• Investigate unfair trade practices to protect the public",
+    examQ:"Can the Kansas Commissioner subpoena witnesses during an investigation?",
+    answer:"<strong>Yes.</strong> The Commissioner has full investigative powers — hearings, subpoenas, and access to books and records.",
+    hook:"Commissioner = investigator with teeth. Subpoena, audit books, hold hearings — the Commissioner has everything a detective needs except a badge."
+  },
+  {
+    label:"Commissioner · Penalties",
+    term:"After a Hearing — C&D, Suspend/Revoke, Fine",
+    def:"After a hearing, the Commissioner may:<br>• Issue a <strong>cease and desist order</strong><br>• <strong>Suspend or revoke</strong> a producer's license<br>• <strong>Levy a monetary fine</strong><br><br>A license cannot be suspended or revoked <strong>without a hearing</strong> (if requested) AND <strong>prompt notification</strong> to the licensee.",
+    examQ:"What three actions can the Commissioner take after a hearing against a producer?",
+    answer:"<strong>Cease and desist, suspend/revoke license, and levy a fine.</strong> All require a hearing first — no surprise revocations.",
+    hook:"Hearing first, then consequences. C&D = stop now. Suspend/revoke = lose the license. Fine = pay up. But the Commissioner must hold a hearing before any of these — due process."
+  },
+  {
+    label:"Commissioner · Insurer Exams",
+    term:"Insurer Examinations — At Least Every 5 Years",
+    def:"The Commissioner may <strong>examine insurers at any time, whenever necessary</strong>, but must do so <strong>at least once every 5 years</strong>.",
+    examQ:"How often must the Commissioner examine insurers at minimum?",
+    answer:"At least <strong>once every 5 years</strong> — but can examine more frequently whenever needed.",
+    hook:"5-year checkup minimum for insurers. Think: like a doctor's check-up every 5 years minimum, but the Commissioner can drop in anytime something looks off."
+  },
+  {
+    label:"Commissioner · Other",
+    term:"Commissioner Reviews Rates & Issues Certificates of Authority",
+    def:"The Commissioner:<br>• Issues <strong>Certificates of Authority</strong> to insurers allowing them to do business in Kansas<br>• Reviews rates to determine if they are <strong>excessive, inadequate, or unfairly discriminatory</strong><br>• Requires filing of an <strong>assumed name before use</strong>",
+    examQ:"What three rate criteria does the Commissioner evaluate?",
+    answer:"<strong>Excessive, inadequate, or unfairly discriminatory.</strong> The Commissioner also issues Certificates of Authority and must approve assumed business names before a producer uses them.",
+    hook:"EID rate review: Excessive, Inadequate, Discriminatory. Think 'EID' — the three reasons a rate gets flagged. Plus: no name change without filing first."
+  },
+  {
+    label:"Insurers · Domicile",
+    term:"Domestic / Foreign / Alien Insurer Definitions",
+    def:"• <strong>Domestic</strong> — organized <strong>in Kansas</strong><br>• <strong>Foreign</strong> — organized in <strong>another U.S. state</strong><br>• <strong>Alien</strong> — organized in <strong>another country</strong>",
+    examQ:"An insurer organized in Missouri doing business in Kansas is classified as what?",
+    answer:"<strong>Foreign</strong> — organized in another state. Domestic = Kansas. Alien = another country.",
+    hook:"DFA: Domestic = home state, Foreign = another state, Alien = another country. 'Alien' doesn't mean little green men — just means outside the U.S."
+  },
+  {
+    label:"Insurers · Authority",
+    term:"Certificate of Authority — Required to Do Business in Kansas",
+    def:"To do business in Kansas, an insurer must have a <strong>Certificate of Authority</strong> from the Kansas Insurance Commissioner.<br><br>The insurer does <strong>NOT</strong> need to have its <strong>home office in Kansas</strong>.",
+    examQ:"Does an insurer need its home office in Kansas to do business there?",
+    answer:"<strong>No</strong> — just a Certificate of Authority. The home office can be anywhere.",
+    hook:"COA = permission slip to do business. No COA = illegal operation. But no one cares where your HQ is — just get the certificate."
+  },
+  {
+    label:"Insurers · Appointments",
+    term:"Notice of Appointment — Within 30 Days",
+    def:"Insurers must <strong>file a notice of appointment</strong> within <strong>30 days</strong> of the effective date of the appointment.",
+    examQ:"How many days does an insurer have to file a notice of appointment?",
+    answer:"<strong>30 days</strong> from the effective date of the appointment.",
+    hook:"Appointment notice = 30 days. Same window as many other 30-day rules in insurance. Appointed Monday? File by the end of the month."
+  },
+  {
+    label:"Insurers · Guaranty Association",
+    term:"Guaranty Association — Coverage, Membership, Assessment",
+    def:"The <strong>Kansas Life & Health Insurance Guaranty Association</strong>:<br>• Covers claims of <strong>insolvent (bankrupt) insurers</strong><br>• <strong>All authorized insurers must join</strong><br>• Assesses members based on their <strong>proportionate premium volume</strong><br><br>Insurers and producers are <strong>prohibited from advertising</strong> that claims will be paid by the Guaranty Association.",
+    examQ:"Who must be a member of the Kansas Guaranty Association?",
+    answer:"<strong>All authorized insurers</strong>. Assessments are proportional to premium volume. No advertising that the Guaranty Association backs your claims.",
+    hook:"Guaranty Association = safety net everyone funds. All authorized insurers pay in. The bigger your share of premiums, the bigger your share of the bill. And you can't advertise it — that would mislead consumers."
+  },
+  {
+    label:"Insurers · Duties",
+    term:"Fiduciary Duty + Dividends Never Guaranteed",
+    def:"Producers have a <strong>fiduciary duty</strong> to handle clients' premiums and insurers' unearned refunds in a trusted manner.<br><br><strong>Dividends may never be guaranteed.</strong> Insurers set their own rate levels; the state legislature passes insurance laws.",
+    examQ:"Can a producer guarantee that a policy will pay dividends?",
+    answer:"<strong>No — dividends may never be guaranteed.</strong> Guaranteeing a dividend is a form of misrepresentation.",
+    hook:"Fiduciary = handle money with care. Dividends = never promise them. Those two duties are always tested together — trust the money, never guarantee the bonus."
+  },
+  {
+    label:"Licensing · Basics",
+    term:"Producer License — 2 Years, Age 18, Producer's Responsibility to Renew",
+    def:"• A producer's license is issued for <strong>2 years</strong><br>• Applicants must be at least <strong>18 years old</strong><br>• It is the <strong>producer's responsibility</strong> to renew — not the insurer's<br>• <strong>No person may sell, solicit, or receive a commission</strong> without a license",
+    examQ:"Whose responsibility is it to renew a producer's license?",
+    answer:"The <strong>producer's</strong> — not the insurer's. License runs 2 years. Must be 18 to apply. Operating on an expired license is illegal.",
+    hook:"2 years, 18 years old, your job to renew. Three producer license rules — the two-year clock, the age floor, and the renewal burden is yours alone."
+  },
+  {
+    label:"Licensing · Exam & Temp License",
+    term:"Fail 3 Times = 6 Months Wait | Temp License = 180 Days",
+    def:"• Applicants who <strong>fail the exam 3 times</strong> must wait <strong>6 months</strong> before retesting<br>• <strong>Temporary licenses</strong> may be issued for up to <strong>180 days</strong> to:<br>  — Surviving spouse or personal representative of a <strong>deceased producer</strong><br>  — Designee of a producer called into <strong>military service</strong>",
+    examQ:"How long must an applicant wait after failing the exam 3 times?",
+    answer:"<strong>6 months.</strong> Temporary licenses (180 days) go to a deceased producer's spouse/rep or a military producer's designee.",
+    hook:"3 fails = 6-month timeout. Temp license = 180 days (also 6 months). Two different 6-month rules — one punishes failure, one helps survivors and soldiers."
+  },
+  {
+    label:"Licensing · Nonresident",
+    term:"Nonresident License — No Exam If Licensed in Home State",
+    def:"Persons <strong>licensed in their home state</strong> may obtain a <strong>Kansas nonresident license without examination</strong> through reciprocal agreements between Kansas and other states.<br><br>Producers only need a license in the <strong>state they reside in</strong> and any state they <strong>conduct business in</strong>.",
+    examQ:"Can a producer licensed in their home state get a Kansas nonresident license without taking the Kansas exam?",
+    answer:"<strong>Yes</strong> — reciprocal agreements allow home-state licensed producers to skip the Kansas exam for a nonresident license.",
+    hook:"Licensed at home = no exam in Kansas. Reciprocity = mutual recognition. You passed your home state test; Kansas trusts it."
+  },
+  {
+    label:"Licensing · Requirements",
+    term:"CE: 18 Hours Every 2 Years, Including 3 Ethics",
+    def:"Every licensed producer must complete <strong>18 hours of continuing education (CE) every 2 years</strong>, including <strong>3 hours of ethics</strong>.",
+    examQ:"How many CE hours must a Kansas producer complete every 2 years, and how many must be ethics?",
+    answer:"<strong>18 total hours every 2 years, with 3 of those being ethics.</strong>",
+    hook:"18 every 2 years, 3 must be ethics. Think: 18 holes of golf every 2 years — and 3 of those holes are the ethics course. 18/2/3."
+  },
+  {
+    label:"Licensing · Producer Rules",
+    term:"Producer = Agent of Insurer | Must Hold at Least 1 Appointment",
+    def:"• <strong>Producers (agents) represent the insurer</strong>, not the insured<br>• A producer must hold <strong>at least one appointment</strong> with an insurer but may hold as many as needed<br>• Producers must notify the Commissioner of a <strong>change of name or address within 30 days</strong><br>• A <strong>false statement</strong> on a licensing application = misrepresentation = grounds for suspension/revocation",
+    examQ:"Who does a producer legally represent — the insurer or the insured?",
+    answer:"The <strong>insurer.</strong> Must hold at least 1 appointment. Name/address changes reported within 30 days. False application = misrepresentation.",
+    hook:"Producer = insurer's person. Always. Despite calling them 'your agent,' they legally work for the company. One appointment minimum, report address changes in 30 days."
+  },
+  {
+    label:"Licensing · Exemptions & Appeals",
+    term:"Who's Exempt | License Denial | Right to Appeal",
+    def:"• <strong>Underwriters and insurance company officers</strong> who do not solicit insurance or receive commissions are <strong>exempt from licensing</strong><br>• If an applicant is unqualified or made a false statement, the Commissioner will <strong>refuse the license and notify the applicant</strong><br>• A producer whose license is suspended/revoked may <strong>appeal the Commissioner's action to court</strong>",
+    examQ:"Can a producer appeal a license revocation by the Commissioner?",
+    answer:"<strong>Yes — to court.</strong> Underwriters and non-soliciting company officers are exempt from licensing. False applications get denied with notification.",
+    hook:"Underwriters don't need a license if they don't sell. Denied? You can fight it in court. The Commissioner has power — but so does due process."
+  },
+  {
+    label:"Marketing · Misrepresentation",
+    term:"Misrepresentation — Definition, Material = Intentional",
+    def:"<strong>Misrepresentation</strong> is the use of written or oral statements that misrepresent the <strong>risk, terms, coverages, or benefits</strong> of any policy.<br><br><strong>Material misrepresentation</strong> is considered an <strong>intentional violation</strong>.<br><br><strong>Defamation</strong> is a form of misrepresentation — making <strong>false or maliciously critical statements</strong> about the financial condition of any insurer or producer.",
+    examQ:"How is material misrepresentation classified — intentional or accidental?",
+    answer:"<strong>Intentional.</strong> Misrepresentation = lying about policy terms. Defamation = lying about a competitor's finances. Both are forms of misrepresentation.",
+    hook:"Misrepresentation = lying about the policy. Material = intentional lie. Defamation = lying about a company. Three layers, one category: all are misrepresentation."
+  },
+  {
+    label:"Marketing · Dividends & Misrepresentation",
+    term:"Guaranteeing Dividends = Misrepresentation, NOT Rebating",
+    def:"• <strong>Making a guarantee of future dividends</strong> is a form of <strong>misrepresentation</strong> — not rebating<br>• <strong>Illustrating</strong> future dividends is NOT misrepresentation, as long as they are <strong>not presented as guaranteed</strong>",
+    examQ:"If a producer guarantees future dividends to a client, is that rebating or misrepresentation?",
+    answer:"<strong>Misrepresentation</strong> — not rebating. You can show projected dividends as long as you don't guarantee them.",
+    hook:"Guarantee dividends = misrepresentation. Show projected dividends = fine, IF you say 'not guaranteed.' The word 'guaranteed' is what makes it a lie."
+  },
+  {
+    label:"Marketing · Rebating",
+    term:"Rebating — Definition and Examples",
+    def:"<strong>Rebating</strong> = giving something of value to <strong>induce a client to purchase</strong> a policy — typically part of the premium or commission.<br><br>Unlawful rebate examples:<br>• Returning part of the <strong>producer's commission</strong> to the client<br>• Using the <strong>producer's commission to pay the client's first premium</strong><br><br><strong>Dividends are NOT rebates</strong> — the policy states they might be paid.",
+    examQ:"A producer uses part of their commission to pay a client's first premium. Is this rebating?",
+    answer:"<strong>Yes — unlawful rebating.</strong> Any inducement of value (commission kickback, premium payment) to get someone to buy = rebating.",
+    hook:"Rebating = buying the sale with your own money. Kick back commission? Rebate. Pay their first premium? Rebate. Dividends? Not a rebate — the policy warned you they might come."
+  },
+  {
+    label:"Marketing · Coercion & Discrimination",
+    term:"Coercion | Unfair Discrimination | Deceptive Advertising",
+    def:"• <strong>Coercion</strong> = requiring insurance to be purchased from a specific producer or insurer; an <strong>unreasonable restraint of trade</strong> and illegal act of unfair competition<br>• <strong>Unfair discrimination</strong> = charging different rates for individuals of the same class, or discriminating based on race or national origin<br>• <strong>Deceptive advertising</strong> = circulating deceptive sales material; an unfair trade practice<br>• Insurers are <strong>responsible for all ad content</strong>, no matter who presents it",
+    examQ:"Is it legal for a lender to require that a borrower buy insurance from a specific company?",
+    answer:"<strong>No — that is coercion</strong>, an unreasonable restraint of trade. Same-class rate differences and race-based discrimination are also illegal. Insurer owns all advertising content.",
+    hook:"Coercion = no choice allowed. Discrimination = same class, same rate. Deceptive ads = insurer's problem no matter who ran them. Three unfair trade practices, one card."
+  },
+  {
+    label:"Marketing · Boycott",
+    term:"Boycott, Coercion & Intimidation — Monopoly Attempt",
+    def:"Attempting to <strong>create a monopoly</strong> in the insurance market falls under <strong>boycott, coercion, or intimidation</strong> and is considered <strong>illegal</strong>.",
+    examQ:"What category of unfair trade practice covers an attempt to create a market monopoly?",
+    answer:"<strong>Boycott, coercion, or intimidation.</strong> Any attempt to dominate or eliminate competition through force or pressure is illegal.",
+    hook:"Monopoly attempt = boycott/coercion/intimidation. Think of Monopoly the board game — trying to own everything is the game's goal, but in real insurance it's illegal."
+  }
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
