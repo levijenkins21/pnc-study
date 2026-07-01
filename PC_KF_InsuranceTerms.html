@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Insurance Terms & Concepts</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+
+  /* Card flip */
+  .scene{width:100%;max-width:680px;height:360px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.8rem;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem}
+  .face-term{font-size:22px;font-weight:700;color:#fff;margin-bottom:.7rem;line-height:1.2}
+  .face-def{font-size:14px;color:#aaa;line-height:1.7}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:11px;color:#333}
+
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:15px;font-weight:600;color:#fff;margin-bottom:.9rem;line-height:1.35}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:10px 13px;margin-bottom:.8rem;font-size:13px;color:#aaa;line-height:1.6}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:10px 13px}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:4px}
+  .hook-text{font-size:13px;color:#f0d080;line-height:1.5}
+
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+
+  /* Done screen */
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="top-label">Key Facts · Insurance Terms</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front" id="front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back" id="back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="flip-hint" id="flipHint">Flip the card first, then mark how you did</div>
+
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label: "Concept #1",
+    term: "Risk",
+    def: "<strong>Risk</strong> is the uncertainty of loss.",
+    examQ: "How is 'risk' defined in insurance?",
+    answer: "Risk is the <strong>uncertainty of loss</strong> — not the loss itself, but the possibility it could happen.",
+    hook: "Risk = Regret waiting to happen. You don't know IF it will — that uncertainty IS the risk."
+  },
+  {
+    label: "Concept #2",
+    term: "Insurance",
+    def: "<strong>Insurance</strong> is a transfer of risk from the insured to the insurer.",
+    examQ: "What does insurance accomplish for the insured?",
+    answer: "It transfers risk — the insured shifts the financial burden of potential loss to the insurer in exchange for a premium.",
+    hook: "Insurance = I Swap my risk. You pay a premium, they take the problem."
+  },
+  {
+    label: "Concept #3",
+    term: "Pure Risk vs. Speculative Risk",
+    def: "<strong>Pure risk</strong> — no chance of gain, only loss or no loss. <strong>Pure risk is insurable.</strong><br><br><strong>Speculative risk</strong> — chance of loss OR gain. <strong>Speculative risk is NOT insurable.</strong>",
+    examQ: "Which type of risk is insurable — pure or speculative?",
+    answer: "<strong>Pure risk only.</strong> Pure risk has no upside (you can only break even or lose). Speculative risk involves possible gain — like gambling or investing — and is not insurable.",
+    hook: "Pure = Protected by insurance. Speculative = like the Stock market — sometimes you win. Insurance doesn't cover bets."
+  },
+  {
+    label: "Concept #4",
+    term: "Hazard",
+    def: "A <strong>hazard</strong> is something that <strong>increases the risk</strong>.",
+    examQ: "What is the difference between a hazard and a peril?",
+    answer: "A <strong>peril</strong> is the cause of loss (fire, storm). A <strong>hazard</strong> increases the likelihood or severity of a peril — like a gas stove near curtains increases the fire risk.",
+    hook: "HAZARD = HAZMAT — it doesn't cause the fire, it makes the fire worse. A hazard turns up the volume on risk."
+  },
+  {
+    label: "Concept #5",
+    term: "Principle of Indemnity",
+    def: "The <strong>principle of indemnity</strong> governs P&C policies. Its purpose is to <strong>restore the insured financially to where they were prior to their loss</strong> — no more, no less.",
+    examQ: "What does the principle of indemnity prevent?",
+    answer: "It prevents the insured from profiting from a loss. The insurer restores the insured to their <strong>pre-loss financial position</strong> — not better.",
+    hook: "Indemnity = IDENtical to before. I-DEM-nity → I DEEM you back to where you were. No windfalls."
+  },
+  {
+    label: "Concept #6",
+    term: "Insurable Interest — Casualty",
+    def: "For a <strong>casualty policy</strong>, insurable interest must exist <strong>at the time of the loss</strong> in order for the policy to provide coverage.",
+    examQ: "When must insurable interest exist on a casualty policy?",
+    answer: "At the <strong>time of the loss</strong>. (Note: for life insurance it must exist at inception — casualty is different.)",
+    hook: "Casualty = at the CRASH. The interest must exist when the accident actually happens — not just when you bought the policy."
+  },
+  {
+    label: "Concept #7",
+    term: "Law of Large Numbers",
+    def: "The <strong>law of large numbers</strong> is used to <strong>predict the likelihood of loss</strong>. The larger the group, the more accurate the prediction.",
+    examQ: "Why do insurers want to insure large groups?",
+    answer: "The law of large numbers — more data from a larger pool leads to more accurate loss predictions, which allows insurers to set appropriate premiums.",
+    hook: "More people = better math. Think of it like polling — 10 people gives you a guess, 10 million gives you a prediction."
+  },
+  {
+    label: "Concept #8",
+    term: "Actual Cash Value (ACV)",
+    def: "<strong>Actual Cash Value = Replacement Cost minus Depreciation</strong>",
+    examQ: "How is Actual Cash Value calculated?",
+    answer: "<strong>ACV = Replacement Cost − Depreciation.</strong> It accounts for the age and wear of the item — you get what it's worth NOW, not what it would cost brand new.",
+    hook: "ACV = Actual Current Value. RC minus D — Replacement Cost with a Ding for age. Think used car vs. new car price."
+  },
+  {
+    label: "Concept #9",
+    term: "Negligence",
+    def: "<strong>Negligence</strong> is a <strong>tort</strong> (civil wrong) and grounds for a lawsuit.<br><br>It is defined as the <strong>failure to act as a reasonable person would</strong> in the same set of circumstances.",
+    examQ: "What standard is used to determine negligence?",
+    answer: "The <strong>reasonable person standard</strong> — would a reasonable person have acted differently in the same situation? If yes, the conduct may be negligent.",
+    hook: "Negligence = Neglecting to be reasonable. TORT = Takes Others to couRT. If you're unreasonable and someone gets hurt, they can sue."
+  },
+  {
+    label: "Concept #10",
+    term: "Occurrence",
+    def: "An <strong>occurrence</strong> happens <strong>over a period of time</strong> — as opposed to a single event.",
+    examQ: "How does an occurrence differ from an accident or claim-made trigger?",
+    answer: "An <strong>occurrence</strong> is a continuous or repeated exposure to conditions over time (like slow water damage or long-term chemical exposure). An accident is a sudden single event.",
+    hook: "Occurrence = Over time. Both start with O — think of a slow water leak, not a lightning strike."
+  },
+  {
+    label: "Concept #11",
+    term: "Binder",
+    def: "A <strong>binder</strong> may be <strong>oral or written</strong>.<br><br>It provides coverage <strong>until the policy is issued</strong> and includes <strong>all coverages provided by the policy</strong>.",
+    examQ: "What is a binder and what does it include?",
+    answer: "A binder is temporary proof of coverage — oral or written — that provides the <strong>full policy coverages</strong> until the actual policy is issued.",
+    hook: "A BINDER BINDS you to the deal immediately — think of it as a receipt that activates the coverage on the spot. Oral or written both count."
+  },
+  {
+    label: "Concept #12",
+    term: "Warranty vs. Representation",
+    def: "A <strong>warranty</strong> is a <strong>literal truth</strong>.<br><br>A <strong>representation</strong> is a <strong>substantial truth</strong> — statements by an applicant are representations, true to the <strong>best of their knowledge</strong>.",
+    examQ: "How does a warranty differ from a representation in insurance?",
+    answer: "A warranty must be <strong>literally, exactly true</strong>. A representation only needs to be <strong>substantially true</strong> — the applicant's honest best-knowledge answer. In insurance, applicant statements are representations, not warranties.",
+    hook: "Warranty = Word-for-word truth (W = W). Representation = Roughly right (R = R). Insurance applicants get the easier standard — representations."
+  },
+  {
+    label: "Concept #13",
+    term: "Concealment",
+    def: "<strong>Concealment</strong> is the <strong>omission of a material fact</strong>.",
+    examQ: "What is concealment in an insurance application?",
+    answer: "Concealment is <strong>hiding or leaving out</strong> a material fact — something the insurer would need to properly evaluate the risk. It can void the policy.",
+    hook: "Concealment = CONCEALING something that COUNTS. You didn't lie, you just didn't say it. Either way, hiding material facts = bad."
+  },
+  {
+    label: "Concept #14",
+    term: "Subrogation",
+    def: "The insurer has the right to <strong>sue a negligent third party</strong> for damages paid to an insured under the concept of <strong>subrogation</strong>.",
+    examQ: "What is subrogation and who benefits?",
+    answer: "After paying a claim, the insurer <strong>steps into the insured's shoes</strong> and can pursue the at-fault third party to recover what it paid out. This keeps the at-fault party accountable and keeps premiums lower.",
+    hook: "SUBrogation = the insurer SUBstitutes for you in court. You got paid, now they go get their money back from whoever caused the damage."
+  }
+];
+
+let deck = [];
+let current = 0;
+let gotIt = 0;
+let stillLearning = 0;
+let isFlipped = false;
+let hasFlipped = false;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function shuffleDeck() {
+  deck = shuffle([...ALL_CARDS]);
+  current = 0; gotIt = 0; stillLearning = 0;
+  document.getElementById('doneScreen').classList.remove('visible');
+  document.querySelector('.scene').style.display = '';
+  document.querySelector('.progress-row').style.display = '';
+  document.querySelector('.stats-row').style.display = '';
+  document.getElementById('flipHint').style.display = '';
+  document.getElementById('btnRow').style.display = '';
+  renderCard();
+}
+
+function resetDeck() {
+  deck = [...ALL_CARDS];
+  current = 0; gotIt = 0; stillLearning = 0;
+  document.getElementById('doneScreen').classList.remove('visible');
+  document.querySelector('.scene').style.display = '';
+  document.querySelector('.progress-row').style.display = '';
+  document.querySelector('.stats-row').style.display = '';
+  document.getElementById('flipHint').style.display = '';
+  document.getElementById('btnRow').style.display = '';
+  renderCard();
+}
+
+function drillMissed() {
+  const missed = deck.filter(c => c._missed);
+  if (!missed.length) { resetDeck(); return; }
+  deck = shuffle(missed.map(c => ({...c, _missed: false})));
+  current = 0; gotIt = 0; stillLearning = 0;
+  document.getElementById('doneScreen').classList.remove('visible');
+  document.querySelector('.scene').style.display = '';
+  document.querySelector('.progress-row').style.display = '';
+  document.querySelector('.stats-row').style.display = '';
+  document.getElementById('flipHint').style.display = '';
+  document.getElementById('btnRow').style.display = '';
+  renderCard();
+}
+
+function renderCard() {
+  if (current >= deck.length) { showDone(); return; }
+  const c = deck[current];
+  isFlipped = false; hasFlipped = false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent = c.label;
+  document.getElementById('frontTerm').textContent = c.term;
+  document.getElementById('frontDef').innerHTML = c.def;
+  document.getElementById('examQ').textContent = c.examQ;
+  document.getElementById('answerBox').innerHTML = c.answer;
+  document.getElementById('hookText').textContent = c.hook;
+  const btnRow = document.getElementById('btnRow');
+  btnRow.style.opacity = '.3';
+  btnRow.style.pointerEvents = 'none';
+  document.getElementById('flipHint').textContent = 'Read the card, then tap to flip';
+
+  const filled = Math.round((current / deck.length) * 100);
+  document.getElementById('fill').style.width = filled + '%';
+  document.getElementById('progText').textContent = `Card ${current + 1} of ${deck.length}`;
+  document.getElementById('remaining').textContent = `${deck.length - current} remaining`;
+  document.getElementById('gotCount').textContent = gotIt;
+  document.getElementById('totalCount').textContent = ALL_CARDS.length;
+  document.getElementById('stillCount').textContent = stillLearning;
+}
+
+function flip() {
+  isFlipped = !isFlipped;
+  document.getElementById('card').classList.toggle('flipped', isFlipped);
+  if (isFlipped && !hasFlipped) {
+    hasFlipped = true;
+    const btnRow = document.getElementById('btnRow');
+    btnRow.style.opacity = '1';
+    btnRow.style.pointerEvents = 'auto';
+    document.getElementById('flipHint').textContent = 'How did you do?';
+  }
+}
+
+function mark(knew) {
+  if (knew) {
+    gotIt++;
+    deck[current]._missed = false;
+  } else {
+    stillLearning++;
+    deck[current]._missed = true;
+  }
+  current++;
+  renderCard();
+}
+
+function showDone() {
+  document.querySelector('.scene').style.display = 'none';
+  document.querySelector('.progress-row').style.display = 'none';
+  document.querySelector('.stats-row').style.display = 'none';
+  document.getElementById('flipHint').style.display = 'none';
+  document.getElementById('btnRow').style.display = 'none';
+  document.getElementById('doneGot').textContent = gotIt;
+  document.getElementById('doneStill').textContent = stillLearning;
+  const pct = Math.round((gotIt / deck.length) * 100);
+  document.getElementById('doneSub').textContent = pct === 100
+    ? 'Perfect round! Every card locked in. 🔒'
+    : `${pct}% this round — ${stillLearning} card${stillLearning !== 1 ? 's' : ''} to drill.`;
+  document.getElementById('drillBtn').style.display = stillLearning > 0 ? 'inline-block' : 'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+
+// Init
+resetDeck();
+</script>
+</body>
+</html>
