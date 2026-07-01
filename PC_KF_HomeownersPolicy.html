@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Homeowners Policy</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:400px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem;flex-shrink:0}
+  .face-term{font-size:18px;font-weight:700;color:#fff;margin-bottom:.6rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:13px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.7rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:9px 12px;margin-bottom:.6rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:9px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:12px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Homeowners Policy</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {label:"HO · Overview",term:"HO Policies Are Package Policies",def:"All HO policies are <strong>package policies</strong> combining <strong>property and liability</strong> coverages.",examQ:"What type of policy is a homeowners policy?",answer:"A <strong>package policy</strong> — it bundles both property and liability coverages into one.",hook:"HO = Home + Others covered. Package = Property + Liability in one box."},
+  {label:"HO · Who Is an Insured",term:"Definition of Insured",def:"The definition of an insured includes:<br>• <strong>Residents of the household who are relatives</strong><br>• <strong>Any person under age 21</strong> who is in the insured's care",examQ:"Who qualifies as an insured under an HO policy?",answer:"Resident relatives AND anyone under <strong>age 21</strong> in the insured's care — even if not related.",hook:"21 and under in your care = covered. Think: if they live with you and you're responsible for them, they're in."},
+  {label:"HO · Exclusions",term:"HO Universal Exclusions — Flood, Landslides, Mudslides",def:"All HO policies <strong>exclude coverage</strong> for:<br>• <strong>Flood</strong><br>• <strong>Landslides or mudslides</strong>",examQ:"Which perils are excluded from ALL homeowners policies?",answer:"<strong>Flood, landslides, and mudslides</strong> are excluded from all HO forms. Flood requires separate NFIP coverage.",hook:"FLM = Flood, Landslide, Mudslide — all LEFT OUT. Water from the ground is always excluded."},
+  {label:"HO · Exclusions",term:"No Theft of Animals, Birds, or Fish",def:"The homeowners policy does <strong>NOT cover theft of animals, birds, or fish</strong>.",examQ:"Does an HO policy cover the theft of a pet?",answer:"<strong>No.</strong> Animals, birds, and fish are specifically excluded from theft coverage under HO policies.",hook:"Pets aren't possessions under theft coverage. You can't file a theft claim when someone takes your goldfish."},
+  {label:"HO · Exclusions",term:"Personal Injury Liability — Not Automatic",def:"Personal injury liability for <strong>false arrest, libel, slander, defamation, and invasion of privacy</strong> is <strong>NOT automatically covered</strong> on an HO — it can be added by <strong>endorsement</strong> for an additional premium.",examQ:"Is personal injury liability (libel, slander, false arrest) covered automatically on an HO?",answer:"<strong>No — it requires an endorsement.</strong> Standard HO covers bodily injury and property damage liability, not personal injury torts like libel or slander.",hook:"Libel and slander need an extra layer — the PI endorsement. Standard HO covers accidents, not words."},
+  {label:"HO · Section II",term:"Property of Others — $1,000 per Occurrence",def:"Section II (liability) provides additional coverage for <strong>damage to the property of others</strong> up to <strong>$1,000 per occurrence</strong>.",examQ:"What is the Section II limit for damage to the property of others?",answer:"<strong>$1,000 per occurrence.</strong> This is the additional coverage for damaging someone else's property — like breaking a neighbor's window.",hook:"$1,000 for the neighbor's stuff. ONE thousand, ONE occurrence. Small coverage for small accidents."},
+  {label:"HO · Who Is Covered",term:"Boarder/Renter vs. Guest vs. Residence Employee",def:"HO does <strong>NOT cover</strong> property of a <strong>boarder or renter</strong>.<br>HO <strong>DOES cover</strong> property of a <strong>guest</strong> or <strong>residence employee</strong>.<br><br>Coverage C will NOT cover property of a roomer, boarder, or other tenant unless <strong>related to the insured</strong>.",examQ:"Whose personal property is NOT covered under an HO policy?",answer:"A <strong>boarder or renter</strong> (unless related). Guests and residence employees are covered — people who pay rent or board are not.",hook:"Paying rent = no coverage. Visiting as a guest = covered. The moment they pay to be there, they're on their own."},
+  {label:"HO · Contents Coverage",term:"Contents Covered Worldwide + While Moving (30 Days)",def:"An HO policy covers <strong>contents anywhere in the world</strong>, including theft.<br><br>Contents are covered <strong>in full while moving</strong> for up to <strong>30 days</strong>.",examQ:"For how long does an HO policy cover contents while moving?",answer:"<strong>30 days</strong> — at full coverage, anywhere in the world, including theft.",hook:"30 days to move, covered the whole way. HO follows your stuff anywhere on earth for a month. After 30 days you're on your own."},
+  {label:"HO · Construction",term:"Under Construction — No Theft Coverage",def:"An HO policy written on a <strong>dwelling under construction</strong> will <strong>NOT cover theft</strong>.",examQ:"Does an HO policy cover theft on a home under construction?",answer:"<strong>No.</strong> Theft is excluded while the home is under construction — the site is too open and unsecured.",hook:"Construction site = theft exclusion. Too many workers, no doors. No theft coverage until the house is done."},
+  {label:"HO · Medical Payments",term:"Medical Coverage — What It Pays + Who It Excludes",def:"Medical coverage pays for: medical, surgical, x-ray, dental, ambulance, hospital, nursing, prosthetic devices, and funeral services.<br><br><strong>Medical payments NEVER apply to regular members of the household.</strong>",examQ:"To whom do HO medical payments NOT apply?",answer:"<strong>Regular household members.</strong> Med pay is for guests and third parties who are injured on your premises — not for you or your family who live there.",hook:"Med Pay = for GUESTS, not RESIDENTS. Your family uses health insurance. If they live there, med pay doesn't apply."},
+  {label:"HO · Legal Provisions",term:"Insurer's Duty to Defend",def:"The insurer's <strong>duty to defend a lawsuit</strong> is stated in the <strong>insuring agreement</strong>.<br><br>The duty to defend <strong>ends</strong> when the <strong>amount paid equals the limit of liability</strong>.<br><br>The insurer will <strong>NOT pay the cost of defense on an excluded claim</strong>.",examQ:"When does an insurer's duty to defend a lawsuit end?",answer:"When the <strong>amount paid for damages equals the limit of liability</strong>. Also — no defense coverage if the claim is excluded.",hook:"Defend until the limit is hit, then done. No duty to defend = no coverage for that claim. Excluded claim = excluded defense."},
+  {label:"HO · Legal Provisions",term:"Bankruptcy of Insured",def:"The <strong>bankruptcy of an insured does NOT relieve the insurer</strong> of their obligations under the policy.",examQ:"What effect does the insured's bankruptcy have on the insurer's policy obligations?",answer:"<strong>None.</strong> The insurer must still honor the policy even if the insured goes bankrupt.",hook:"Bankrupt insured ≠ off the hook insurer. The policy still pays. Your financial collapse doesn't cancel coverage."},
+  {label:"HO · Legal Provisions",term:"Ordinance or Law Coverage",def:"Claims resulting from <strong>enforcement of an ordinance or law</strong> are <strong>NOT covered</strong> by most property policies — although <strong>limited coverage is provided as additional coverage</strong>.",examQ:"Is ordinance or law enforcement covered under a standard HO policy?",answer:"Not as standard coverage — but <strong>limited additional coverage</strong> is provided. If code upgrades after a loss add cost, the base policy won't fully cover it.",hook:"Law upgrades aren't automatically covered. If the city makes you rebuild to new code, the extra cost usually isn't included — limited coverage only."},
+  {label:"HO · Additional Coverage",term:"Trees, Shrubs & Plants — In Addition to Limits",def:"Additional coverages (such as for <strong>trees, shrubs, and plants</strong>) are <strong>in addition to</strong> the main coverage limits — not taken from them.",examQ:"How does coverage for trees, shrubs, and plants affect the main policy limits?",answer:"It <strong>adds on top</strong> — it doesn't reduce the dwelling or personal property limits. It's extra, not carved out.",hook:"Trees are a BONUS — they don't take from your house coverage. Additional = additive, not a subtraction."},
+  {label:"HO · Cancellation",term:"Cancellation Notice — Mortgage Company + Insured",def:"If the insurer cancels an HO policy, they must send advance <strong>written notice</strong> to both the <strong>mortgage company</strong> AND the <strong>named insured</strong>.",examQ:"Who must receive notice when an insurer cancels an HO policy?",answer:"Both the <strong>mortgage company</strong> and the <strong>named insured</strong> must receive written advance notice.",hook:"Cancel an HO? Tell TWO people — the bank (mortgage) AND the homeowner. The bank has a stake in that house too."},
+  {label:"HO · Vehicles",term:"No Coverage for Motorized Vehicles",def:"Property policies do <strong>NOT cover damage to motorized vehicles</strong>, other than those used to <strong>maintain the premises</strong> (e.g., riding lawn mowers).",examQ:"Does an HO policy cover motorized vehicles?",answer:"<strong>No</strong> — except vehicles used to maintain the premises (like a riding lawn mower). Cars, motorcycles, ATVs = excluded.",hook:"If it drives on the road, HO doesn't cover it. If it cuts your grass, it's fine. Lawn mower = yes. Car = no."},
+  {label:"HO · Liability",term:"Personal Liability & Med Pay — On AND Off Premises",def:"Personal liability and medical payments coverage cover the insured's activities <strong>both on and off the premises</strong>.",examQ:"Does HO liability coverage apply only to incidents on the insured's property?",answer:"<strong>No.</strong> HO personal liability and medical payments follow the insured anywhere — on or off the property.",hook:"Liability travels with you. If you hurt someone at a park or a friend's house, your HO liability still applies."},
+  {label:"HO · Loss of Use",term:"Loss of Use — Additional Living Expenses Only",def:"Loss of use covers <strong>only additional living expenses</strong> — the extra costs you incur above your normal living expenses because you can't stay in your home.",examQ:"What does Loss of Use coverage pay for?",answer:"The <strong>additional</strong> living expenses beyond your normal costs — like a hotel and restaurant meals you wouldn't otherwise need.",hook:"Loss of Use = the UPGRADE cost only. Not your whole life — just the extra you're paying because your home isn't livable."},
+  {label:"HO · Loss Provisions",term:"Constructive Total Loss",def:"After a loss, if the <strong>cost of reconstructing a home exceeds its market value</strong>, the insurer will consider it a <strong>constructive total loss</strong>.",examQ:"What is a constructive total loss on a homeowners policy?",answer:"When <strong>rebuild cost > market value</strong>. The insurer treats the home as a total loss — it's not worth rebuilding based on market economics.",hook:"If it costs more to fix than it's worth, it's totaled. Like a car — when repair > value, it's a constructive total loss."},
+  {label:"HO · Loss Provisions",term:"Recovered Property",def:"After a loss payment, at the <strong>insured's option</strong>, recovered property may be:<br>• <strong>Returned to the insured</strong> (loss payment adjusted), OR<br>• <strong>Retained by the insurer</strong>",examQ:"What happens if stolen property is recovered after the insurer has already paid the claim?",answer:"The <strong>insured chooses</strong>: take the property back (and return the payment) or let the insurer keep it.",hook:"It's the insured's call. Want your stuff back? Return the money. Want to keep the cash? Insurer keeps the stuff."},
+  {label:"HO · Rain Damage",term:"Rain Damage — Wind or Hail Must Open It First",def:"Damage due to <strong>rain</strong> is <strong>NOT covered</strong> on a property policy unless the roof or wall was <strong>first damaged by wind or hail</strong>, allowing the rain to enter.",examQ:"Under what condition does an HO policy cover rain damage?",answer:"Only when <strong>wind or hail first creates the opening</strong>. Rain that enters through a pre-existing gap or gradual leak is not covered.",hook:"Wind or hail first, then rain. No storm opening = no rain coverage. The covered peril has to let the rain in."},
+  {label:"HO Forms",term:"HO-2 vs. HO-3",def:"<strong>HO-2</strong> — Named peril on <strong>both</strong> the dwelling and contents.<br><br><strong>HO-3</strong> — <strong>All-risk</strong> (open peril) on the <strong>dwelling</strong>, but <strong>named peril</strong> on contents.<br><br>HO-3 also covers <strong>theft of personal property of a resident employee</strong>.",examQ:"What is the coverage difference between HO-2 and HO-3?",answer:"HO-2 = named perils on everything. HO-3 = open perils on the dwelling structure, but contents stay on named perils.",hook:"HO-3 is the upgrade for the BUILDING only. The stuff inside is still named. Think: 3 > 2 on the walls, but contents stay the same."},
+  {label:"HO Forms",term:"HO-4 (Tenants) and HO-6 (Unit Owners)",def:"<strong>HO-4</strong> — For <strong>tenants</strong>; covers contents + improvements/alterations/additions made at the tenant's expense.<br><br><strong>HO-6</strong> — For <strong>unit owners</strong> (condo); contents on <strong>named perils</strong>; does <strong>NOT cover common area buildings</strong>.",examQ:"What does HO-6 NOT cover?",answer:"<strong>Common area buildings.</strong> HO-6 covers the unit owner's contents and interior — the building and common areas are covered by the condo association's master policy.",hook:"HO-4 = renters. HO-6 = condo owners. Condo: you own the inside, the association owns the outside. HO-6 stops at your door."},
+  {label:"HO Forms",term:"HO-8 — Older Homes",def:"<strong>HO-8</strong> was created specifically for <strong>older homes</strong>.",examQ:"Which HO form is designed for older homes?",answer:"<strong>HO-8.</strong> It was created because older homes often have replacement costs that far exceed their market value — HO-8 uses market value as the basis for coverage.",hook:"HO-8 = Heritage homes. The OLDEST homes get their own form. Think 8 = antique, vintage, old school."}
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
