@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch8: Kansas Auto Injury Reparations Act</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.2rem 2rem;min-height:340px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.7rem}
+  .info-grid{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:10px 13px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .know-box{background:#1c1500;border:2px solid #c8a84b;border-radius:10px;padding:12px 14px;margin-top:.8rem}
+  .know-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:5px}
+  .know-box p{font-size:13px;color:#f0d080;line-height:1.55}
+  .num-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:12px}
+  .num-big{font-size:22px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:80px;text-align:center;line-height:1.1}
+  .num-desc{font-size:13px;color:#aaa;line-height:1.45}
+  .num-desc strong{color:#e2e2e2}
+  .limit-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:.6rem}
+  .limit-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:10px;text-align:center}
+  .limit-amt{font-size:18px;font-weight:700;color:#5b8dee;margin-bottom:3px}
+  .limit-label{font-size:11px;color:#6a8fd0;line-height:1.3}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.6rem}
+  .mini-card{background:#1a1a1a;border:1px solid #242424;border-radius:9px;padding:9px 11px}
+  .mini-label{font-size:10px;color:#5b8dee;font-weight:600;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .mini-val{font-size:12px;color:#bbb;line-height:1.4}
+  .slide-num{position:absolute;top:1.1rem;right:1.4rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+  {
+    label: "Chapter 8 · Auto Injury Reparations Act",
+    title: "Purpose of the Act",
+    body: `<p>The <strong>Kansas Automobile Injury Reparations Act</strong> provides a means of <strong>compensating persons promptly</strong> for accidental bodily injury arising out of the <strong>ownership, operation, maintenance, or use</strong> of motor vehicles — in lieu of liability for damages.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">Who It Applies To</div><div class="info-val">Every policy of motor vehicle liability insurance issued by an insurer to an <strong>owner residing in Kansas</strong> must contain an agreement that the policy complies with this Act.</div></div>
+</div>`
+  },
+  {
+    label: "Chapter 8 · Required Coverages",
+    title: "Minimum Liability Limits — 25/50/25",
+    body: `<p>Every Kansas motor vehicle liability policy must include the following <strong>minimum limits</strong>:</p>
+<div class="limit-row">
+  <div class="limit-card"><div class="limit-amt">$25,000</div><div class="limit-label">Bodily Injury per person</div></div>
+  <div class="limit-card"><div class="limit-amt">$50,000</div><div class="limit-label">Bodily Injury per accident</div></div>
+  <div class="limit-card"><div class="limit-amt">$25,000</div><div class="limit-label">Property Damage per accident</div></div>
+</div>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">PIP Also Required</div><div class="info-val">The policy must include <strong>Personal Injury Protection (PIP)</strong> for the named insured, <strong>resident relatives, passengers, and others occupying</strong> the motor vehicle.</div></div>
+</div>
+<div class="know-box"><div class="know-label">Know This</div><p>Kansas minimum: <strong>25/50/25</strong> plus mandatory PIP.</p></div>`
+  },
+  {
+    label: "Chapter 8 · Financial Responsibility",
+    title: "Proof of Financial Responsibility",
+    body: `<p>To <strong>register or re-register a vehicle</strong> in Kansas, a person must furnish proof of financial responsibility at the <strong>25/50/25 minimum limits</strong>.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="num-card"><div class="num-big">30 days</div><div class="num-desc">Insurer cannot terminate a financial responsibility policy except for <strong>nonpayment of premium</strong> without giving <strong>30 days advance notice</strong> of cancellation or nonrenewal.</div></div>
+  <div class="info-row"><div class="info-label">Notice Must Include</div><div class="info-val">A warning that failure to provide proof of financial security may result in a <strong>fine of $300–$1,000</strong> and <strong>suspension of the driver's license</strong>.</div></div>
+  <div class="info-row"><div class="info-label">DMV Notification</div><div class="info-val">When coverage is terminated, a notification of cancellation or nonrenewal must be sent to the <strong>Director of the Department of Motor Vehicles</strong>.</div></div>
+</div>`
+  },
+  {
+    label: "Chapter 8 · PIP Benefits",
+    title: "Personal Injury Protection (PIP) — Priority & Deadlines",
+    body: `<div class="info-grid">
+  <div class="info-row"><div class="info-label">Coverage Priority</div><div class="info-val">PIP benefits are <strong>primary to all other coverages</strong> — with one exception: <strong>Workers Compensation</strong> takes priority over PIP.</div></div>
+  <div class="num-card"><div class="num-big">2 years</div><div class="num-desc">No PIP claim is payable unless made within <strong>2 years of the date of injury</strong>.</div></div>
+</div>
+<div class="know-box" style="margin-top:.8rem"><div class="know-label">Know This</div><p>PIP is primary except when Workers Compensation applies — WC always comes first. And the claim window is <strong>2 years from injury date</strong>.</p></div>`
+  },
+  {
+    label: "Chapter 8 · PIP Payment Timing",
+    title: "PIP Overdue Payments & Interest",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">30 days</div><div class="num-desc">PIP benefits are <strong>overdue</strong> if not paid within <strong>30 days</strong> after the insurer receives written notice of the covered loss and the amount of loss.</div></div>
+  <div class="num-card"><div class="num-big">30 days</div><div class="num-desc"><strong>Disability benefits</strong> are payable no less than <strong>30 days after notice</strong> is furnished to the insurer.</div></div>
+  <div class="num-card"><div class="num-big">18%</div><div class="num-desc">All <strong>overdue PIP payments</strong> are subject to additional interest at a rate of <strong>18% per annum</strong>.</div></div>
+</div>`
+  },
+  {
+    label: "Numbers to Memorize",
+    title: "Auto Injury Reparations Act — Key Numbers",
+    body: `<div class="two-col">
+  <div class="mini-card"><div class="mini-label">Min. Liability Limits</div><div class="mini-val"><strong>25/50/25</strong></div></div>
+  <div class="mini-card"><div class="mini-label">Cancellation Notice</div><div class="mini-val"><strong>30 days</strong> advance notice</div></div>
+  <div class="mini-card"><div class="mini-label">Fine for No Proof</div><div class="mini-val"><strong>$300–$1,000</strong> + license suspension</div></div>
+  <div class="mini-card"><div class="mini-label">PIP Claim Window</div><div class="mini-val"><strong>2 years</strong> from date of injury</div></div>
+  <div class="mini-card"><div class="mini-label">PIP Overdue Threshold</div><div class="mini-val"><strong>30 days</strong> after written notice of loss</div></div>
+  <div class="mini-card"><div class="mini-label">Overdue Interest Rate</div><div class="mini-val"><strong>18%</strong> per annum</div></div>
+  <div class="mini-card"><div class="mini-label">PIP Priority Exception</div><div class="mini-val">Workers Compensation takes priority over PIP</div></div>
+  <div class="mini-card"><div class="mini-label">DMV Notification</div><div class="mini-val">Required when coverage is terminated</div></div>
+</div>`
+  }
+];
+
+let cur = 0;
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'PC_Dashboard.html'
+    : () => go(1);
+}
+function go(dir) { cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir)); render(); }
+render();
+</script>
+</body>
+</html>
