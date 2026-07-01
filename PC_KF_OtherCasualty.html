@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Other Casualty Coverages</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:420px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.4rem;flex-shrink:0}
+  .face-term{font-size:16px;font-weight:700;color:#fff;margin-bottom:.6rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:13px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.6rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:9px 12px;margin-bottom:.6rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:9px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:12px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Other Casualty Coverages</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label:"Workers Comp · Market",
+    term:"Competitive Market — State Fund OR Private Insurer",
+    def:"When workers compensation may be purchased from <strong>either the state fund or any other authorized insurer</strong>, the market is known as a <strong>competitive market</strong>.",
+    examQ:"What is it called when WC can be bought from either the state fund or a private insurer?",
+    answer:"A <strong>competitive market</strong> — both the state and private insurers compete for the business.",
+    hook:"Competitive = choices. State vs. private = competition. If you can shop around for WC, it's a competitive market."
+  },
+  {
+    label:"Workers Comp · Basics",
+    term:"WC Statutory Coverages Set by the State",
+    def:"Workers compensation <strong>statutory coverages are set by the state</strong> — not by the insurer or the employer. The state determines what must be covered.",
+    examQ:"Who sets the required coverages under a workers compensation policy?",
+    answer:"The <strong>state</strong>. WC is statutory — the state legislature defines the benefits, and every employer and insurer must comply.",
+    hook:"Statutory = state law. WC benefits aren't negotiated — the state writes the rules and everyone follows them."
+  },
+  {
+    label:"Workers Comp · Basics",
+    term:"WC Covers Occupational Injury AND Disease",
+    def:"Workers compensation covers <strong>both occupational injury</strong> (accidents on the job) <strong>and occupational disease</strong> (illness caused by work conditions).",
+    examQ:"Does workers compensation cover occupational diseases as well as injuries?",
+    answer:"<strong>Yes — both.</strong> Injury from an accident AND disease from work conditions are both covered under WC.",
+    hook:"WC covers it if work caused it — whether it was a sudden accident or a slow-building illness. Hurt on the job or sick from the job = WC."
+  },
+  {
+    label:"Workers Comp · Basics",
+    term:"WC = Always Stand-Alone, Never in a Package",
+    def:"Workers compensation <strong>cannot be added to a package policy</strong>. It is always written as a <strong>stand-alone coverage</strong>.",
+    examQ:"Can workers compensation be included in a commercial package policy (CPP)?",
+    answer:"<strong>No.</strong> WC is always a standalone policy — it cannot be bundled into a package.",
+    hook:"WC stands alone. Always. No packages, no bundling. WC is the lone wolf of commercial coverage."
+  },
+  {
+    label:"Workers Comp · Disability Types",
+    term:"4 WC Disability Classifications",
+    def:"• <strong>Temporary disability</strong> — can't do job now, but will recover<br>• <strong>Permanent partial disability</strong> — permanently unable to perform certain job functions due to injury or disease<br>• <strong>Total disability</strong> — cannot return to work at all due to disability<br>• <strong>Death</strong> — income benefits paid to surviving spouse and/or children",
+    examQ:"What WC disability type describes a worker who will eventually recover and return to work?",
+    answer:"<strong>Temporary disability.</strong> Permanent partial = some job functions lost forever. Total = can never work again. Death = benefits go to survivors.",
+    hook:"Temp = back eventually. Partial = some gone forever. Total = done for good. Death = family gets paid. Think of it as a severity scale: temp → partial → total → death."
+  },
+  {
+    label:"Workers Comp · Benefits",
+    term:"WC Medical Expenses — Unlimited",
+    def:"Under workers compensation, <strong>medical expenses are covered on an unlimited basis</strong> — there is no dollar cap or time limit on medical benefits.",
+    examQ:"Is there a dollar limit on medical benefits under workers compensation?",
+    answer:"<strong>No — unlimited.</strong> Medical expenses under WC have no cap. The insurer pays whatever treatment the injury requires.",
+    hook:"WC medical = no ceiling. Unlike most coverages, WC medical just keeps paying. The job hurt you — the job (via WC) covers all the bills."
+  },
+  {
+    label:"Workers Comp · Compliance",
+    term:"Non-Compliant WC Policy — Insurer Still Pays Mandated Benefits",
+    def:"If an insurer issues a workers compensation policy that <strong>does not comply with state requirements</strong>, the insurer must still <strong>pay the mandated coverages</strong> in the event of a claim — regardless of what the policy says.",
+    examQ:"If a WC policy doesn't meet state requirements, what happens at claim time?",
+    answer:"The insurer must pay <strong>the state-mandated benefits</strong> anyway. A non-compliant policy can't cheat the worker out of their statutory benefits.",
+    hook:"State minimums always win. Even if the policy is wrong, the worker gets the state-required benefits. The insurer wrote a bad policy — that's their problem, not the worker's."
+  },
+  {
+    label:"Workers Comp · Premiums",
+    term:"WC Premiums Based on Payroll — Audited After Policy Period",
+    def:"Workers compensation <strong>premiums are based on payroll</strong>. Since actual payroll isn't known until after the year ends, the policy is subject to a <strong>premium audit after the policy period</strong>.",
+    examQ:"Why is a workers compensation policy audited after the policy period ends?",
+    answer:"Because premiums are based on <strong>payroll</strong>, which isn't finalized until after the year is over. The audit true-ups the premium to actual payroll.",
+    hook:"WC premium = payroll-based. Can't know payroll 'til the year's done, so the insurer audits after. You estimate at start, reconcile at end."
+  },
+  {
+    label:"Workers Comp · Other States",
+    term:"Other States Coverage — Listed States Only",
+    def:"<strong>Other states' coverage</strong> on a WC policy <strong>only applies to states listed on the declarations page</strong>. If a state isn't listed, WC coverage doesn't apply there.",
+    examQ:"Does other states coverage on a WC policy automatically apply in all 50 states?",
+    answer:"<strong>No.</strong> Coverage only extends to states <strong>specifically listed on the dec page</strong>. Unlisted states = no coverage.",
+    hook:"Other states = only the ones you named. If it's not on the dec page, it's not covered. List it or lose it."
+  },
+  {
+    label:"Professional Liability · E&O",
+    term:"Lawyers E&O — Financial Damages Only, No BI/PD",
+    def:"Lawyers <strong>errors and omissions (E&O)</strong> coverage does <strong>NOT cover bodily injury or property damage</strong>. It only covers claims for <strong>financial/economic damages</strong>.",
+    examQ:"Does a lawyers E&O policy cover bodily injury claims?",
+    answer:"<strong>No.</strong> Lawyers E&O is for financial damages — bad legal advice, missed deadlines, malpractice. No BI, no PD.",
+    hook:"Lawyer E&O = money problems only. Lawyers hurt people financially, not physically (usually). E&O covers the economic damage of bad legal work."
+  },
+  {
+    label:"Professional Liability · Malpractice",
+    term:"Malpractice = BI Liability for Medical Professionals",
+    def:"<strong>Malpractice liability</strong> provides medical professionals with <strong>bodily injury liability</strong> coverage for harm caused to patients.",
+    examQ:"What type of professional liability covers a doctor who injures a patient?",
+    answer:"<strong>Malpractice liability</strong> — it provides BI liability coverage for medical professionals whose errors physically harm patients.",
+    hook:"Malpractice = medical + BI. Doctors can physically hurt people, so their E&O is called malpractice and covers bodily injury. Lawyers = financial. Doctors = bodily injury."
+  },
+  {
+    label:"Professional Liability · D&O",
+    term:"D&O — Management Mistakes, Shareholder Lawsuits",
+    def:"<strong>Directors and Officers (D&O)</strong> liability covers:<br>• <strong>Management mistakes</strong> of corporate officers and board members<br>• Lawsuits brought by <strong>shareholders</strong> against directors for acts like <strong>unintentionally misstating financial reports</strong>",
+    examQ:"A shareholder sues a director for accidentally misreporting the company's financials. What policy covers this?",
+    answer:"<strong>D&O (Directors and Officers) liability</strong> — it covers management errors by corporate officers, including unintentional financial misstatements.",
+    hook:"D&O = suits in the boardroom. Directors make mistakes; shareholders sue. D&O is the shield for executives against their own management errors."
+  },
+  {
+    label:"Professional Liability · EPL",
+    term:"EPL — Discrimination, Harassment, Wrongful Termination",
+    def:"An <strong>Employment Practices Liability (EPL)</strong> policy covers:<br>• <strong>Discrimination</strong><br>• <strong>Harassment</strong><br>• <strong>Unlawful termination</strong><br><br>This coverage is <strong>NOT provided by workers compensation</strong>.",
+    examQ:"Does workers compensation cover a claim of workplace discrimination?",
+    answer:"<strong>No.</strong> Discrimination, harassment, and wrongful termination are covered under <strong>EPL</strong> — a separate policy entirely.",
+    hook:"EPL = the HR nightmare policy. Fired unfairly, harassed, or discriminated against? That's EPL, not WC. WC is for physical injuries, EPL is for employment wrongs."
+  },
+  {
+    label:"Umbrella · Basics",
+    term:"Umbrella = Excess Over Primary, With Retention",
+    def:"A <strong>personal umbrella</strong> pays on an <strong>excess basis</strong> — only after the primary policy has already paid.<br><br>Umbrella policies contain a <strong>retention requirement</strong> (like a deductible) the insured must pay if no primary policy applies to the claim.<br><br>On a personal umbrella, the <strong>retained limit = the policy limits of the underlying primary policies</strong>.",
+    examQ:"What is the 'retained limit' on a personal umbrella policy?",
+    answer:"The <strong>policy limits of the primary (underlying) policies</strong>. The umbrella only pays after those limits are exhausted.",
+    hook:"Retained limit = the primary policy limits are your 'deductible' for the umbrella. Umbrella kicks in only after the primary is gone."
+  },
+  {
+    label:"Umbrella · Structure",
+    term:"Umbrella Policies — NOT on Standardized Forms",
+    def:"Unlike most lines of insurance, <strong>umbrella policies are not written on standardized industry forms</strong>. Each insurer uses its own policy language.",
+    examQ:"Are umbrella policies written on standardized forms like most other policies?",
+    answer:"<strong>No.</strong> Umbrella policies are non-standard — each insurer writes their own form. This means terms, conditions, and exclusions vary by carrier.",
+    hook:"Umbrella = no standard form. Every umbrella is different. Unlike a HO-3 or PAP, you can't assume all umbrellas are the same — always read the specific policy."
+  }
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
