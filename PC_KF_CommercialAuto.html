@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Commercial Auto</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:420px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.6rem;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.4rem;flex-shrink:0}
+  .face-term{font-size:16px;font-weight:700;color:#fff;margin-bottom:.6rem;line-height:1.25;flex-shrink:0}
+  .face-def{font-size:13px;color:#aaa;line-height:1.65;overflow-y:auto}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1rem;right:1.3rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:13px;font-weight:600;color:#fff;margin-bottom:.6rem;line-height:1.35;flex-shrink:0}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:9px 12px;margin-bottom:.6rem;font-size:12px;color:#aaa;line-height:1.6;overflow-y:auto}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:9px 12px;flex-shrink:0}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:3px}
+  .hook-text{font-size:12px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Commercial Auto</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label:"Business Auto · Liability",
+    term:"Employee Injured in Company Car — NOT Covered",
+    def:"A <strong>business auto coverage form does not cover an employee injured while driving a company car</strong>.<br><br>Employee injuries on the job require <strong>Workers Compensation</strong> or a separate <strong>employers liability</strong> policy.",
+    examQ:"Under a business auto policy, whose injuries are NOT covered when an employee is hurt driving a company vehicle?",
+    answer:"The <strong>employee's injuries are not covered</strong> by business auto. Injured workers need Workers Compensation, not the auto policy.",
+    hook:"Business auto = covers the car and others, not your employees. Hurt worker = WC claim. The business auto policy never steps in for employee injuries."
+  },
+  {
+    label:"Business Auto · Physical Damage",
+    term:"Falling Object on Business Auto = Comprehensive",
+    def:"On a business auto policy, damage to an insured vehicle caused by a <strong>falling object</strong> is covered under <strong>comprehensive (other than collision) coverage</strong>.",
+    examQ:"A tree branch falls and damages a company truck. Which business auto coverage pays?",
+    answer:"<strong>Comprehensive (other than collision)</strong> — falling objects are always an 'other than collision' peril, same as on a PAP.",
+    hook:"Falling object = comprehensive. It fell ON the car — it wasn't a collision. Same rule as your personal auto: things that fall or fly = comprehensive."
+  },
+  {
+    label:"Business Auto · Coverage Gaps",
+    term:"Partner's Own Car on Business = Add Owned Auto",
+    def:"On a business auto policy, if an <strong>employer's partner</strong> drives their <strong>own personal car</strong> on company business, the <strong>partner must add owned auto coverage</strong> to the business policy.",
+    examQ:"An owner's business partner uses their personal vehicle for company business. What coverage must be added to the business auto policy?",
+    answer:"<strong>Owned auto coverage</strong> — because a partner is considered an owner, their personal vehicle is treated as an owned auto of the business.",
+    hook:"Partner = owner. Owner's car = owned auto. Partners are part of the business, so their personal car gets treated as a business-owned vehicle. Add owned auto."
+  },
+  {
+    label:"Business Auto · Coverage Gaps",
+    term:"Employees' Personal Cars on Business = Hired & Nonowned",
+    def:"If an employer wants coverage while <strong>employees drive their own personal vehicles</strong> on company business, the employer must add <strong>hired and nonowned auto coverage</strong> to the business auto policy.",
+    examQ:"What coverage does an employer need so that employees using their own cars for work are covered?",
+    answer:"<strong>Hired and nonowned auto coverage</strong> — it protects the employer when non-owned vehicles (employee cars) are used for company purposes.",
+    hook:"Employees ≠ owners. Their cars = nonowned. Add hired and nonowned to cover the gap. Think: 'HNOA' for 'Here's a Nonowned Auto coverage.'"
+  },
+  {
+    label:"Garage Insurance · Inventory",
+    term:"Fluctuating Dealer Inventory = Reporting Forms",
+    def:"On garage insurance, <strong>car dealers with fluctuating inventories</strong> should use <strong>reporting forms</strong> to ensure their coverage keeps pace with the changing value of their stock.",
+    examQ:"What type of form should a car dealer with changing inventory levels use on a garage policy?",
+    answer:"<strong>Reporting forms</strong> — they allow the insured to report changing inventory values so coverage and premium stay accurate.",
+    hook:"Cars come and go on the lot — so does the coverage. Reporting forms track what's there right now. No more, no less."
+  },
+  {
+    label:"Garage Insurance · Liability",
+    term:"Garage Liability — Products Yes, Recall No",
+    def:"Garage liability covers <strong>products liability</strong> — but like other liability forms, it does <strong>NOT cover the cost of a recall</strong> or the lost income resulting from a recall.",
+    examQ:"Does garage liability cover a product recall?",
+    answer:"<strong>No.</strong> Garage liability covers products liability claims (injuries from defective parts), but never covers recall costs or lost income from recalls.",
+    hook:"Garage covers the injury, not the fix. If a bad part hurts someone = covered. If you have to pull all the parts back off shelves = not covered. Recall = your problem."
+  },
+  {
+    label:"Garage Insurance · Eligibility",
+    term:"Garage Coverage Form — Who It's For",
+    def:"The <strong>garage coverage form</strong> was created for:<br>• <strong>Auto dealers</strong><br>• <strong>Repair shops</strong><br>• <strong>Service stations</strong><br>• <strong>Parking garages</strong><br>• Similar auto-related businesses",
+    examQ:"Name four types of businesses the garage coverage form is designed for.",
+    answer:"<strong>Auto dealers, repair shops, service stations, and parking garages.</strong> Any business that deals with customer vehicles professionally.",
+    hook:"Garage form = anyone in the car business: sell it, fix it, fuel it, or park it. If cars are your business, garage coverage is your form."
+  },
+  {
+    label:"Garage Insurance · Garagekeepers",
+    term:"Garagekeepers Coverage = Care, Custody & Control",
+    def:"In a garage policy, it is the <strong>garagekeepers coverage</strong> that provides coverage for <strong>property in the care, custody, and control</strong> of the insured — i.e., customers' vehicles left for service or storage.",
+    examQ:"What garage coverage protects a customer's vehicle while it's in the shop for repairs?",
+    answer:"<strong>Garagekeepers coverage</strong> — it specifically covers property (customer vehicles) in the insured's care, custody, and control.",
+    hook:"Garagekeepers = CCC coverage. Care, Custody, Control. You have their car? Garagekeepers covers it. Without it, damage to a customer's vehicle is on you."
+  }
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
