@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch8: Accident Prevention Courses</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.2rem 2rem;min-height:320px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.7rem}
+  .info-grid{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:10px 13px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .know-box{background:#1c1500;border:2px solid #c8a84b;border-radius:10px;padding:12px 14px;margin-top:.8rem}
+  .know-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:5px}
+  .know-box p{font-size:13px;color:#f0d080;line-height:1.55}
+  .num-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:12px}
+  .num-big{font-size:26px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:80px;text-align:center;line-height:1.1}
+  .num-desc{font-size:13px;color:#aaa;line-height:1.45}
+  .num-desc strong{color:#e2e2e2}
+  .slide-num{position:absolute;top:1.1rem;right:1.4rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+  {
+    label: "Chapter 8 · Accident Prevention Courses",
+    title: "Required Discount — Course Requirements",
+    body: `<p>Automobile insurers are <strong>required to offer a discount</strong> on auto policy premiums for insureds who successfully complete an approved motor vehicle accident prevention course.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="num-card"><div class="num-big">4 hrs</div><div class="num-desc">The course must be <strong>at least 4 hours long</strong> and use a <strong>nationally recognized driver training curriculum</strong> approved by a state or federal agency.</div></div>
+  <div class="info-row"><div class="info-label">Coverages the Discount Applies To</div><div class="info-val"><strong>Liability · Personal Injury Protection (PIP) · Collision</strong></div></div>
+</div>`
+  },
+  {
+    label: "Chapter 8 · Accident Prevention Courses",
+    title: "Discount Duration & Removal",
+    body: `<div class="info-grid">
+  <div class="num-card"><div class="num-big">3 years</div><div class="num-desc">The discount is effective for a <strong>3-year period</strong> following completion of the course.</div></div>
+</div>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">When the Discount Can Be Removed</div><div class="info-val">Insurers may remove the discount if, during the discount period, the insured:<br>• Is involved in an <strong>at-fault accident</strong>, OR<br>• Is convicted of <strong>more than one moving violation</strong></div></div>
+</div>
+<div class="know-box"><div class="know-label">Know This</div><p>Course = <strong>4 hours minimum</strong> · Discount lasts <strong>3 years</strong> · Removed for an at-fault accident or <strong>more than one</strong> moving violation during the period.</p></div>`
+  }
+];
+
+let cur = 0;
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'PC_Dashboard.html'
+    : () => go(1);
+}
+function go(dir) { cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir)); render(); }
+render();
+</script>
+</body>
+</html>
