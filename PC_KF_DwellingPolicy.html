@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts — Dwelling Policy</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;padding-bottom:5rem}
+  .top-bar{width:100%;max-width:680px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+  .top-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border-radius:7px;border:1px solid #2a2a2a;background:#1a1a1a;color:#888;transition:all .15s}
+  .action-btn:hover{background:#252525;color:#ccc}
+  .progress-row{width:100%;max-width:680px;margin-bottom:1.2rem}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .progress-text{font-size:11px;color:#444;display:flex;justify-content:space-between}
+  .stats-row{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:1.2rem}
+  .stat-chip{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:8px 10px;text-align:center}
+  .stat-num{font-size:18px;font-weight:700;color:#5b8dee}
+  .stat-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.5px}
+  .stat-chip.green .stat-num{color:#4aaa4a}
+  .stat-chip.amber .stat-num{color:#c8a84b}
+  .scene{width:100%;max-width:680px;height:390px;perspective:1000px;cursor:pointer;margin-bottom:1.2rem}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:1.8rem;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem}
+  .face-term{font-size:19px;font-weight:700;color:#fff;margin-bottom:.7rem;line-height:1.25}
+  .face-def{font-size:13px;color:#aaa;line-height:1.7}
+  .face-def strong{color:#e2e2e2}
+  .tap-hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:11px;color:#333}
+  .back .face-label{color:#7aafff}
+  .exam-q{font-size:14px;font-weight:600;color:#fff;margin-bottom:.8rem;line-height:1.35}
+  .answer-box{background:#0a1428;border:1px solid #1e3a6e;border-radius:10px;padding:10px 13px;margin-bottom:.7rem;font-size:13px;color:#aaa;line-height:1.6}
+  .answer-box strong{color:#e2e2e2}
+  .hook-box{background:#1c1500;border:1px solid #3a2a00;border-radius:10px;padding:10px 13px}
+  .hook-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;margin-bottom:4px}
+  .hook-text{font-size:13px;color:#f0d080;line-height:1.5}
+  .btn-row{width:100%;max-width:680px;display:flex;gap:10px;margin-bottom:.8rem}
+  .know-btn{flex:1;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;transition:all .15s}
+  .btn-got{background:#0d2e0d;border:1px solid #1a4a1a;color:#4aaa4a}
+  .btn-got:hover{background:#112e11;border-color:#2a6a2a}
+  .btn-still{background:#2e1a00;border:1px solid #4a3000;color:#c8a84b}
+  .btn-still:hover{background:#3a2200;border-color:#6a4400}
+  .flip-hint{width:100%;max-width:680px;text-align:center;font-size:12px;color:#333;margin-bottom:.5rem}
+  .done-screen{display:none;width:100%;max-width:680px;text-align:center;padding:2rem}
+  .done-screen.visible{display:block}
+  .done-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:.5rem}
+  .done-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+  .done-stats{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+  .done-stat{background:#141414;border:1px solid #222;border-radius:12px;padding:1rem 1.5rem;text-align:center}
+  .done-stat-num{font-size:28px;font-weight:700}
+  .done-stat-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .restart-btn{padding:13px 32px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid #1e3a6e;background:#0d1a2e;color:#5b8dee;margin:6px}
+  .restart-btn:hover{background:#112244}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="top-label">Key Facts · Dwelling Policy</span>
+  <div class="top-actions">
+    <button class="action-btn" onclick="shuffleDeck()">⇄ Shuffle</button>
+    <button class="action-btn" onclick="resetDeck()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-row">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="progress-text"><span id="progText"></span><span id="remaining"></span></div>
+</div>
+<div class="stats-row">
+  <div class="stat-chip green"><div class="stat-num" id="gotCount">0</div><div class="stat-label">Got It</div></div>
+  <div class="stat-chip"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+  <div class="stat-chip amber"><div class="stat-num" id="stillCount">0</div><div class="stat-label">Still Learning</div></div>
+</div>
+<div class="scene" onclick="flip()">
+  <div class="card" id="card">
+    <div class="face front">
+      <div class="face-label" id="frontLabel"></div>
+      <div class="face-term" id="frontTerm"></div>
+      <div class="face-def" id="frontDef"></div>
+      <div class="tap-hint">tap to flip →</div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Exam Question</div>
+      <div class="exam-q" id="examQ"></div>
+      <div class="answer-box" id="answerBox"></div>
+      <div class="hook-box"><div class="hook-label">Memory Hook</div><div class="hook-text" id="hookText"></div></div>
+    </div>
+  </div>
+</div>
+<div class="flip-hint" id="flipHint">Read the card, then tap to flip</div>
+<div class="btn-row" id="btnRow" style="opacity:.3;pointer-events:none">
+  <button class="know-btn btn-still" onclick="mark(false)">↩ Still Learning</button>
+  <button class="know-btn btn-got" onclick="mark(true)">✓ Got It</button>
+</div>
+<div class="done-screen" id="doneScreen">
+  <div class="done-title">Round Complete! 🎯</div>
+  <div class="done-sub" id="doneSub"></div>
+  <div class="done-stats">
+    <div class="done-stat"><div class="done-stat-num" style="color:#4aaa4a" id="doneGot">0</div><div class="done-stat-label">Got It</div></div>
+    <div class="done-stat"><div class="done-stat-num" style="color:#c8a84b" id="doneStill">0</div><div class="done-stat-label">Still Learning</div></div>
+  </div>
+  <button class="restart-btn" id="drillBtn" onclick="drillMissed()">Drill Still Learning</button>
+  <button class="restart-btn" onclick="resetDeck()">Start Over (All Cards)</button>
+  <br><br>
+  <a href="PC_Dashboard.html" style="font-size:13px;color:#444;text-decoration:none">← Back to Dashboard</a>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+  {
+    label:"Dwelling Policy · Overview",
+    term:"What Differentiates DP Forms?",
+    def:"The main difference between DP forms (DP-1, DP-2, DP-3) is the <strong>property perils insured against</strong>.",
+    examQ:"What is the primary difference between the various dwelling policy forms?",
+    answer:"The <strong>perils covered</strong>. DP-1 is the most basic (named perils only), DP-2 broadens the named perils, and DP-3 adds open perils on the dwelling.",
+    hook:"Different DPs = Different Perils. The number goes up, the coverage opens up. DP-1 narrow, DP-3 wide."
+  },
+  {
+    label:"Dwelling Policy · Liability",
+    term:"DP Policies & Personal Liability",
+    def:"DP policies do <strong>NOT cover personal liability</strong>.<br><br>Liability can be added by endorsement: the <strong>Personal Liability Supplement (PLS)</strong>, for an additional premium.",
+    examQ:"How can personal liability be added to a dwelling policy?",
+    answer:"By adding the <strong>Personal Liability Supplement</strong> endorsement for an additional premium. It does not come standard on any DP form.",
+    hook:"DP doesn't DO liability. You have to SUPPLEMENT it. PLS = Please add Liability Supplement."
+  },
+  {
+    label:"Dwelling Policy · Exclusions",
+    term:"DP General Exclusions — War, Nuclear, Flood (Not Wind)",
+    def:"DP policies have general exclusions for:<br>• <strong>War</strong><br>• <strong>Nuclear hazard</strong><br>• <strong>Flood</strong><br><br>But <strong>wind is NOT excluded</strong> — wind damage IS covered.",
+    examQ:"Which of the following is NOT a general exclusion on a dwelling policy — war, nuclear, flood, or wind?",
+    answer:"<strong>Wind is NOT excluded.</strong> War, nuclear hazard, and flood are the three big general exclusions. Wind damage remains covered.",
+    hook:"WNF: War, Nuclear, Flood — those three are OUT. But WIND blows right IN. Remember: wind still wins on a DP policy."
+  },
+  {
+    label:"Dwelling Policy · Other Structures",
+    term:"Other Structures — Rented Private Garage",
+    def:"On a dwelling policy, <strong>other structures coverage applies</strong> to a structure <strong>rented out as a private garage</strong>.",
+    examQ:"Does other structures coverage on a DP apply to a structure rented out as a private garage?",
+    answer:"<strong>Yes.</strong> A structure rented as a private garage is still covered under other structures — even though it's being rented.",
+    hook:"A private GARAGE gets a PASS even when rented. It's still a garage, not a business. Other structures covers it."
+  },
+  {
+    label:"Dwelling Policy · Vacancy Rules",
+    term:"Glass Breakage After 60 Days Vacant",
+    def:"DP policies do <strong>NOT cover breakage of glass</strong> after <strong>60 days of vacancy</strong>.",
+    examQ:"After how many days of vacancy does a DP policy stop covering glass breakage?",
+    answer:"<strong>60 days.</strong> Once the dwelling has been vacant for 60 days, glass breakage coverage is suspended.",
+    hook:"60 days empty = glass is on its own. Think: after 2 months, nobody's home to care about the windows."
+  },
+  {
+    label:"Dwelling Policy · Vacancy Rules",
+    term:"Freezing of Plumbing — Vacancy Exception",
+    def:"DP policies do <strong>NOT cover freezing of plumbing</strong> during vacancy <strong>unless the heat was left on</strong>.",
+    examQ:"Under what condition does a DP policy cover freezing of plumbing in a vacant dwelling?",
+    answer:"Only if the <strong>heat was left on</strong>. If the heat is off and pipes freeze during a vacancy, there's no coverage.",
+    hook:"Keep the heat on or your pipes are on your own. No heat = no coverage. Simple: HEAT = HELP from the policy."
+  },
+  {
+    label:"Dwelling Policy · What's Not Insurable",
+    term:"Land Is Not Insurable",
+    def:"The <strong>land on which the insured dwelling sits is not insurable</strong> under a dwelling policy.",
+    examQ:"Is the land under an insured dwelling covered under a DP policy?",
+    answer:"<strong>No.</strong> Land cannot be destroyed by fire, storm, or most covered perils — so it has no insurable value under a DP policy.",
+    hook:"Land doesn't BURN. You can't insure what you can't lose to a covered peril. The DIRT stays, only the structure is at risk."
+  },
+  {
+    label:"Dwelling Policy · Endorsements",
+    term:"Inflation Guard / Automatic Increase Endorsement",
+    def:"The <strong>inflation guard</strong> (also called the <strong>automatic increase endorsement</strong>) must be added to a DP policy by endorsement — it is not automatic.",
+    examQ:"How is inflation guard coverage added to a dwelling policy?",
+    answer:"By <strong>endorsement</strong>. It automatically increases the coverage limit over time to keep pace with construction cost inflation, but it must be specifically added.",
+    hook:"Inflation Guard GUARDS your limits from shrinking in value — but you have to ASK for it. Not built-in, bolt-on."
+  },
+  {
+    label:"Dwelling Policy · Water/Rain Damage",
+    term:"Rain or Dust — Wind Opening Required",
+    def:"A loss from <strong>rain or dust</strong> is covered <strong>only if an opening</strong> in the roof or walls was <strong>first created by wind or another covered cause of loss</strong>.",
+    examQ:"When is rain damage covered under a dwelling policy?",
+    answer:"Only when <strong>wind (or another covered peril) first created an opening</strong> in the roof or walls. Rain that seeps in through existing gaps is not covered — the covered peril must cause the opening.",
+    hook:"Wind first, water second. Rain can't get in unless wind let it. No opening = no coverage for rain damage."
+  },
+  {
+    label:"DP-1 · Basic Form",
+    term:"DP-1 — Named Peril & Fair Rental Value Only",
+    def:"The <strong>DP-1 Basic Form</strong> is a <strong>named (specified) peril policy</strong>.<br><br>Coverage D provides <strong>fair rental value only</strong> — <strong>no additional living expense</strong>.<br><br>Created by adding the <strong>Extended Coverage Endorsement</strong> to the Standard Fire Policy.",
+    examQ:"What type of policy is the DP-1, and what does Coverage D provide?",
+    answer:"DP-1 is a <strong>named peril policy</strong>. Coverage D gives you <strong>fair rental value only</strong> — no additional living expense (no hotel stays).",
+    hook:"DP-1 = the BASIC one. Only named perils, and Coverage D only pays FAIR RENT — not your hotel bill. Extended Coverage Endorsement + Standard Fire Policy = DP-1."
+  },
+  {
+    label:"DP-2 · Broad Form",
+    term:"DP-2 — Named Perils + 80% Coinsurance + Coverage B Add-On",
+    def:"The <strong>DP-2 Broad Form</strong> is named perils on <strong>both dwelling and contents</strong>.<br><br>Building structures (Coverages A & B) require <strong>80% coinsurance</strong>.<br><br>Coverage B (other structures) is <strong>in addition to</strong> other coverage limits.",
+    examQ:"On a DP-2, what is the coinsurance requirement for building structures?",
+    answer:"<strong>80% coinsurance</strong> applies to Coverages A and B. Also, Coverage B (other structures) is additive — it stacks on top of Coverage A, not taken from it.",
+    hook:"DP-2: 80% rule — insure to 80% or pay the penalty. Coverage B is a BONUS, not a cut from Coverage A. BROADer = BETTER coverage."
+  },
+  {
+    label:"DP-2 vs. DP-3",
+    term:"DP-3 Contents Coverage = Same as DP-2",
+    def:"The <strong>DP-3</strong> provides the <strong>same coverage as DP-2 for personal property</strong> (contents), should coverage for contents be declared.",
+    examQ:"How does DP-3 handle personal property coverage compared to DP-2?",
+    answer:"Contents on a DP-3 are covered the <strong>same as DP-2</strong> — named perils. The difference is that DP-3 provides open perils on the dwelling itself, but contents stay on named perils.",
+    hook:"DP-3 is open perils on the BUILDING, but contents = same as DP-2. The stuff inside doesn't get the upgrade — only the walls do."
+  },
+  {
+    label:"DP-1 vs. DP-2/DP-3",
+    term:"Trees, Shrubs, Plants & Lawns",
+    def:"The <strong>DP-1 Basic Form does NOT cover</strong> trees, shrubs, plants, and lawns.<br><br>Both the <strong>DP-2 and DP-3 do cover</strong> trees, shrubs, plants, and lawns.",
+    examQ:"Which DP forms cover trees, shrubs, plants, and lawns?",
+    answer:"<strong>DP-2 and DP-3 only.</strong> The DP-1 basic form leaves the landscaping unprotected.",
+    hook:"DP-1 leaves you with NO leaves. DP-2 and DP-3 cover the greenery. The basic form keeps it basic — no trees, no shrubs, no lawn."
+  },
+  {
+    label:"DP-2 · Form Date",
+    term:"DP-2 ('02) — What Does '02 Mean?",
+    def:"When a DP-2 is referred to as <strong>DP-2 ('02)</strong>, it means it is the <strong>ISO policy form introduced in 2002</strong>.",
+    examQ:"What does the ('02) designation on a DP-2 policy mean?",
+    answer:"It refers to the <strong>ISO form edition year — 2002</strong>. The '02 just identifies which version of the ISO Dwelling Property Broad Form is being used.",
+    hook:"'02 = 2002 edition. Like a car model year — DP-2 ('02) is the 2002 ISO version. The number in parentheses is always the year."
+  }
+];
+
+let deck=[],current=0,gotIt=0,stillLearning=0,isFlipped=false,hasFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleDeck(){deck=shuffle([...ALL_CARDS]);current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function resetDeck(){deck=[...ALL_CARDS];current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function drillMissed(){const m=deck.filter(c=>c._missed);if(!m.length){resetDeck();return}deck=shuffle(m.map(c=>({...c,_missed:false})));current=0;gotIt=0;stillLearning=0;show();renderCard()}
+function show(){document.getElementById('doneScreen').classList.remove('visible');document.querySelector('.scene').style.display='';document.querySelector('.progress-row').style.display='';document.querySelector('.stats-row').style.display='';document.getElementById('flipHint').style.display='';document.getElementById('btnRow').style.display=''}
+function renderCard(){
+  if(current>=deck.length){showDone();return}
+  const c=deck[current];isFlipped=false;hasFlipped=false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('frontLabel').textContent=c.label;
+  document.getElementById('frontTerm').textContent=c.term;
+  document.getElementById('frontDef').innerHTML=c.def;
+  document.getElementById('examQ').textContent=c.examQ;
+  document.getElementById('answerBox').innerHTML=c.answer;
+  document.getElementById('hookText').textContent=c.hook;
+  const b=document.getElementById('btnRow');b.style.opacity='.3';b.style.pointerEvents='none';
+  document.getElementById('flipHint').textContent='Read the card, then tap to flip';
+  document.getElementById('fill').style.width=Math.round(current/deck.length*100)+'%';
+  document.getElementById('progText').textContent=`Card ${current+1} of ${deck.length}`;
+  document.getElementById('remaining').textContent=`${deck.length-current} remaining`;
+  document.getElementById('gotCount').textContent=gotIt;
+  document.getElementById('totalCount').textContent=ALL_CARDS.length;
+  document.getElementById('stillCount').textContent=stillLearning;
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);if(isFlipped&&!hasFlipped){hasFlipped=true;const b=document.getElementById('btnRow');b.style.opacity='1';b.style.pointerEvents='auto';document.getElementById('flipHint').textContent='How did you do?'}}
+function mark(knew){if(knew){gotIt++;deck[current]._missed=false}else{stillLearning++;deck[current]._missed=true}current++;renderCard()}
+function showDone(){
+  document.querySelector('.scene').style.display='none';document.querySelector('.progress-row').style.display='none';document.querySelector('.stats-row').style.display='none';document.getElementById('flipHint').style.display='none';document.getElementById('btnRow').style.display='none';
+  document.getElementById('doneGot').textContent=gotIt;document.getElementById('doneStill').textContent=stillLearning;
+  const pct=Math.round(gotIt/deck.length*100);
+  document.getElementById('doneSub').textContent=pct===100?'Perfect round! Every card locked in. 🔒':`${pct}% this round — ${stillLearning} card${stillLearning!==1?'s':''} to drill.`;
+  document.getElementById('drillBtn').style.display=stillLearning>0?'inline-block':'none';
+  document.getElementById('doneScreen').classList.add('visible');
+}
+resetDeck();
+</script>
+</body>
+</html>
