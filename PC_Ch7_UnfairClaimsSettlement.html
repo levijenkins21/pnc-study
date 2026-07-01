@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C — Ch7: Unfair Claims Settlement Practices</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.2rem 2rem;min-height:360px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.7rem}
+  .info-grid{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:10px 13px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .warn-box{background:#1a1200;border:1px solid #3a2a00;border-radius:10px;padding:11px 13px;margin-top:.8rem}
+  .warn-box p{font-size:13px;color:#c8a84b;line-height:1.55}
+  .bad-item{background:#1f0a0a;border:1px solid #3a1a1a;border-radius:9px;padding:9px 13px;margin-bottom:6px;font-size:13px;color:#c08080;line-height:1.45}
+  .bad-item strong{color:#e2e2e2}
+  ul.bullet{padding-left:1.1rem;display:flex;flex-direction:column;gap:5px;margin-top:.4rem}
+  ul.bullet li{font-size:13px;color:#999;line-height:1.45}
+  ul.bullet li strong{color:#ddd}
+  .slide-num{position:absolute;top:1.1rem;right:1.4rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="PC_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+  {
+    label: "Chapter 7 · Unfair Claims Settlement",
+    title: "Overview — What the Law Requires",
+    body: `<p>Kansas, like most states, has passed laws patterned after <strong>NAIC model legislation</strong> to ensure insurance claims are handled fairly and that an open line of communication exists between the insured and insurer.</p>
+<div class="info-grid" style="margin-top:.8rem">
+  <div class="info-row"><div class="info-label">The Standard</div><div class="info-val">"<strong>Utmost good faith</strong>" — the law promotes good faith between insured and insurer in all insurance transactions.</div></div>
+  <div class="info-row"><div class="info-label">When It's a Violation</div><div class="info-val">These acts are illegal when performed <strong>frequently enough to indicate a general business practice</strong> — not just a one-time mistake.</div></div>
+  <div class="info-row"><div class="info-label">Consequence</div><div class="info-val">Court-assessed penalties against the insurer. Findings of <strong>"bad faith"</strong> most often occur in first-party insurance when an insurer fails to promptly pay or unreasonably refuses a legitimate claim.</div></div>
+</div>`
+  },
+  {
+    label: "Prohibited Practices · Part 1 of 3",
+    title: "Unfair Claims Practices — #1–5",
+    body: `<div class="bad-item"><strong>1. Misrepresentation</strong> — Misrepresenting pertinent facts or insurance policy provisions relating to coverages at issue.</div>
+<div class="bad-item"><strong>2. Failure to Acknowledge</strong> — Failing to acknowledge or act promptly upon communications concerning claims.</div>
+<div class="bad-item"><strong>3. No Investigation Standards</strong> — Failing to adopt and implement reasonable standards for the prompt investigation of claims.</div>
+<div class="bad-item"><strong>4. Refusing Without Investigation</strong> — Refusing to pay claims without conducting a reasonable investigation based on available information.</div>
+<div class="bad-item"><strong>5. Failure to Affirm or Deny</strong> — Failing to affirm or deny coverage within a reasonable time after proof of loss statements have been completed.</div>`
+  },
+  {
+    label: "Prohibited Practices · Part 2 of 3",
+    title: "Unfair Claims Practices — #6–10",
+    body: `<div class="bad-item"><strong>6. No Prompt Settlement</strong> — Not attempting to make prompt, fair, and equitable settlement when liability is reasonably clear.</div>
+<div class="bad-item"><strong>7. Forcing Litigation</strong> — Compelling insureds to go to court to recover amounts due by offering substantially less than amounts ultimately recovered.</div>
+<div class="bad-item"><strong>8. Misleading Advertising</strong> — Attempting to settle a claim for less than the insured was led to believe they were entitled to based on advertising material that accompanied the application.</div>
+<div class="bad-item"><strong>9. Altered Application</strong> — Attempting to settle claims based on an application that was altered without the insured's knowledge and consent.</div>
+<div class="bad-item"><strong>10. Appealing Arbitration Awards</strong> — Making known a policy of appealing arbitration decisions won by claimants to pressure them into accepting lower settlements.</div>`
+  },
+  {
+    label: "Prohibited Practices · Part 3 of 3",
+    title: "Unfair Claims Practices — #11–15",
+    body: `<div class="bad-item"><strong>11. No Coverage Statement</strong> — Making claim payments not accompanied by a statement setting forth the coverage under which payments are made.</div>
+<div class="bad-item"><strong>12. Duplicate Paperwork Delays</strong> — Delaying investigation or payment by requiring both preliminary claim reports and formal proof of loss that contain substantially the same information.</div>
+<div class="bad-item"><strong>13. Leveraging One Portion Against Another</strong> — Failing to settle under one portion of coverage where liability is clear in order to influence settlements under other portions.</div>
+<div class="bad-item"><strong>14. No Explanation for Denial</strong> — Failing to promptly provide a reasonable explanation of the basis for denying a claim.</div>
+<div class="bad-item"><strong>15. Failure to Keep Complaint Records</strong> — Failing to maintain a complete record of all complaints since the insurer's last examination — including total number, nature, disposition, and dates.</div>`
+  },
+  {
+    label: "Chapter 7 · Bad Faith",
+    title: "Good Faith vs. Bad Faith",
+    body: `<div class="info-grid">
+  <div class="info-row"><div class="info-label">Utmost Good Faith</div><div class="info-val">The standard all insurers must operate under — open communication, fair dealing, and prompt handling of legitimate claims.</div></div>
+  <div class="info-row"><div class="info-label">Bad Faith</div><div class="info-val">When an insurer <strong>fails to perform under the policy terms</strong> — most commonly by failing to promptly pay a legitimate claim after proof of loss, or unreasonably refusing to pay a legitimate claim.</div></div>
+  <div class="info-row"><div class="info-label">Consequence of Bad Faith</div><div class="info-val">A court may assess a penalty against the insurer. Bad faith findings most often occur in <strong>first-party insurance</strong> (claims by the insured against their own policy).</div></div>
+</div>
+<div class="warn-box"><p>💡 The trigger for a bad faith finding is typically an insurer who <strong>knew the claim was legitimate</strong> but delayed or refused to pay without reasonable cause.</p></div>`
+  }
+];
+
+let cur = 0;
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'PC_Dashboard.html'
+    : () => go(1);
+}
+function go(dir) { cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir)); render(); }
+render();
+</script>
+</body>
+</html>
