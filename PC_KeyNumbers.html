@@ -330,6 +330,7 @@ function renderCard(){
   const card=document.getElementById('card');
   card.style.transition='none';
   card.style.transform='translateX(0) rotate(0deg)';
+  card.style.opacity='1';
   card.classList.remove('flipped');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
 
