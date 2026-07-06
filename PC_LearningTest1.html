@@ -2,509 +2,633 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Learning Test 1 — P&C Study</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ── RESET & BASE ─────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#090b10;color:#f0f0f0;font-family:'IBM Plex Mono',monospace;min-height:100vh;padding-bottom:60px;}
-.header{padding:16px 20px;border-bottom:1px solid #1e2330;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#090b10;z-index:10;}
-.h-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#c9a227;}
-.h-sub{font-size:7px;letter-spacing:3px;color:#4b5563;margin-top:2px;}
-.back-link{color:#6b7280;font-size:8px;letter-spacing:2px;text-decoration:none;}
-.back-link:hover{color:#c9a227;}
-.stats-bar{display:flex;gap:0;border-bottom:1px solid #1e2330;}
-.stat{flex:1;padding:12px 8px;text-align:center;border-right:1px solid #1e2330;}
-.stat:last-child{border-right:none;}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#c9a227;line-height:1;}
-.stat-lbl{font-size:6px;letter-spacing:2px;color:#4b5563;margin-top:2px;}
-.controls{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #1e2330;}
-.mode-btns{display:flex;gap:6px;}
-.mode-btn{background:#0e1117;border:1px solid #1e2330;color:#6b7280;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;padding:7px 12px;cursor:pointer;border-radius:2px;transition:all .15s;}
-.mode-btn.active{background:#c9a227;border-color:#c9a227;color:#090b10;}
-.progress-txt{font-size:8px;letter-spacing:1px;color:#4b5563;}
-#flashcard-mode{padding:16px;}
-.card-counter{font-size:8px;letter-spacing:2px;color:#4b5563;text-align:center;margin-bottom:12px;}
-.flashcard-wrap{perspective:1000px;margin-bottom:12px;cursor:pointer;}
-.flashcard{position:relative;width:100%;min-height:220px;transform-style:preserve-3d;transition:transform .45s ease;border-radius:4px;}
-.flashcard.flipped{transform:rotateY(180deg);}
-.card-face{position:absolute;width:100%;min-height:220px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:4px;padding:20px 18px;display:flex;flex-direction:column;justify-content:center;}
-.card-front{background:#0e1117;border:1px solid #1e2330;}
-.card-back{background:#0d1a0d;border:1px solid #1e2330;transform:rotateY(180deg);}
-.card-face-label{font-size:7px;letter-spacing:3px;color:#4b5563;margin-bottom:10px;}
-.card-question{font-size:12px;line-height:1.7;color:#f0f0f0;}
-.card-answer{font-size:11px;line-height:1.7;color:#f0f0f0;margin-bottom:10px;}
-.card-answer strong{color:#c9a227;}
-.memory-trick{background:#0a1a0a;border:1px solid #1a3a1a;border-radius:3px;padding:10px 12px;margin-top:8px;}
-.memory-label{font-size:7px;letter-spacing:2px;color:#4b5563;margin-bottom:4px;}
-.memory-text{font-size:10px;color:#6fcf6f;line-height:1.6;}
-.tap-hint{font-size:7px;letter-spacing:2px;color:#374151;text-align:center;margin-top:6px;}
-.card-topic{font-size:7px;letter-spacing:2px;padding:3px 8px;border-radius:2px;display:inline-block;margin-bottom:10px;}
-.topic-auto{background:#1a1a2e;color:#818cf8;}
-.topic-property{background:#1a1200;color:#f59e0b;}
-.topic-liability{background:#1a0d0d;color:#f87171;}
-.topic-crime{background:#0d1a1a;color:#34d399;}
-.topic-general{background:#1a1a1a;color:#9ca3af;}
-.topic-workers{background:#1a0d1a;color:#c084fc;}
-.topic-state{background:#0d1020;color:#60a5fa;}
-.topic-bop{background:#1a1a0d;color:#fbbf24;}
-.nav-btns{display:flex;gap:8px;justify-content:center;}
-.nav-btn{background:#0e1117;border:1px solid #1e2330;color:#f0f0f0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;padding:10px 28px;cursor:pointer;border-radius:2px;transition:all .15s;}
-.nav-btn:hover,.nav-btn:active{border-color:#c9a227;color:#c9a227;}
-.nav-btn.primary{background:#c9a227;border-color:#c9a227;color:#090b10;}
-.nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.got-it-wrap{display:flex;gap:8px;justify-content:center;margin-top:10px;}
-.got-it-btn{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;padding:8px 20px;border-radius:2px;cursor:pointer;border:1px solid;}
-.btn-knew{background:#0d1a0d;border-color:#2d6a2d;color:#6fcf6f;}
-.btn-missed{background:#1a0d0d;border-color:#6a2d2d;color:#f87171;}
-#list-mode{display:none;padding:14px;}
-.list-card{background:#0e1117;border:1px solid #1e2330;border-radius:3px;padding:14px 16px;margin-bottom:8px;}
-.list-q{font-size:10px;letter-spacing:1px;color:#9ca3af;margin-bottom:8px;line-height:1.6;}
-.list-a{font-size:11px;color:#f0f0f0;margin-bottom:6px;line-height:1.6;}
-.list-a strong{color:#c9a227;}
-.list-mem{font-size:9px;color:#6fcf6f;border-top:1px solid #1a2a1a;padding-top:8px;margin-top:8px;line-height:1.6;}
-.topic-header{font-size:8px;letter-spacing:3px;color:#4b5563;padding:16px 0 8px;border-bottom:1px solid #1e2330;margin-bottom:8px;}
-#score-screen{display:none;padding:32px 20px;text-align:center;}
-.score-big{font-family:'Bebas Neue',sans-serif;font-size:80px;color:#c9a227;line-height:1;}
-.score-label{font-size:9px;letter-spacing:3px;color:#4b5563;margin-bottom:24px;}
-.score-breakdown{display:flex;gap:12px;justify-content:center;margin-bottom:28px;}
-.score-item{background:#0e1117;border:1px solid #1e2330;padding:14px 20px;border-radius:3px;}
-.score-item-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#f0f0f0;}
-.score-item-lbl{font-size:7px;letter-spacing:2px;color:#4b5563;}
-.restart-btn{background:#c9a227;border:none;color:#090b10;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;padding:12px 40px;cursor:pointer;border-radius:2px;}
+:root{
+  --bg:#090b10;
+  --surface:#0d1117;
+  --surface2:#111620;
+  --border:#1e2330;
+  --gold:#c9a227;
+  --gold-dim:#7a5f18;
+  --green:#10b981;
+  --red:#ef4444;
+  --text:#f0f0f0;
+  --muted:#4b5563;
+  --muted2:#374151;
+}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;user-select:none;}
+
+/* ── PROGRESS BAR (top of page) ───────────────────────── */
+/* Design note: A thin progress bar at the very top gives users
+   a sense of location without taking space from the content */
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:0%;transition:width .4s ease;}
+
+/* ── HEADER ───────────────────────────────────────────── */
+.header{padding:20px 20px 0;padding-top:22px;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.back-link{color:var(--muted);font-size:8px;letter-spacing:2px;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;}
+.back-link:active{color:var(--gold);}
+.deck-badge{font-size:7px;letter-spacing:2px;background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.25);color:var(--gold);padding:3px 10px;border-radius:20px;}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:var(--text);line-height:1;}
+.header-sub{font-size:7px;letter-spacing:3px;color:var(--muted);margin-top:3px;}
+
+/* ── MODE TABS ────────────────────────────────────────── */
+/* Design note: Tab navigation uses an underline indicator —
+   cleaner than bordered buttons, feels more like an app */
+.mode-tabs{display:flex;gap:0;padding:0 20px;margin-top:16px;border-bottom:1px solid var(--border);}
+.mode-tab{font-size:8px;letter-spacing:2px;color:var(--muted);padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'IBM Plex Mono',monospace;}
+.mode-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── STATS ROW ────────────────────────────────────────── */
+/* Design note: 4-column stat grid gives key numbers
+   at a glance. Use Bebas for numbers (large, punchy)
+   and tiny mono for labels (secondary info) */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin:0;}
+.stat-cell{background:var(--bg);padding:12px 6px;text-align:center;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1;transition:all .3s;}
+.stat-val.green{color:var(--green);}
+.stat-val.red{color:var(--red);}
+.stat-lbl{font-size:6px;letter-spacing:2px;color:var(--muted);margin-top:2px;}
+
+/* ── FLASHCARD VIEW ───────────────────────────────────── */
+#flash-view{padding:16px 16px 80px;}
+
+/* Card counter */
+.card-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-pos{font-size:8px;letter-spacing:2px;color:var(--muted);}
+.card-pos span{color:var(--text);}
+.skip-btn{background:none;border:none;color:var(--muted2);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;cursor:pointer;padding:4px 0;}
+.skip-btn:active{color:var(--muted);}
+
+/* ── THE CARD ─────────────────────────────────────────── */
+/* Design note: The card uses a 3D flip transform.
+   Key trick: both faces are positioned:absolute so they
+   overlay each other. The back face starts rotated 180deg
+   so when parent flips, it comes right-side up. */
+.card-scene{perspective:1200px;margin-bottom:14px;cursor:pointer;touch-action:pan-y;}
+.card{position:relative;width:100%;min-height:280px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;top:0;left:0;right:0;
+  min-height:280px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:12px;
+  padding:24px 20px;
+  display:flex;flex-direction:column;
+  /* Design note: border-image creates the gradient border effect */
+}
+.card-front{
+  background:var(--surface);
+  border:1px solid var(--border);
+  /* subtle inner shadow gives depth */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 4px 24px rgba(0,0,0,.4);
+}
+.card-back{
+  background:linear-gradient(135deg,#0a1a0e 0%,#0d1117 60%);
+  border:1px solid #1e3a28;
+  box-shadow:inset 0 1px 0 rgba(16,185,129,.05), 0 4px 24px rgba(0,0,0,.4);
+  transform:rotateY(180deg);
+}
+
+/* Topic badge */
+/* Design note: Each topic gets a colored pill badge.
+   Using emoji + text creates visual landmarks that make
+   it easier to spot categories while scrolling */
+.topic-pill{display:inline-flex;align-items:center;gap:5px;font-size:7px;letter-spacing:2px;padding:4px 10px;border-radius:20px;margin-bottom:14px;width:fit-content;}
+.tp-auto{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:#818cf8;}
+.tp-property{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);color:#fbbf24;}
+.tp-liability{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:#f87171;}
+.tp-crime{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:#34d399;}
+.tp-general{background:rgba(156,163,175,.1);border:1px solid rgba(156,163,175,.2);color:#9ca3af;}
+.tp-workers{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:#c084fc;}
+.tp-state{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);color:#60a5fa;}
+.tp-bop{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);color:#fbbf24;}
+
+.card-label{font-size:7px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;}
+.card-q{font-size:13px;line-height:1.75;color:var(--text);flex:1;}
+.card-a{font-size:12px;line-height:1.75;color:var(--text);flex:1;}
+.card-a strong{color:var(--gold);}
+
+/* Memory trick box */
+/* Design note: Give the memory trick its own visual "zone" —
+   a different background + accent color makes it feel like
+   a sticky note attached to the answer */
+.mem-box{margin-top:14px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:12px 14px;}
+.mem-icon{font-size:14px;margin-bottom:4px;}
+.mem-label{font-size:6px;letter-spacing:2px;color:var(--green);margin-bottom:4px;opacity:.7;}
+.mem-text{font-size:10px;color:#6fcf6f;line-height:1.65;}
+
+.tap-hint{text-align:center;font-size:7px;letter-spacing:2px;color:var(--muted2);margin-top:8px;transition:opacity .3s;}
+.tap-hint.hidden{opacity:0;}
+
+/* ── SWIPE FEEDBACK ───────────────────────────────────── */
+/* Design note: When user swipes, show a colored overlay hint.
+   This gives immediate physical feedback before they release */
+.swipe-hint{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;opacity:0;transition:opacity .1s;pointer-events:none;z-index:5;}
+.swipe-hint.knew{background:rgba(16,185,129,.15);color:var(--green);border:2px solid rgba(16,185,129,.3);}
+.swipe-hint.missed{background:rgba(239,68,68,.12);color:var(--red);border:2px solid rgba(239,68,68,.25);}
+
+/* ── ANSWER BUTTONS ───────────────────────────────────── */
+/* Design note: Two clear action buttons after flip.
+   High contrast, full width, with visual weight difference
+   between the two options */
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.ans-btn{border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:14px 16px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s, opacity .15s;}
+.ans-btn:active{transform:scale(0.97);}
+.btn-missed{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--red);}
+.btn-knew{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--green);}
+.answer-btns.hidden{display:none;}
+
+/* ── BOTTOM NAV ───────────────────────────────────────── */
+.bottom-nav{display:flex;gap:8px;margin-top:10px;}
+.nav-btn{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:11px;border-radius:8px;cursor:pointer;transition:all .15s;}
+.nav-btn:active:not(:disabled){background:var(--border);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#090b10;}
+.nav-btn.primary:active{background:#b08f20;}
+
+/* ── LIST VIEW ────────────────────────────────────────── */
+#list-view{display:none;padding:12px 16px 80px;}
+.topic-section-header{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;margin-top:6px;}
+.topic-section-icon{font-size:16px;}
+.topic-section-label{font-size:9px;letter-spacing:3px;color:var(--muted);}
+.topic-section-count{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted2);margin-left:auto;}
+.list-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;transition:border-color .15s;}
+.list-q{font-size:9px;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.list-a{font-size:11px;color:var(--text);line-height:1.7;margin-bottom:10px;}
+.list-a strong{color:var(--gold);}
+.list-mem{font-size:9px;color:#6fcf6f;line-height:1.65;border-top:1px solid rgba(16,185,129,.1);padding-top:10px;}
+
+/* ── SCORE SCREEN ─────────────────────────────────────── */
+/* Design note: The score screen uses a large SVG ring chart.
+   Rings are more visually interesting than just a number —
+   and encode the ratio at a glance */
+#score-view{display:none;padding:32px 20px;text-align:center;}
+.score-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 24px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:12;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:12;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-fill.good{stroke:#10b981;}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--text);line-height:1;}
+.score-of{font-size:7px;letter-spacing:3px;color:var(--muted);}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
+.score-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;}
+.score-block-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;margin-bottom:2px;}
+.score-block-val.green{color:var(--green);}
+.score-block-val.red{color:var(--red);}
+.score-block-lbl{font-size:7px;letter-spacing:2px;color:var(--muted);}
+.score-msg{font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
+.restart-btn{width:100%;background:var(--gold);border:none;color:#090b10;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:14px;border-radius:8px;cursor:pointer;}
+.restart-btn:active{background:#b08f20;}
+
+/* ── KEYBOARD HINT ────────────────────────────────────── */
+.kb-hint{text-align:center;font-size:7px;letter-spacing:1px;color:var(--muted2);margin-top:6px;}
 </style>
 </head>
 <body>
 
+<!-- Progress bar rail at very top of page -->
+<div id="progress-rail"><div id="progress-fill"></div></div>
+
+<!-- HEADER -->
 <div class="header">
-  <div>
-    <div class="h-title">LEARNING TEST 1</div>
-    <div class="h-sub">64 MISSED QUESTIONS · FLASHCARDS + MEMORY TRICKS</div>
+  <div class="header-top">
+    <a class="back-link" href="PC_Dashboard.html">← DASHBOARD</a>
+    <span class="deck-badge">LEARNING TEST 1</span>
   </div>
-  <a class="back-link" href="PC_Dashboard.html">← DASHBOARD</a>
+  <h1>MISSED QUESTIONS</h1>
+  <div class="header-sub" id="hdr-sub">64 CARDS · GENERAL + STATE LAW</div>
 </div>
 
-<div class="stats-bar">
-  <div class="stat"><div class="stat-val">64</div><div class="stat-lbl">TOTAL</div></div>
-  <div class="stat"><div class="stat-val" id="known-count">0</div><div class="stat-lbl">KNEW IT</div></div>
-  <div class="stat"><div class="stat-val" id="missed-count">0</div><div class="stat-lbl">MISSED</div></div>
-  <div class="stat"><div class="stat-val" id="pct-count">0%</div><div class="stat-lbl">SCORE</div></div>
+<!-- MODE TABS -->
+<div class="mode-tabs">
+  <button class="mode-tab active" onclick="setMode('flash',this)">FLASHCARDS</button>
+  <button class="mode-tab" onclick="setMode('list',this)">REVIEW ALL</button>
 </div>
 
-<div class="controls">
-  <div class="mode-btns">
-    <button class="mode-btn active" onclick="setMode('flash',event)">FLASHCARDS</button>
-    <button class="mode-btn" onclick="setMode('list',event)">REVIEW ALL</button>
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" id="s-total">64</div><div class="stat-lbl">TOTAL</div></div>
+  <div class="stat-cell"><div class="stat-val green" id="s-knew">0</div><div class="stat-lbl">KNEW IT</div></div>
+  <div class="stat-cell"><div class="stat-val red" id="s-missed">0</div><div class="stat-lbl">MISSED</div></div>
+  <div class="stat-cell"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">SCORE</div></div>
+</div>
+
+<!-- ═══ FLASHCARD VIEW ═══ -->
+<div id="flash-view">
+  <div class="card-nav-row">
+    <div class="card-pos"><span id="cur-num">1</span> / <span id="tot-num">64</span></div>
+    <button class="skip-btn" onclick="skipCard()">SKIP →</button>
   </div>
-  <div class="progress-txt" id="progress-txt">Card 1 of 64</div>
+
+  <!-- The card -->
+  <div class="card-scene" id="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="cf-front">
+        <!-- rendered by JS -->
+      </div>
+      <div class="card-face card-back" id="cf-back">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+    <!-- Swipe feedback overlays -->
+    <div class="swipe-hint knew" id="sh-knew">✓ KNEW IT</div>
+    <div class="swipe-hint missed" id="sh-missed">✕ MISSED</div>
+  </div>
+
+  <div class="tap-hint" id="tap-hint">TAP TO FLIP</div>
+
+  <!-- Answer buttons (shown after flip) -->
+  <div class="answer-btns hidden" id="ans-btns">
+    <button class="ans-btn btn-missed" onclick="markCard(false)">✕ MISSED IT</button>
+    <button class="ans-btn btn-knew" onclick="markCard(true)">✓ KNEW IT</button>
+  </div>
+
+  <!-- Nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀</button>
+    <button class="nav-btn primary" id="next-btn" onclick="nextCard()">NEXT ▶</button>
+  </div>
+  <div class="kb-hint">← → to navigate · Space to flip · K = knew · M = missed</div>
 </div>
 
-<div id="flashcard-mode">
-  <div class="card-counter" id="card-counter">1 / 46</div>
-  <div class="flashcard-wrap" onclick="flipCard()">
-    <div class="flashcard" id="flashcard">
-      <div class="card-face card-front" id="card-front"></div>
-      <div class="card-face card-back" id="card-back"></div>
+<!-- ═══ LIST VIEW ═══ -->
+<div id="list-view"></div>
+
+<!-- ═══ SCORE VIEW ═══ -->
+<div id="score-view">
+  <div class="score-ring-wrap">
+    <svg width="180" height="180" viewBox="0 0 180 180">
+      <circle class="ring-bg" cx="90" cy="90" r="78"/>
+      <circle class="ring-fill" id="ring-fill" cx="90" cy="90" r="78"
+        stroke-dasharray="0 490" stroke-dashoffset="0"/>
+    </svg>
+    <div class="score-center">
+      <div class="score-pct" id="fin-pct">0%</div>
+      <div class="score-of" id="fin-of">OF 64</div>
     </div>
   </div>
-  <div class="tap-hint" id="tap-hint">TAP CARD TO REVEAL ANSWER</div>
-  <div class="got-it-wrap" id="got-it-wrap" style="display:none;">
-    <button class="got-it-btn btn-missed" onclick="markCard(false)">✕ MISSED IT</button>
-    <button class="got-it-btn btn-knew" onclick="markCard(true)">✓ KNEW IT</button>
-  </div>
-  <div class="nav-btns" style="margin-top:14px;">
-    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀ PREV</button>
-    <button class="nav-btn primary" onclick="nextCard()" id="next-btn">NEXT ▶</button>
-  </div>
-</div>
 
-<div id="list-mode"></div>
-
-<div id="score-screen">
-  <div class="score-big" id="score-pct">--</div>
-  <div class="score-label">FINAL SCORE</div>
   <div class="score-breakdown">
-    <div class="score-item"><div class="score-item-val" id="final-known">0</div><div class="score-item-lbl">KNEW IT</div></div>
-    <div class="score-item"><div class="score-item-val" id="final-missed">0</div><div class="score-item-lbl">STILL LEARNING</div></div>
+    <div class="score-block">
+      <div class="score-block-val green" id="fin-knew">0</div>
+      <div class="score-block-lbl">KNEW IT</div>
+    </div>
+    <div class="score-block">
+      <div class="score-block-val red" id="fin-missed">0</div>
+      <div class="score-block-lbl">STILL LEARNING</div>
+    </div>
   </div>
+  <div class="score-msg" id="score-msg"></div>
   <button class="restart-btn" onclick="restart()">REVIEW AGAIN</button>
 </div>
 
 <script>
+// ══════════════════════════════════════════════════════
+// CARD DATA
+// ══════════════════════════════════════════════════════
+const TOPIC_META = {
+  auto:    {icon:'🚗', label:'AUTO'},
+  property:{icon:'🏠', label:'PROPERTY'},
+  liability:{icon:'⚖️', label:'LIABILITY'},
+  crime:   {icon:'🔒', label:'CRIME'},
+  general: {icon:'📋', label:'GENERAL'},
+  workers: {icon:'👷', label:'WORKERS COMP'},
+  state:   {icon:'🏛️', label:'KANSAS STATE LAW'},
+  bop:     {icon:'💼', label:'COMMERCIAL / BOP'},
+};
+
 const CARDS = [
   // ── GENERAL ──
-  {topic:'general',topicLabel:'GENERAL',
-   q:'What are common carriers and who do they serve?',
-   a:'<strong>Common carriers transport the property of anyone who hires them.</strong> Open to the public — cannot refuse.',
-   mem:'"Common" = open to the common public. Like a taxi that can\'t refuse a fare.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'What is it called when an in-force policy is terminated before the expiration date?',
-   a:'<strong>Cancellation.</strong> Can be by insured or insurer, voluntary or involuntary.',
-   mem:'"Cancel = Cut before the end." Nonrenewal = at expiration. Rescission = void from start. Cancellation = cut short.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'Which would modify the original insurance contract by adding or removing coverage?',
-   a:'<strong>Endorsements.</strong> Change original terms, conditions, or coverages. Can add, delete, or correct.',
-   mem:'"Endorse = Modify." Conditions are rules; endorsements are edits.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'A legal contract must contain all of the following EXCEPT: Beneficiary\'s consent / Offer & acceptance / Competent parties / Consideration',
-   a:'<strong>Beneficiary\'s consent is NOT required.</strong> The 4 elements: Offer & Acceptance, Consideration, Competent Parties, Legal Purpose.',
-   mem:'"OCCP" — Offer, Consideration, Competent parties, Purpose. No beneficiary needed to form the contract.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'Which act created a federal program sharing terrorist attack risk with the insurance industry?',
-   a:'<strong>TRIA — Terrorism Risk Insurance Act.</strong> Requires all commercial insurers to offer terrorism coverage.',
-   mem:'"TRIA = Terror Risk Insurance Act." Uncle Sam + insurers split the terror tab.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'What does the Federal Fair Credit Reporting Act regulate?',
-   a:'<strong>Consumer reports</strong> (also called consumer investigative reports or credit reports).',
-   mem:'"FCRA = Credit Files." Not telemarketing (TCPA), not money laundering (BSA). FCRA = reports on YOU.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'The part of the policy describing covered perils and the nature of coverage is called the:',
-   a:'<strong>Insuring agreement.</strong> Describes the insured perils and method of indemnification.',
-   mem:'"Insuring agreement = what we\'re insuring and how we pay." Declarations = who/what/when/how much. Conditions = rules. Exclusions = what\'s out.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'Which is NOT a condition in an insurance policy? Cancellation/nonrenewal / Appraisal / Insuring agreement / Subrogation',
-   a:'<strong>Insuring agreement is NOT a condition.</strong> It\'s a separate section of the policy. Conditions state legal obligations and duties.',
-   mem:'"Insuring agreement gives coverage. Conditions give rules." They\'re different sections — don\'t mix them up.'},
-
-  // ── LIABILITY ──
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'What is vicarious liability?',
-   a:'<strong>Liability imposed on one party due to the actions of another person.</strong> Ex: employer/employee, parent/child.',
-   mem:'"VICarious = liability VIA someone else." You\'re on the hook for what THEY did.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'A store employee wrongfully detained the meter reader thinking he was shoplifting. What coverage applies?',
-   a:'<strong>Personal and advertising injury liability.</strong> Covers false arrest/detention — damage to a person\'s character.',
-   mem:'"False arrest = character damage = Personal Injury Liability." Not bodily injury, not crime. It\'s about reputation harm.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'Which statement about strict liability is NOT correct? A) Imposed for hazardous activities B) Claimants may need proof a defect caused injury C) Applied in product liability D) Imposed regardless of fault',
-   a:'<strong>B is NOT correct in the way implied.</strong> Strict liability removes the need to prove negligence — but causation (defect caused the harm) must still be shown.',
-   mem:'"Strict = no fault needed, but causation always counts." You don\'t prove carelessness; you still prove the defect caused harm.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'A cereal company shipped product in faulty containers causing spoilage and illness. What type of claim?',
-   a:'<strong>Product liability claim.</strong> Covers legal liability of a manufacturer/merchant/distributor due to injury from a covered product.',
-   mem:'"Made it, sold it, you\'re on the hook." Product liability — regardless of how careful you were in making it.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'What does professional liability coverage protect against?',
-   a:'<strong>Errors and omissions.</strong> Covers liability from failure to use due care and skill expected in a profession.',
-   mem:'"E&O = Errors and Omissions = Professional Liability." Doctors call it malpractice. Everyone else calls it E&O.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'CGL Coverage A (BI & PD) will cover which of the following? Liquor liability / Insured\'s negligence / Contractual liability / Damage to insured\'s product',
-   a:'<strong>Losses due to the insured\'s negligence.</strong> The others (liquor liability, contractual liability, damage to own product) are exclusions.',
-   mem:'"Coverage A = your negligence caused someone else harm." Your product, your contract, your liquor = all excluded.'},
-  {topic:'liability',topicLabel:'LIABILITY',
-   q:'CGL supplementary payments cover all EXCEPT: $500/day lost earnings + $2,000 bail bonds / Pre & post judgment interest / Bonds to release attachment / $100 gasoline driving witness to court',
-   a:'<strong>$500/day for lost earnings and $2,000 bail bonds are wrong.</strong> Actual limits: $250/day lost earnings, $250 for bail bonds.',
-   mem:'"$250, not $500. $250, not $2,000." Supplementary payments are modest. Everything else listed IS covered.'},
+  {t:'general',q:'What do common carriers do and who do they serve?',a:'<strong>Common carriers transport the property of anyone who hires them.</strong> Open to the public — cannot refuse.',m:'"Common" = open to the common public. Like a taxi that can\'t refuse a fare.'},
+  {t:'general',q:'What is it called when an in-force policy is terminated before the expiration date?',a:'<strong>Cancellation.</strong> Can be by insured or insurer, voluntary or involuntary.',m:'"Cancel = Cut before the end." Nonrenewal = at expiration. Rescission = void from start. Cancellation = cut short.'},
+  {t:'general',q:'Which modifies the original insurance contract by adding or removing coverage?',a:'<strong>Endorsements.</strong> Change original terms, conditions, or coverages. Can add, delete, or correct.',m:'"Endorse = Modify." Conditions are rules; endorsements are edits.'},
+  {t:'general',q:'A legal contract must contain all EXCEPT: Beneficiary\'s consent / Offer & acceptance / Competent parties / Consideration',a:'<strong>Beneficiary\'s consent is NOT required.</strong> The 4 elements: Offer & Acceptance, Consideration, Competent Parties, Legal Purpose.',m:'"OCCP" — Offer, Consideration, Competent parties, Purpose. No beneficiary required.'},
+  {t:'general',q:'Which act created a federal program sharing terrorist attack risk with the insurance industry?',a:'<strong>TRIA — Terrorism Risk Insurance Act.</strong> Requires all commercial insurers to offer terrorism coverage.',m:'"TRIA = Terror Risk Insurance Act." Uncle Sam + insurers split the terror tab.'},
+  {t:'general',q:'What does the Federal Fair Credit Reporting Act regulate?',a:'<strong>Consumer reports</strong> — also called consumer investigative reports or credit reports.',m:'"FCRA = Credit Files." Not telemarketing (TCPA), not money laundering (BSA). FCRA = reports on YOU.'},
+  {t:'general',q:'The part of the policy describing covered perils and the nature of coverage is called the:',a:'<strong>Insuring agreement.</strong> Describes the insured perils and method of indemnification.',m:'"Insuring agreement = what we\'re insuring and how we pay." Declarations = who/what/when. Conditions = rules. Exclusions = what\'s out.'},
+  {t:'general',q:'Which is NOT a condition in an insurance policy? Cancellation/nonrenewal / Appraisal / Insuring agreement / Subrogation',a:'<strong>Insuring agreement is NOT a condition.</strong> It\'s a separate section. Conditions state legal obligations and duties.',m:'"Insuring agreement gives coverage. Conditions give rules." Two different sections of the policy.'},
+  {t:'general',q:'Which provides coverage on property involved in shipping on navigable waters?',a:'<strong>Marine insurance.</strong> Covers property in shipping and transportation on navigable waters.',m:'"Marine = water. Inland marine = land/transit." The name tells you where it goes.'},
 
   // ── AUTO ──
-  {topic:'auto',topicLabel:'AUTO',
-   q:'Auto policy 25/50/15. Accident: A=$15k, B=$30k, C=$35k injured. Total insurer pays?',
-   a:'<strong>$50,000.</strong> A=$15k (under limit). B=$25k (capped at per-person limit). C=$10k (only $10k left of $50k total).',
-   mem:'"Per-person cap first, then per-accident cap." 25 per person, 50 total. Stop when you hit either ceiling.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'Theft transportation expenses in a personal auto policy begin how many hours after theft?',
-   a:'<strong>48 hours</strong> after the theft.',
-   mem:'"2 days before the rental clock starts." 48 hours = 2 days.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'Transportation expense coverage in a PAP: how much per day, what\'s the maximum?',
-   a:'<strong>$20 per day, max $600</strong> (up to 30 days following theft).',
-   mem:'"$20 × 30 days = $600." Easy math. Lock in $20/$600.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'To assign a property insurance policy, whose written consent is required?',
-   a:'<strong>The insurer\'s written consent.</strong>',
-   mem:'"The company holds the keys." You can\'t hand off the policy without the insurer\'s blessing.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'In a commercial auto policy, where is the policy period found?',
-   a:'<strong>The Conditions section.</strong> Defines policy period, territory, and how coverage applies.',
-   mem:'"Conditions = rules of the game, including when and where." Period = Conditions.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'Medical payments in a PAP covers all EXCEPT: Insured hit by car crossing street / Insured exiting friend\'s mobile home / Friend driving insured\'s car with permission / Insured\'s child injured when car rolls',
-   a:'<strong>A friend driving the insured\'s vehicle is NOT covered by med pay.</strong> Med pay = insured and passengers only. Other drivers = liability coverage.',
-   mem:'"Med pay = YOU and your riders." The person borrowing your car? That\'s a liability situation, not med pay.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'Driver A (left turn on red, 80% at fault) hits Driver B (speeding, 20% at fault). How much can B collect under comparative negligence?',
-   a:'<strong>80% of damages.</strong> You recover based on the OTHER party\'s percentage of fault.',
-   mem:'"You collect what THEY owe." B is 20% at fault → collects 80%. Your fault % reduces your recovery.'},
-  {topic:'auto',topicLabel:'AUTO',
-   q:'A $500k liability limit applies to the total of BI and PD combined from one accident. What type of limit is this?',
-   a:'<strong>Combined single limit.</strong> One dollar amount covers both bodily injury and property damage together.',
-   mem:'"Combined Single = one pot for everything." Split limit = separate buckets for BI per person / BI total / PD.'},
+  {t:'auto',q:'Auto policy 25/50/15. Accident: A=$15k, B=$30k, C=$35k injured. Total insurer pays?',a:'<strong>$50,000.</strong> A=$15k (under limit). B=$25k (capped per-person). C=$10k (only $10k left of $50k total).',m:'"Per-person cap first, then per-accident cap." 25/person, 50/accident. Stop when you hit either ceiling.'},
+  {t:'auto',q:'Theft transportation expenses in a personal auto policy begin how many hours after theft?',a:'<strong>48 hours</strong> after the theft.',m:'"2 days before the rental clock starts." 48 hours = 2 days.'},
+  {t:'auto',q:'Transportation expense coverage in a PAP: how much per day, what\'s the maximum?',a:'<strong>$20 per day, max $600</strong> (up to 30 days following theft).',m:'"$20 × 30 days = $600." Lock in $20/$600.'},
+  {t:'auto',q:'To assign a property insurance policy, whose written consent is required?',a:'<strong>The insurer\'s written consent.</strong>',m:'"The company holds the keys." You can\'t hand off the policy without the insurer\'s blessing.'},
+  {t:'auto',q:'In a commercial auto policy, where is the policy period information found?',a:'<strong>The Conditions section.</strong> Defines policy period, territory, and how coverage applies.',m:'"Conditions = rules of the game, including when and where."'},
+  {t:'auto',q:'Medical payments in a PAP covers all EXCEPT: Insured hit crossing street / Insured exiting friend\'s mobile home / Friend driving insured\'s car with permission / Insured\'s child hurt when car rolls',a:'<strong>A friend driving the insured\'s vehicle is NOT covered by med pay.</strong> Med pay = insured and passengers only. Other drivers = liability.',m:'"Med pay = YOU and your riders." The person borrowing your car is a liability situation, not med pay.'},
+  {t:'auto',q:'Driver A (left turn, 80% at fault) vs Driver B (speeding, 20% at fault). How much can B collect under comparative negligence?',a:'<strong>80% of damages.</strong> You recover based on the OTHER party\'s fault percentage.',m:'"You collect what THEY owe." B is 20% at fault → collects 80% from A. Your fault reduces your recovery.'},
+  {t:'auto',q:'A $500k limit applies to total BI and PD combined from one accident. What type of limit is this?',a:'<strong>Combined single limit.</strong> One amount covers both bodily injury and property damage together.',m:'"Combined Single = one pot for everything." Split limit = separate buckets for BI per person / BI total / PD.'},
 
   // ── PROPERTY ──
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Which coverage in dwelling/homeowners policies covers indirect losses?',
-   a:'<strong>Loss of Use.</strong> Only kicks in after a direct covered loss has occurred.',
-   mem:'"Direct hits the house. Indirect hits your wallet." Loss of use = hotel bills, extra expenses.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Which is NOT covered by the condo unit owners endorsement? Appliances / Alterations / Fixtures / Furniture',
-   a:'<strong>Furniture is NOT covered.</strong> Covers Alterations, Appliances, Fixtures that are part of the building.',
-   mem:'"AAF in, Furniture out." Alterations, Appliances, Fixtures are attached to the building. Furniture walks out the door.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Which is NOT settled on ACV basis under business property coverage? Manuscripts / Property of others / Valuable papers & records / Works of art',
-   a:'<strong>Valuable papers and records.</strong> Valued at cost of blank materials + labor to copy — NOT replacement cost minus depreciation.',
-   mem:'"Papers aren\'t appraised — they\'re reprinted." Blank paper + labor. Everything else = ACV.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Homeowners covers collapse caused by all EXCEPT: Weight of too many people / Foundation cracks / Hidden insect damage / Weight of snow',
-   a:'<strong>Foundation cracks NOT covered.</strong> Collapse must be sudden and unexpected. Cracks develop over years.',
-   mem:'"Sudden = covered. Slow = not." Cracks are slow. Snow, bugs, too many people = sudden.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'How is Actual Cash Value (ACV) defined in property insurance?',
-   a:'<strong>Replacement cost at time of loss, minus depreciation.</strong>',
-   mem:'"ACV = RC − D." Replace it today, subtract the age discount.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'$100k house, 80% coinsurance required, $60k coverage, $40k fire loss. How much does owner collect?',
-   a:'<strong>$30,000.</strong> Need $80k, have $60k = 75%. 75% × $40k = $30,000.',
-   mem:'"Coinsurance: Have ÷ Need × Loss." 60÷80×40,000 = $30k. Underinsure = you eat the gap.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Which coverage in the dwelling policy covers contents damaged by fire?',
-   a:'<strong>Coverage C — Personal Property.</strong>',
-   mem:'"C for Contents." A=Dwelling, B=Other structures, C=Contents, D=Loss of use.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Insured mows lawn with borrowed lawnmower. Fuel line ruptures, mower destroyed by fire. How does HO liability respond?',
-   a:'<strong>It will cover the damage to the brother\'s mower.</strong> HO liability covers damage to property of others even if the insured is NOT legally liable.',
-   mem:'"HO liability = goodwill coverage." Even if it\'s not your fault, HO liability still pays for others\' property you damaged.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'What type of property valuation pays the full value as specified on the policy regardless of appreciation or depreciation?',
-   a:'<strong>Agreed value.</strong> Insurer and insured agree on value at policy inception. That\'s what\'s paid at loss, no questions asked.',
-   mem:'"Agreed = locked in." Both sides agree upfront. No depreciation argument. No appraisal fight. Agreed = done.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'HO-3 vs HO-5 contents coverage: what\'s the difference?',
-   a:'<strong>HO-5 = open peril for contents. HO-3 = named peril for contents.</strong> Replacement cost requires an endorsement on either form.',
-   mem:'"HO-5 is the Rolls Royce — open peril on structure AND contents." HO-3 is open peril on structure only, named peril on contents.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Replacement cost coverage in broad and special form dwelling policies requires what?',
-   a:'<strong>Insurance on the dwelling must be at least 80% of its replacement cost at the time of loss.</strong>',
-   mem:'"80% at time of loss." Not when written — AT THE TIME OF LOSS. Keep coverage current as values go up.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'A neighbor\'s tree falls in the insured\'s yard. When will the HO policy pay to remove it?',
-   a:'<strong>If the tree is blocking the driveway</strong> (or a handicapped ramp), or if it caused damage to a covered structure. Up to $1,000.',
-   mem:'"Blocking the driveway = covered." If it\'s just lying in the yard doing nothing, no coverage. It has to be blocking or damaging.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Special form dwelling, $100k Coverage A. Fire: $75k dwelling, $15k garage, 10 trees × $600. How much for trees?',
-   a:'<strong>$5,000.</strong> Trees capped at $500 per tree AND max 5% of Coverage A ($100k × 5% = $5,000). 10 trees × $500 = $5,000 (not $6,000).',
-   mem:'"Trees: $500 each, 5% of A total." Two caps, both apply. $500/tree AND 5% of Coverage A — use whichever runs out first.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Windstorm blocks insured\'s driveway with 2 of insured\'s trees and 2 neighbor\'s trees. 3 trees at $300, 1 tree at $600. How much does insurer pay?',
-   a:'<strong>$1,000.</strong> The policy has a $1,000 maximum for tree removal. 3×$300 + 1×$600 = $1,500, but capped at $1,000.',
-   mem:'"$1,000 max for tree removal, period." Doesn\'t matter whose trees or how many. Hit $1,000, stop.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'What term describes direct physical damage where the insured peril is the proximate cause of loss?',
-   a:'<strong>Direct loss.</strong> The covered peril directly and physically caused the damage.',
-   mem:'"Direct = the peril directly caused it." Fire burns the building = direct. Hotel bills while displaced = indirect.'},
-  {topic:'property',topicLabel:'PROPERTY',
-   q:'Which coverage in the dwelling policy would provide income protection when an insured RENTAL dwelling is uninhabitable due to a covered loss?',
-   a:'<strong>Coverage D — Fair Rental Value.</strong> Pays lost rental income when a covered loss makes the dwelling uninhabitable.',
-   mem:'"D for Dollars you\'re not getting from rent." Loss of use for rental income = Coverage D.'},
+  {t:'property',q:'Which coverage in dwelling/homeowners policies covers indirect losses?',a:'<strong>Loss of Use.</strong> Only kicks in after a direct covered loss has occurred.',m:'"Direct hits the house. Indirect hits your wallet." Loss of use = hotel bills, extra expenses.'},
+  {t:'property',q:'Which is NOT covered by the condo unit owners endorsement? Appliances / Alterations / Fixtures / Furniture',a:'<strong>Furniture is NOT covered.</strong> Covers Alterations, Appliances, Fixtures that are part of the building.',m:'"AAF in, Furniture out." Alterations, Appliances, Fixtures are attached. Furniture walks out the door.'},
+  {t:'property',q:'Which is NOT settled on ACV basis under business property coverage? Manuscripts / Property of others / Valuable papers & records / Works of art',a:'<strong>Valuable papers and records.</strong> Valued at blank materials cost + labor to copy — NOT ACV.',m:'"Papers aren\'t appraised — they\'re reprinted." Blank paper + labor. Everything else = ACV.'},
+  {t:'property',q:'Homeowners covers collapse caused by all EXCEPT: Weight of too many people / Foundation cracks / Hidden insect damage / Weight of snow',a:'<strong>Foundation cracks NOT covered.</strong> Collapse must be sudden and unexpected. Cracks develop over years.',m:'"Sudden = covered. Slow = not." Cracks are slow. Snow, bugs, too many people = sudden.'},
+  {t:'property',q:'How is Actual Cash Value (ACV) defined in property insurance?',a:'<strong>Replacement cost at time of loss, minus depreciation.</strong>',m:'"ACV = RC − D." Replace it today, subtract the age discount.'},
+  {t:'property',q:'$100k house, 80% coinsurance required, $60k coverage, $40k fire loss. How much does owner collect?',a:'<strong>$30,000.</strong> Need $80k, have $60k = 75%. 75% × $40k = $30,000.',m:'"Have ÷ Need × Loss." 60÷80×40,000 = $30k. Underinsure = you eat the gap.'},
+  {t:'property',q:'Which coverage in the dwelling policy covers contents damaged by fire?',a:'<strong>Coverage C — Personal Property.</strong>',m:'"C for Contents." A=Dwelling, B=Other structures, C=Contents, D=Loss of use.'},
+  {t:'property',q:'Insured mows lawn with borrowed lawnmower that catches fire. How does HO liability respond?',a:'<strong>It covers the damage to the brother\'s mower.</strong> HO liability covers damage to property of others even if the insured is NOT legally liable.',m:'"HO liability = goodwill coverage." Not your fault? Still pays. HO liability covers others\' property you damaged.'},
+  {t:'property',q:'What type of property valuation pays the full specified value regardless of appreciation or depreciation?',a:'<strong>Agreed value.</strong> Both parties agree on value at inception. That\'s what\'s paid at loss.',m:'"Agreed = locked in." No depreciation fight. No appraisal argument. Both sides agreed upfront — done.'},
+  {t:'property',q:'HO-3 vs HO-5 contents coverage: what\'s the difference?',a:'<strong>HO-5 = open peril for contents. HO-3 = named peril for contents.</strong> Replacement cost requires an endorsement on either form.',m:'"HO-5 is the Rolls Royce." Open peril on structure AND contents. HO-3 = open peril on structure, named peril on contents.'},
+  {t:'property',q:'Replacement cost coverage in broad/special form dwelling policies requires what?',a:'<strong>Insurance on the dwelling must be at least 80% of its replacement cost at the time of loss.</strong>',m:'"80% at time of loss." Not when written — AT THE TIME OF LOSS. Keep coverage current as values rise.'},
+  {t:'property',q:'A neighbor\'s tree falls in the insured\'s yard. When will the HO policy pay for removal?',a:'<strong>If the tree is blocking the driveway</strong> (or handicapped ramp), or caused damage to a covered structure. Up to $1,000.',m:'"Blocking the driveway = covered." Lying in the yard doing nothing = no coverage. Must be blocking or damaging.'},
+  {t:'property',q:'Special form dwelling, $100k Coverage A. 10 trees × $600 damaged by fire. How much for trees?',a:'<strong>$5,000.</strong> Trees capped at $500 per tree AND max 5% of Coverage A ($5,000). 10 trees × $500 = $5,000 (not $6,000).',m:'"Trees: $500 each, 5% of A total." Two caps — both apply. Use whichever runs out first.'},
+  {t:'property',q:'Windstorm blocks driveway with 4 trees. 3 trees at $300, 1 tree at $600. How much does insurer pay for removal?',a:'<strong>$1,000.</strong> Policy max for tree removal is $1,000. 3×$300 + 1×$600 = $1,500, capped at $1,000.',m:'"$1,000 max for tree removal, period." Whose trees, how many — doesn\'t matter. $1,000 is the ceiling.'},
+  {t:'property',q:'What term describes direct physical damage where the insured peril is the proximate cause?',a:'<strong>Direct loss.</strong> The covered peril directly and physically caused the damage.',m:'"Direct = the peril directly caused it." Fire burns the building = direct. Hotel bills = indirect.'},
+  {t:'property',q:'Which coverage in the dwelling policy covers lost rental income when the dwelling is uninhabitable?',a:'<strong>Coverage D — Fair Rental Value.</strong> Pays lost rental income following a covered loss.',m:'"D for Dollars you\'re not getting from rent." Loss of use for rental income = Coverage D.'},
+
+  // ── LIABILITY ──
+  {t:'liability',q:'What is vicarious liability?',a:'<strong>Liability imposed on one party due to the actions of another person.</strong> Examples: employer/employee, parent/child.',m:'"VICarious = liability VIA someone else." You\'re on the hook for what THEY did.'},
+  {t:'liability',q:'Store employee wrongfully detains the meter reader. What coverage applies?',a:'<strong>Personal and advertising injury liability.</strong> Covers false arrest/detention — damage to a person\'s character.',m:'"False arrest = character damage = Personal Injury Liability." Not bodily injury, not crime. It\'s about reputation harm.'},
+  {t:'liability',q:'Which statement about strict liability is NOT correct? (A) Hazardous activities (B) Claimants need proof defect caused injury (C) Product liability (D) Regardless of fault',a:'<strong>B is the EXCEPT — not entirely true as stated.</strong> Strict liability removes need to prove negligence, but causation (defect caused harm) must still be shown.',m:'"Strict = no fault needed, but causation always counts." Don\'t prove carelessness — still prove the defect caused the harm.'},
+  {t:'liability',q:'A cereal company ships product in faulty containers causing illness. What type of claim?',a:'<strong>Product liability claim.</strong> Covers legal liability of a manufacturer/merchant/distributor due to injury from a product.',m:'"Made it, sold it, you\'re on the hook." Product liability — regardless of how careful you were.'},
+  {t:'liability',q:'What does professional liability coverage protect against?',a:'<strong>Errors and omissions.</strong> Covers liability from failure to use due care and skill expected in a profession.',m:'"E&O = Errors and Omissions = Professional Liability." Doctors = malpractice. Everyone else = E&O.'},
+  {t:'liability',q:'CGL Coverage A covers which of the following? Liquor liability / Insured\'s negligence / Contractual liability / Damage to insured\'s product',a:'<strong>Losses due to the insured\'s negligence.</strong> The others are exclusions.',m:'"Coverage A = your negligence caused someone else harm." Your product, your contract, your liquor — all excluded.'},
+  {t:'liability',q:'CGL supplementary payments cover all EXCEPT: $500/day lost earnings + $2k bail / Pre-judgment interest / Bonds to release attachment / $100 gasoline driving witness to court',a:'<strong>The $500/day and $2,000 figures are wrong.</strong> Actual: $250/day for lost earnings, $250 for bail bonds.',m:'"$250, not $500. $250, not $2,000." Supplementary payments are modest — $250 is the magic number.'},
 
   // ── CRIME ──
-  {topic:'crime',topicLabel:'CRIME',
-   q:'A masked man pulls a gun demanding cash from a couple in a parking lot. What crime is this?',
-   a:'<strong>Robbery.</strong> Property taken under threat of violence.',
-   mem:'"Robbery = Rough (force/threat). Burglary = Breaking in. Larceny = Lifting quietly." Robbery requires a victim present and threatened.'},
-  {topic:'crime',topicLabel:'CRIME',
-   q:'Employee theft bonds may be written in all forms EXCEPT: Single form / Blanket position / Position schedule / Name schedule',
-   a:'<strong>Single form does NOT exist.</strong> Valid forms: Individual, Name Schedule, Position Schedule, Commercial Blanket, Blanket Position.',
-   mem:'"I Need People Covered, Broadly" — Individual, Name, Position, Commercial blanket, Blanket position. No "single" form.'},
+  {t:'crime',q:'A masked man pulls a gun demanding cash from a couple in a parking lot. What crime is this?',a:'<strong>Robbery.</strong> Property taken under threat of violence.',m:'"Robbery = Rough (force/threat). Burglary = Breaking in. Larceny = Lifting quietly." Robbery requires threat or force with a victim present.'},
+  {t:'crime',q:'Employee theft bonds may be written in all forms EXCEPT: Single form / Blanket position / Position schedule / Name schedule',a:'<strong>Single form does NOT exist.</strong> Valid forms: Individual, Name Schedule, Position Schedule, Commercial Blanket, Blanket Position.',m:'"I Need People Covered, Broadly" — Individual, Name, Position, Commercial blanket, Blanket position. No "single."'},
 
   // ── WORKERS COMP ──
-  {topic:'workers',topicLabel:'WORKERS COMP',
-   q:'Before workers compensation statutes, what did employees have to do to be compensated for work injuries?',
-   a:'<strong>Sue the employer and prove fault.</strong> Very few received any payment.',
-   mem:'"Old system = sue and prove or lose." Workers comp replaced this. Now: injured at work = covered, no fault needed.'},
+  {t:'workers',q:'Before workers comp statutes, what did employees have to do to receive compensation for work injuries?',a:'<strong>Sue the employer and prove fault.</strong> Very few received any payment.',m:'"Old system = sue and prove or lose." Workers comp replaced it. Injured at work = covered, no fault needed.'},
 
   // ── BOP / COMMERCIAL ──
-  {topic:'bop',topicLabel:'COMMERCIAL / BOP',
-   q:'Which is an example of a protective safeguard in a businessowners policy?',
-   a:'<strong>Automatic sprinkler system.</strong> Protective safeguards endorsement requires insured to maintain fire alarms, sprinklers, etc. as a condition for coverage.',
-   mem:'"Sprinklers, alarms = protective safeguards." Not paperwork — physical systems that reduce loss. Maintain them or lose coverage.'},
-  {topic:'bop',topicLabel:'COMMERCIAL / BOP',
-   q:'Duties of the insurer in property policy conditions include all EXCEPT: Notify insured of financial difficulty / Pay covered losses / Advance notice of cancellation / Return premiums',
-   a:'<strong>Notify insured of financial difficulty is NOT an insurer duty to policyholders.</strong> Insurers report financial conditions to the STATE, not to individual policyholders.',
-   mem:'"State monitors the insurer\'s finances, not you." You\'re not entitled to an insurer\'s financial report. The DOI handles that.'},
-  {topic:'bop',topicLabel:'COMMERCIAL / BOP',
-   q:'Which type of insurance is covered under TRIA? Commercial auto / Workers compensation / Crop insurance / Burglary & theft',
-   a:'<strong>Workers compensation is covered under TRIA.</strong> TRIA covers commercial property, liability, excess, workers comp, D&O. Commercial auto, crop, and burglary/theft are excluded.',
-   mem:'"TRIA = commercial lines essentials + workers comp." Niche lines like crop and burglary? Not in the terror umbrella.'},
-  {topic:'bop',topicLabel:'COMMERCIAL / BOP',
-   q:'Which is NOT included in the basic form dwelling policy (DP-1)? Other structures / Dwelling coverage / Loss of fair rental value / Additional living expense',
-   a:'<strong>Additional living expense (Coverage E) is NOT in the DP-1.</strong> It\'s automatic only in DP-2 and DP-3. Can be added by endorsement to DP-1.',
-   mem:'"DP-1 = bare bones." DP-2 = broad. DP-3 = special. The nicer the form, the more automatic coverages included.'},
+  {t:'bop',q:'Which is an example of a protective safeguard in a businessowners policy?',a:'<strong>Automatic sprinkler system.</strong> Protective safeguards endorsement requires maintaining physical systems (sprinklers, alarms) as a condition for coverage.',m:'"Sprinklers, alarms = protective safeguards." Physical systems that reduce loss. Maintain them or lose coverage.'},
+  {t:'bop',q:'Insurer duties in property policy conditions include all EXCEPT: Notify insured of financial difficulty / Pay covered losses / Advance notice of cancellation / Return premiums',a:'<strong>Notify insured of financial difficulty is NOT an insurer duty to policyholders.</strong> Insurers report financials to the STATE, not policyholders.',m:'"State monitors the insurer\'s finances, not you." The DOI handles that — not your job to track.'},
+  {t:'bop',q:'Which type of insurance is covered under TRIA? Commercial auto / Workers compensation / Crop insurance / Burglary & theft',a:'<strong>Workers compensation is covered under TRIA.</strong> TRIA covers commercial property, liability, excess, workers comp, D&O. Commercial auto, crop, burglary/theft are excluded.',m:'"TRIA = commercial lines essentials + workers comp." Niche lines like crop and burglary? Not in the terror umbrella.'},
+  {t:'bop',q:'Which is NOT included in the basic form dwelling policy (DP-1)? Other structures / Dwelling / Loss of fair rental value / Additional living expense',a:'<strong>Additional living expense (Coverage E) is NOT in the DP-1.</strong> Automatic only in DP-2 and DP-3. Added by endorsement to DP-1.',m:'"DP-1 = bare bones." DP-2 = broad. DP-3 = special. Nicer form = more automatic coverages.'},
 
   // ── KANSAS STATE LAW ──
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'An excess/surplus lines license permits a producer to do what?',
-   a:'<strong>Place insurance risks with unauthorized insurers.</strong> Surplus lines = unauthorized market for risks standard carriers won\'t take.',
-   mem:'"Surplus = unauthorized." The whole point of surplus lines is to go outside the admitted market. If it were admitted, you wouldn\'t need the surplus lines license.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'A professional liability policy in force 90+ days may be cancelled for all EXCEPT: Filing of a claim / Nonpayment of premium / Changes in exposure not present at inception / Material misrepresentation',
-   a:'<strong>Filing of a claim is NOT grounds for cancellation.</strong> Using your policy as intended cannot be used against you to cancel it.',
-   mem:'"Filing a claim ≠ cancellation." You paid for coverage. Using it can\'t be held against you. Nonpayment, misrepresentation, exposure changes — those are legitimate reasons.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'In the context of a producer database maintained by the NAIC, the term "producer" includes which of the following?',
-   a:'<strong>Agent.</strong> In the NAIC producer database context, "producer" includes "agent."',
-   mem:'"Producer = Agent in the NAIC database." Not insurer, not solicitor. Producer is the umbrella term that includes agents.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'If an insured requests a proof of loss form after fire/tornado damage, the insurer must send it within how many days?',
-   a:'<strong>10 days.</strong>',
-   mem:'"10 days for proof of loss form." Quick turnaround — insurer can\'t stall. 10 days to get the form to you so you can file.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'Personal lines insurance rates must be filed with the Insurance Department how far in advance?',
-   a:'<strong>At least 30 days prior to use.</strong> If disapproved, they may not be used.',
-   mem:'"30 days before you use them." File first, wait 30 days, then charge. Department gets a chance to review and disapprove.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'What determines a licensed agent\'s continuing education biennium due date?',
-   a:'<strong>Agent\'s year of birth.</strong> Odd birth year = CE due odd years. Even birth year = CE due even years.',
-   mem:'"Born odd = study odd years. Born even = study even years." Your birth year locks in your CE cycle for life.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'When an auto policy is cancelled, the insured must be notified of KAIP eligibility EXCEPT when:',
-   a:'<strong>The insured requested the cancellation.</strong> Also not required when cancellation is for nonpayment of premium.',
-   mem:'"You asked to cancel? You already know you\'re cancelling." KAIP notice is to protect people who didn\'t choose to lose coverage. If you initiated it, no notice needed.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'In Kansas, what would allow an insurer to cancel an auto policy in force more than 50 days?',
-   a:'<strong>Conviction of a third moving violation in the past 18 months.</strong> This is grounds for license and insurance suspension.',
-   mem:'"Three strikes in 18 months = cancelable." After 50 days, the insurer can\'t cancel for just anything. Three moving violations in 18 months crosses the line.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'Uninsured motorist coverage limits must be what compared to bodily injury liability limits?',
-   a:'<strong>The same.</strong> UM coverage limits must equal the BI liability limits on the policy.',
-   mem:'"UM = BI. Equal protection." You can\'t offer less UM than BI. You\'re as protected from uninsured drivers as you protect others.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'What is the maximum coverage for a residential dwelling under the Kansas FAIR Plan?',
-   a:'<strong>$400,000</strong> (lesser of market value, ACV, or $400,000). Capped to eliminate moral hazard.',
-   mem:'"FAIR Plan cap = $400k." Not $500k, not $1M. $400k keeps people from over-insuring a risky property they\'d rather see destroyed.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'Which of the following is NOT false advertising? Using names that disguise a policy / Stating dividends are not guaranteed / Representing a policy as stock / Misrepresenting policy terms',
-   a:'<strong>Stating that dividends are not guaranteed is NOT false advertising</strong> — it\'s a truthful, required disclosure.',
-   mem:'"Saying dividends aren\'t guaranteed = honest." Everything else is deception. True statements are never false advertising.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'All P&C insurers admitted in Kansas must do what as a condition of their certificate of authority?',
-   a:'<strong>Maintain membership in the Kansas Insurance Guaranty Association.</strong>',
-   mem:'"Admitted in Kansas = Guaranty Association member. No exceptions." The Guaranty Association protects policyholders if an insurer fails — every admitted insurer must participate.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'Which would NOT be a legal reason for nonrenewal of a personal auto policy in Kansas?',
-   a:'<strong>Filing two or more physical damage claims during the policy period.</strong> Claims alone cannot trigger nonrenewal — excessive claims may require higher deductible or surcharge instead.',
-   mem:'"Filing claims ≠ nonrenewal." You can\'t lose coverage just for using it. Nonrenewal requires things like moving violations, license loss, or insurer leaving the state.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'What is the FAIR Plan limit for theft coverage on personal property?',
-   a:'<strong>$10,000 maximum</strong> for theft of personal property.',
-   mem:'"FAIR Plan theft = $10k max." The FAIR Plan is bare-bones. $10k is the ceiling on theft — no more.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'An agent can\'t meet CE requirements due to military service. What can they do?',
-   a:'<strong>Request a waiver from the Commissioner.</strong> Military service and other extenuating circumstances qualify for a CE waiver.',
-   mem:'"Military = waiver available." You served the country — you get flexibility on CE. Request it from the Commissioner, don\'t just let the license lapse.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'If an applicant can\'t get auto insurance from a standard carrier, where can they apply?',
-   a:'<strong>Kansas Automobile Insurance Plan (KAIP).</strong> The assigned risk plan — provides basic auto coverage only.',
-   mem:'"Can\'t get standard? KAIP it." Kansas Automobile Insurance Plan = last resort assigned risk pool. Basic coverage only, no frills.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'In an insurance transaction, who is the principal?',
-   a:'<strong>The insurer.</strong> The insurer is the principal — the company that issues the policy.',
-   mem:'"Principal = the insurer." The agent acts ON BEHALF of the insurer (the principal). Agent = agent. Insurer = principal. Basic agency law.'},
-  {topic:'state',topicLabel:'KANSAS STATE LAW',
-   q:'Completing an approved motor vehicle accident prevention course entitles the insured to a premium discount for how long?',
-   a:'<strong>3 years</strong> following completion of the course.',
-   mem:'"Defensive driving = 3-year discount." Not 1, not 2 — 3 years. Take the course, lock in savings for 3 years.'},
-  {topic:'general',topicLabel:'GENERAL',
-   q:'Which provides coverage on property involved in shipping on navigable waters?',
-   a:'<strong>Marine insurance.</strong> Covers property in shipping and transportation on navigable waters.',
-   mem:'"Marine = water." Inland marine = land/transit. Ocean/navigable waters = Marine. The name tells you where it goes.'}
+  {t:'state',q:'An excess/surplus lines license permits a producer to do what?',a:'<strong>Place insurance risks with unauthorized insurers.</strong> Surplus lines = unauthorized market for risks standard carriers won\'t take.',m:'"Surplus = unauthorized." The whole point is going outside the admitted market.'},
+  {t:'state',q:'A professional liability policy 90+ days old may be cancelled for all EXCEPT: Filing a claim / Nonpayment / Changes in exposure / Material misrepresentation',a:'<strong>Filing of a claim is NOT grounds for cancellation.</strong> Using your coverage cannot be held against you.',m:'"Filing a claim ≠ cancellation." You paid for coverage. Using it can\'t cancel it.'},
+  {t:'state',q:'In the context of a producer database maintained by the NAIC, the term "producer" includes which of the following?',a:'<strong>Agent.</strong> In the NAIC producer database, "producer" includes "agent."',m:'"Producer = Agent in the NAIC database." Producer is the umbrella term that includes agents.'},
+  {t:'state',q:'If an insured requests a proof of loss form after fire/tornado damage, the insurer must send it within how many days?',a:'<strong>10 days.</strong>',m:'"10 days for proof of loss form." Insurer can\'t stall — 10 days to get the form to you.'},
+  {t:'state',q:'Personal lines insurance rates must be filed with the Insurance Department how far in advance?',a:'<strong>At least 30 days prior to use.</strong> If disapproved, they may not be used.',m:'"30 days before you use them." File, wait, then charge.'},
+  {t:'state',q:'What determines a licensed agent\'s continuing education biennium due date?',a:'<strong>Agent\'s year of birth.</strong> Odd birth year = CE due odd years. Even birth year = CE due even years.',m:'"Born odd = study odd years. Born even = study even years." Your birth year locks your CE cycle forever.'},
+  {t:'state',q:'When an auto policy is cancelled, insured must be notified of KAIP eligibility EXCEPT when:',a:'<strong>The insured requested the cancellation</strong> (or when cancelled for nonpayment of premium).',m:'"You asked to cancel? You already know." KAIP notice protects people who didn\'t choose to lose coverage.'},
+  {t:'state',q:'In Kansas, what allows an insurer to cancel an auto policy in force more than 50 days?',a:'<strong>Conviction of a third moving violation in the past 18 months.</strong> Grounds for license and insurance suspension.',m:'"Three strikes in 18 months = cancelable." After 50 days, the bar is high. Three moving violations crosses it.'},
+  {t:'state',q:'Uninsured motorist coverage limits must be what compared to bodily injury liability limits?',a:'<strong>The same.</strong> UM coverage limits must equal the BI liability limits.',m:'"UM = BI. Equal protection." You can\'t offer less UM than BI.'},
+  {t:'state',q:'Maximum coverage for a residential dwelling under the Kansas FAIR Plan?',a:'<strong>$400,000</strong> (lesser of market value, ACV, or $400,000). Capped to eliminate moral hazard.',m:'"FAIR Plan cap = $400k." Not $500k, not $1M. $400k prevents over-insuring a risky property.'},
+  {t:'state',q:'Which is NOT false advertising? Using names that disguise a policy / Stating dividends are not guaranteed / Representing a policy as stock / Misrepresenting terms',a:'<strong>Stating that dividends are not guaranteed is NOT false advertising</strong> — it\'s a truthful disclosure.',m:'"True statements are never false advertising." Everything else is deception.'},
+  {t:'state',q:'All P&C insurers admitted in Kansas must maintain what as a condition of their certificate of authority?',a:'<strong>Membership in the Kansas Insurance Guaranty Association.</strong>',m:'"Admitted in Kansas = Guaranty Association member. No exceptions."'},
+  {t:'state',q:'Which would NOT be a legal reason for nonrenewal of a personal auto policy in Kansas?',a:'<strong>Filing two or more physical damage claims.</strong> Claims alone cannot trigger nonrenewal — may result in higher deductible or surcharge instead.',m:'"Filing claims ≠ nonrenewal." You can\'t lose coverage just for using it.'},
+  {t:'state',q:'What is the FAIR Plan limit for theft coverage on personal property?',a:'<strong>$10,000 maximum</strong> for theft of personal property.',m:'"FAIR Plan theft = $10k max." The FAIR Plan is bare-bones. $10k is the ceiling.'},
+  {t:'state',q:'An agent can\'t meet CE requirements due to military service. What can they do?',a:'<strong>Request a waiver from the Commissioner.</strong> Military service qualifies for a CE waiver.',m:'"Military = waiver available." Request it from the Commissioner — don\'t let the license lapse.'},
+  {t:'state',q:'If an applicant can\'t get auto insurance from a standard carrier, where can they apply?',a:'<strong>Kansas Automobile Insurance Plan (KAIP).</strong> The assigned risk plan — provides basic auto coverage only.',m:'"Can\'t get standard? KAIP it." Last resort assigned risk pool. Basic coverage only.'},
+  {t:'state',q:'In an insurance transaction, who is the principal?',a:'<strong>The insurer.</strong> The company that issues the policy.',m:'"Principal = the insurer." Agent acts ON BEHALF of the insurer. Agent = agent. Insurer = principal.'},
+  {t:'state',q:'Completing an approved motor vehicle accident prevention course entitles the insured to a premium discount for how long?',a:'<strong>3 years</strong> following completion of the course.',m:'"Defensive driving = 3-year discount." Not 1, not 2 — 3 years.'}
 ];
 
-let current=0, flipped=false, scores=new Array(CARDS.length).fill(null), mode='flash';
-const TOTAL=CARDS.length;
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let cur=0, flipped=false, scores=new Array(CARDS.length).fill(null);
+const CIRC=2*Math.PI*78; // circumference for ring (r=78)
 
+// Touch/swipe state
+let touchStartX=0, touchStartY=0, isDragging=false;
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+document.getElementById('tot-num').textContent=CARDS.length;
+document.getElementById('s-total').textContent=CARDS.length;
+document.getElementById('fin-of').textContent='OF '+CARDS.length;
 renderCard();
-buildListMode();
+buildListView();
+setupSwipe();
+setupKeyboard();
 
-function setMode(m,e){
-  mode=m;
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-  if(e&&e.target)e.target.classList.add('active');
-  document.getElementById('flashcard-mode').style.display=m==='flash'?'block':'none';
-  document.getElementById('list-mode').style.display=m==='list'?'block':'none';
-  document.getElementById('score-screen').style.display='none';
-  document.getElementById('progress-txt').style.display=m==='flash'?'block':'none';
-}
-
+// ══════════════════════════════════════════════════════
+// RENDER CARD
+// ══════════════════════════════════════════════════════
 function renderCard(){
-  if(current>=CARDS.length){showScore();return;}
-  const c=CARDS[current];
+  if(cur>=CARDS.length){showScore();return;}
+  const c=CARDS[cur];
+  const tm=TOPIC_META[c.t]||TOPIC_META.general;
   flipped=false;
-  document.getElementById('flashcard').classList.remove('flipped');
-  document.getElementById('card-counter').textContent=`${current+1} / ${CARDS.length}`;
-  document.getElementById('progress-txt').textContent=`Card ${current+1} of ${CARDS.length}`;
-  document.getElementById('tap-hint').style.display='block';
-  document.getElementById('got-it-wrap').style.display='none';
-  document.getElementById('prev-btn').disabled=current===0;
-  document.getElementById('next-btn').textContent=current===CARDS.length-1?'FINISH':'NEXT ▶';
-  document.getElementById('card-front').innerHTML=`<span class="card-topic topic-${c.topic}">${c.topicLabel}</span><div class="card-face-label">QUESTION</div><div class="card-question">${c.q}</div>`;
-  document.getElementById('card-back').innerHTML=`<span class="card-topic topic-${c.topic}">${c.topicLabel}</span><div class="card-face-label">ANSWER</div><div class="card-answer">${c.a}</div><div class="memory-trick"><div class="memory-label">💡 MEMORY TRICK</div><div class="memory-text">${c.mem}</div></div>`;
+
+  // Reset card visual
+  const card=document.getElementById('card');
+  card.style.transition='none';
+  card.style.transform='translateX(0) rotate(0deg)';
+  card.classList.remove('flipped');
+  // Re-enable transition after paint
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+
+  document.getElementById('cf-front').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">QUESTION</div>
+    <div class="card-q">${c.q}</div>
+  `;
+  document.getElementById('cf-back').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">ANSWER</div>
+    <div class="card-a">${c.a}</div>
+    <div class="mem-box">
+      <div class="mem-icon">💡</div>
+      <div class="mem-label">MEMORY TRICK</div>
+      <div class="mem-text">${c.m}</div>
+    </div>
+  `;
+
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('tap-hint').className='tap-hint';
+  document.getElementById('ans-btns').className='answer-btns hidden';
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').textContent=cur===CARDS.length-1?'FINISH':'NEXT ▶';
+  document.getElementById('sh-knew').style.opacity='0';
+  document.getElementById('sh-missed').style.opacity='0';
+
+  // Progress bar
+  document.getElementById('progress-fill').style.width=((cur/CARDS.length)*100)+'%';
   updateStats();
 }
 
 function flipCard(){
   if(flipped)return;
   flipped=true;
-  document.getElementById('flashcard').classList.add('flipped');
-  document.getElementById('tap-hint').style.display='none';
-  document.getElementById('got-it-wrap').style.display='flex';
+  document.getElementById('card').classList.add('flipped');
+  document.getElementById('tap-hint').className='tap-hint hidden';
+  document.getElementById('ans-btns').className='answer-btns';
 }
 
+document.getElementById('card-scene').addEventListener('click',()=>{
+  if(!flipped)flipCard();
+});
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
 function markCard(knew){
-  scores[current]=knew;
+  scores[cur]=knew;
   updateStats();
-  setTimeout(()=>{current++;renderCard();},200);
+  animateExit(knew?'right':'left');
+  setTimeout(()=>{cur++;renderCard();},350);
 }
-
 function nextCard(){
-  if(current>=CARDS.length-1){showScore();return;}
-  current++;renderCard();
+  if(cur>=CARDS.length-1){showScore();return;}
+  animateExit('left');
+  setTimeout(()=>{cur++;renderCard();},350);
+}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function skipCard(){nextCard();}
+
+function animateExit(dir){
+  const card=document.getElementById('card');
+  const x=dir==='right'?120:-120;
+  card.style.transition='transform .35s ease, opacity .35s ease';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='right'?8:-8}deg)`;
+  card.style.opacity='0';
 }
 
-function prevCard(){
-  if(current<=0)return;
-  current--;renderCard();
+// ══════════════════════════════════════════════════════
+// SWIPE GESTURES
+// ══════════════════════════════════════════════════════
+function setupSwipe(){
+  const scene=document.getElementById('card-scene');
+  scene.addEventListener('touchstart',e=>{
+    if(!flipped)return;
+    touchStartX=e.touches[0].clientX;
+    touchStartY=e.touches[0].clientY;
+    isDragging=true;
+  },{passive:true});
+  scene.addEventListener('touchmove',e=>{
+    if(!isDragging||!flipped)return;
+    const dx=e.touches[0].clientX-touchStartX;
+    const dy=e.touches[0].clientY-touchStartY;
+    if(Math.abs(dy)>Math.abs(dx))return; // vertical scroll
+    const card=document.getElementById('card');
+    card.style.transition='none';
+    card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/20}deg)`;
+    const shKnew=document.getElementById('sh-knew');
+    const shMissed=document.getElementById('sh-missed');
+    if(dx>40){shKnew.style.opacity=Math.min((dx-40)/60,1)+'';shMissed.style.opacity='0';}
+    else if(dx<-40){shMissed.style.opacity=Math.min((-dx-40)/60,1)+'';shKnew.style.opacity='0';}
+    else{shKnew.style.opacity='0';shMissed.style.opacity='0';}
+  },{passive:true});
+  scene.addEventListener('touchend',e=>{
+    if(!isDragging||!flipped){isDragging=false;return;}
+    isDragging=false;
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(dx>80){markCard(true);}
+    else if(dx<-80){markCard(false);}
+    else{
+      const card=document.getElementById('card');
+      card.style.transition='transform .3s ease';
+      card.style.transform='rotateY(180deg)';
+      document.getElementById('sh-knew').style.opacity='0';
+      document.getElementById('sh-missed').style.opacity='0';
+    }
+  },{passive:true});
 }
 
+// ══════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════════
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    else if(e.key==='ArrowRight')nextCard();
+    else if(e.key==='ArrowLeft')prevCard();
+    else if(e.key==='k'||e.key==='K'){if(flipped)markCard(true);}
+    else if(e.key==='m'||e.key==='M'){if(flipped)markCard(false);}
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════════
 function updateStats(){
-  const known=scores.filter(s=>s===true).length;
+  const knew=scores.filter(s=>s===true).length;
   const missed=scores.filter(s=>s===false).length;
   const seen=scores.filter(s=>s!==null).length;
-  const pct=seen>0?Math.round(known/seen*100):0;
-  document.getElementById('known-count').textContent=known;
-  document.getElementById('missed-count').textContent=missed;
-  document.getElementById('pct-count').textContent=pct+'%';
+  const pct=seen>0?Math.round(knew/seen*100):null;
+  document.getElementById('s-knew').textContent=knew;
+  document.getElementById('s-missed').textContent=missed;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
 }
 
+// ══════════════════════════════════════════════════════
+// SCORE SCREEN
+// ══════════════════════════════════════════════════════
 function showScore(){
-  const known=scores.filter(s=>s===true).length;
+  const knew=scores.filter(s=>s===true).length;
   const missed=scores.filter(s=>s===false).length;
-  const pct=Math.round(known/CARDS.length*100);
-  document.getElementById('flashcard-mode').style.display='none';
-  document.getElementById('score-screen').style.display='block';
-  document.getElementById('score-pct').textContent=pct+'%';
-  document.getElementById('final-known').textContent=known;
-  document.getElementById('final-missed').textContent=missed;
+  const pct=Math.round(knew/CARDS.length*100);
+  document.getElementById('flash-view').style.display='none';
+  document.getElementById('score-view').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+
+  document.getElementById('fin-pct').textContent=pct+'%';
+  document.getElementById('fin-knew').textContent=knew;
+  document.getElementById('fin-missed').textContent=missed;
+
+  // Score ring animation
+  const ring=document.getElementById('ring-fill');
+  const fill=(pct/100)*CIRC;
+  ring.style.strokeDasharray=`${fill} ${CIRC}`;
+  if(pct>=70)ring.classList.add('good');
+
+  // Message
+  const msgs=['Keep grinding — every rep builds memory.','Getting there. The weak spots are mapped.','Solid progress. Run it again on the ones you missed.','Strong! You\'re in the passing zone.','Locked in. You\'re ready.'];
+  const msgIdx=pct>=90?4:pct>=70?3:pct>=50?2:pct>=30?1:0;
+  document.getElementById('score-msg').textContent=msgs[msgIdx];
 }
 
 function restart(){
-  current=0;scores=new Array(CARDS.length).fill(null);flipped=false;
-  document.getElementById('score-screen').style.display='none';
-  document.getElementById('flashcard-mode').style.display='block';
+  cur=0;scores=new Array(CARDS.length).fill(null);flipped=false;
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  document.getElementById('ring-fill').classList.remove('good');
   renderCard();updateStats();
 }
 
-function buildListMode(){
-  const topics=[...new Set(CARDS.map(c=>c.topic))];
+// ══════════════════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════════════════
+function setMode(m,btn){
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('flash-view').style.display=m==='flash'?'block':'none';
+  document.getElementById('list-view').style.display=m==='list'?'block':'none';
+  document.getElementById('score-view').style.display='none';
+}
+
+// ══════════════════════════════════════════════════════
+// LIST VIEW
+// ══════════════════════════════════════════════════════
+function buildListView(){
+  const topics=[...new Set(CARDS.map(c=>c.t))];
   let html='';
   topics.forEach(t=>{
-    const cards=CARDS.filter(c=>c.topic===t);
-    html+=`<div class="topic-header">${cards[0].topicLabel} (${cards.length})</div>`;
+    const cards=CARDS.filter(c=>c.t===t);
+    const tm=TOPIC_META[t]||TOPIC_META.general;
+    html+=`<div class="topic-section-header">
+      <span class="topic-section-icon">${tm.icon}</span>
+      <span class="topic-section-label">${tm.label}</span>
+      <span class="topic-section-count">${cards.length}</span>
+    </div>`;
     cards.forEach(c=>{
-      html+=`<div class="list-card"><div class="list-q">${c.q}</div><div class="list-a">${c.a}</div><div class="list-mem">💡 ${c.mem}</div></div>`;
+      html+=`<div class="list-card">
+        <div class="list-q">${c.q}</div>
+        <div class="list-a">${c.a}</div>
+        <div class="list-mem">💡 ${c.m}</div>
+      </div>`;
     });
   });
-  document.getElementById('list-mode').innerHTML=html;
+  document.getElementById('list-view').innerHTML=html;
 }
 </script>
 </body>
