@@ -80,13 +80,13 @@ body{background:#090b10;color:#f0f0f0;font-family:'IBM Plex Mono',monospace;min-
 <div class="header">
   <div>
     <div class="h-title">LEARNING TEST 1</div>
-    <div class="h-sub">46 MISSED QUESTIONS · FLASHCARDS + MEMORY TRICKS</div>
+    <div class="h-sub">64 MISSED QUESTIONS · FLASHCARDS + MEMORY TRICKS</div>
   </div>
   <a class="back-link" href="PC_Dashboard.html">← DASHBOARD</a>
 </div>
 
 <div class="stats-bar">
-  <div class="stat"><div class="stat-val">46</div><div class="stat-lbl">TOTAL</div></div>
+  <div class="stat"><div class="stat-val">64</div><div class="stat-lbl">TOTAL</div></div>
   <div class="stat"><div class="stat-val" id="known-count">0</div><div class="stat-lbl">KNEW IT</div></div>
   <div class="stat"><div class="stat-val" id="missed-count">0</div><div class="stat-lbl">MISSED</div></div>
   <div class="stat"><div class="stat-val" id="pct-count">0%</div><div class="stat-lbl">SCORE</div></div>
@@ -97,7 +97,7 @@ body{background:#090b10;color:#f0f0f0;font-family:'IBM Plex Mono',monospace;min-
     <button class="mode-btn active" onclick="setMode('flash',event)">FLASHCARDS</button>
     <button class="mode-btn" onclick="setMode('list',event)">REVIEW ALL</button>
   </div>
-  <div class="progress-txt" id="progress-txt">Card 1 of 46</div>
+  <div class="progress-txt" id="progress-txt">Card 1 of 64</div>
 </div>
 
 <div id="flashcard-mode">
@@ -329,10 +329,89 @@ const CARDS = [
   {topic:'bop',topicLabel:'COMMERCIAL / BOP',
    q:'Which is NOT included in the basic form dwelling policy (DP-1)? Other structures / Dwelling coverage / Loss of fair rental value / Additional living expense',
    a:'<strong>Additional living expense (Coverage E) is NOT in the DP-1.</strong> It\'s automatic only in DP-2 and DP-3. Can be added by endorsement to DP-1.',
-   mem:'"DP-1 = bare bones." DP-2 = broad. DP-3 = special. The nicer the form, the more automatic coverages included.'}
+   mem:'"DP-1 = bare bones." DP-2 = broad. DP-3 = special. The nicer the form, the more automatic coverages included.'},
+
+  // ── KANSAS STATE LAW ──
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'An excess/surplus lines license permits a producer to do what?',
+   a:'<strong>Place insurance risks with unauthorized insurers.</strong> Surplus lines = unauthorized market for risks standard carriers won\'t take.',
+   mem:'"Surplus = unauthorized." The whole point of surplus lines is to go outside the admitted market. If it were admitted, you wouldn\'t need the surplus lines license.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'A professional liability policy in force 90+ days may be cancelled for all EXCEPT: Filing of a claim / Nonpayment of premium / Changes in exposure not present at inception / Material misrepresentation',
+   a:'<strong>Filing of a claim is NOT grounds for cancellation.</strong> Using your policy as intended cannot be used against you to cancel it.',
+   mem:'"Filing a claim ≠ cancellation." You paid for coverage. Using it can\'t be held against you. Nonpayment, misrepresentation, exposure changes — those are legitimate reasons.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'In the context of a producer database maintained by the NAIC, the term "producer" includes which of the following?',
+   a:'<strong>Agent.</strong> In the NAIC producer database context, "producer" includes "agent."',
+   mem:'"Producer = Agent in the NAIC database." Not insurer, not solicitor. Producer is the umbrella term that includes agents.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'If an insured requests a proof of loss form after fire/tornado damage, the insurer must send it within how many days?',
+   a:'<strong>10 days.</strong>',
+   mem:'"10 days for proof of loss form." Quick turnaround — insurer can\'t stall. 10 days to get the form to you so you can file.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'Personal lines insurance rates must be filed with the Insurance Department how far in advance?',
+   a:'<strong>At least 30 days prior to use.</strong> If disapproved, they may not be used.',
+   mem:'"30 days before you use them." File first, wait 30 days, then charge. Department gets a chance to review and disapprove.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'What determines a licensed agent\'s continuing education biennium due date?',
+   a:'<strong>Agent\'s year of birth.</strong> Odd birth year = CE due odd years. Even birth year = CE due even years.',
+   mem:'"Born odd = study odd years. Born even = study even years." Your birth year locks in your CE cycle for life.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'When an auto policy is cancelled, the insured must be notified of KAIP eligibility EXCEPT when:',
+   a:'<strong>The insured requested the cancellation.</strong> Also not required when cancellation is for nonpayment of premium.',
+   mem:'"You asked to cancel? You already know you\'re cancelling." KAIP notice is to protect people who didn\'t choose to lose coverage. If you initiated it, no notice needed.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'In Kansas, what would allow an insurer to cancel an auto policy in force more than 50 days?',
+   a:'<strong>Conviction of a third moving violation in the past 18 months.</strong> This is grounds for license and insurance suspension.',
+   mem:'"Three strikes in 18 months = cancelable." After 50 days, the insurer can\'t cancel for just anything. Three moving violations in 18 months crosses the line.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'Uninsured motorist coverage limits must be what compared to bodily injury liability limits?',
+   a:'<strong>The same.</strong> UM coverage limits must equal the BI liability limits on the policy.',
+   mem:'"UM = BI. Equal protection." You can\'t offer less UM than BI. You\'re as protected from uninsured drivers as you protect others.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'What is the maximum coverage for a residential dwelling under the Kansas FAIR Plan?',
+   a:'<strong>$400,000</strong> (lesser of market value, ACV, or $400,000). Capped to eliminate moral hazard.',
+   mem:'"FAIR Plan cap = $400k." Not $500k, not $1M. $400k keeps people from over-insuring a risky property they\'d rather see destroyed.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'Which of the following is NOT false advertising? Using names that disguise a policy / Stating dividends are not guaranteed / Representing a policy as stock / Misrepresenting policy terms',
+   a:'<strong>Stating that dividends are not guaranteed is NOT false advertising</strong> — it\'s a truthful, required disclosure.',
+   mem:'"Saying dividends aren\'t guaranteed = honest." Everything else is deception. True statements are never false advertising.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'All P&C insurers admitted in Kansas must do what as a condition of their certificate of authority?',
+   a:'<strong>Maintain membership in the Kansas Insurance Guaranty Association.</strong>',
+   mem:'"Admitted in Kansas = Guaranty Association member. No exceptions." The Guaranty Association protects policyholders if an insurer fails — every admitted insurer must participate.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'Which would NOT be a legal reason for nonrenewal of a personal auto policy in Kansas?',
+   a:'<strong>Filing two or more physical damage claims during the policy period.</strong> Claims alone cannot trigger nonrenewal — excessive claims may require higher deductible or surcharge instead.',
+   mem:'"Filing claims ≠ nonrenewal." You can\'t lose coverage just for using it. Nonrenewal requires things like moving violations, license loss, or insurer leaving the state.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'What is the FAIR Plan limit for theft coverage on personal property?',
+   a:'<strong>$10,000 maximum</strong> for theft of personal property.',
+   mem:'"FAIR Plan theft = $10k max." The FAIR Plan is bare-bones. $10k is the ceiling on theft — no more.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'An agent can\'t meet CE requirements due to military service. What can they do?',
+   a:'<strong>Request a waiver from the Commissioner.</strong> Military service and other extenuating circumstances qualify for a CE waiver.',
+   mem:'"Military = waiver available." You served the country — you get flexibility on CE. Request it from the Commissioner, don\'t just let the license lapse.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'If an applicant can\'t get auto insurance from a standard carrier, where can they apply?',
+   a:'<strong>Kansas Automobile Insurance Plan (KAIP).</strong> The assigned risk plan — provides basic auto coverage only.',
+   mem:'"Can\'t get standard? KAIP it." Kansas Automobile Insurance Plan = last resort assigned risk pool. Basic coverage only, no frills.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'In an insurance transaction, who is the principal?',
+   a:'<strong>The insurer.</strong> The insurer is the principal — the company that issues the policy.',
+   mem:'"Principal = the insurer." The agent acts ON BEHALF of the insurer (the principal). Agent = agent. Insurer = principal. Basic agency law.'},
+  {topic:'state',topicLabel:'KANSAS STATE LAW',
+   q:'Completing an approved motor vehicle accident prevention course entitles the insured to a premium discount for how long?',
+   a:'<strong>3 years</strong> following completion of the course.',
+   mem:'"Defensive driving = 3-year discount." Not 1, not 2 — 3 years. Take the course, lock in savings for 3 years.'},
+  {topic:'general',topicLabel:'GENERAL',
+   q:'Which provides coverage on property involved in shipping on navigable waters?',
+   a:'<strong>Marine insurance.</strong> Covers property in shipping and transportation on navigable waters.',
+   mem:'"Marine = water." Inland marine = land/transit. Ocean/navigable waters = Marine. The name tells you where it goes.'}
 ];
 
 let current=0, flipped=false, scores=new Array(CARDS.length).fill(null), mode='flash';
+const TOTAL=CARDS.length;
 
 renderCard();
 buildListMode();
