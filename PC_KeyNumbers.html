@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Key Numbers & Limits — P&C Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0a;
+  --surface:#141414;
+  --surface2:#1a1a1a;
+  --border:#222;
+  --border2:#2a2a2a;
+  --gold:#c8a84b;
+  --gold-dim:rgba(200,168,75,.15);
+  --green:#4aaa4a;
+  --green-dim:rgba(74,170,74,.12);
+  --red:#aa4a4a;
+  --red-dim:rgba(170,74,74,.12);
+  --text:#e2e2e2;
+  --muted:#555;
+  --muted2:#333;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;
+}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .4s ease;}
+
+.header{padding:20px 20px 0;padding-top:22px;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.back-link{color:var(--muted);font-size:12px;text-decoration:none;}
+.deck-tag{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);padding:3px 10px;border-radius:20px;}
+.header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:2px;}
+.header-sub{font-size:12px;color:var(--muted);}
+
+.mode-tabs{display:flex;padding:0 20px;margin-top:16px;border-bottom:1px solid var(--border);}
+.mode-tab{font-size:12px;font-weight:500;color:var(--muted);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.mode-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-cell{background:var(--bg);padding:12px 6px;text-align:center;}
+.stat-val{font-size:24px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-val.g{color:var(--green);}
+.stat-val.r{color:var(--red);}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+
+#flash-view{padding:16px 16px 80px;}
+.card-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.card-pos{font-size:12px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.skip-btn{background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:inherit;}
+
+/* NUMBER HIGHLIGHT — big number on front */
+.num-display{
+  font-size:54px;font-weight:700;color:var(--gold);line-height:1;
+  margin:16px 0 8px;letter-spacing:-1px;
+}
+.num-unit{font-size:18px;font-weight:500;color:#b09040;margin-left:2px;}
+
+.card-scene{perspective:1200px;margin-bottom:12px;cursor:pointer;touch-action:pan-y;}
+.card{
+  position:relative;width:100%;min-height:300px;
+  transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+  border-radius:12px;
+}
+.card.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;top:0;left:0;right:0;min-height:300px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:12px;padding:20px 18px;
+  display:flex;flex-direction:column;
+}
+.card-front{
+  background:var(--surface);border:1px solid var(--border2);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.card-back{
+  background:#0f1a0f;border:1px solid #1e3a1e;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  transform:rotateY(180deg);
+}
+
+.topic-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;letter-spacing:.5px;
+  padding:3px 10px;border-radius:20px;margin-bottom:10px;width:fit-content;
+}
+.tp-auto{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:#818cf8;}
+.tp-property{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);color:#c8a84b;}
+.tp-liability{background:rgba(170,74,74,.1);border:1px solid rgba(170,74,74,.2);color:#f87171;}
+.tp-general{background:rgba(85,85,85,.15);border:1px solid rgba(85,85,85,.3);color:#888;}
+.tp-state{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);color:#60a5fa;}
+.tp-flood{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:#38bdf8;}
+.tp-formula{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:#c084fc;}
+
+.card-label{font-size:9px;font-weight:600;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
+.card-q{font-size:14px;line-height:1.7;color:var(--text);font-weight:400;}
+.flip-hint{font-size:10px;color:var(--muted2);margin-top:auto;padding-top:12px;text-align:center;}
+
+.card-a{font-size:13px;line-height:1.8;color:var(--text);}
+.card-a strong{color:var(--gold);font-weight:600;}
+.card-a .num{font-size:20px;font-weight:700;color:var(--gold);}
+
+.rule-box{
+  margin-top:10px;background:rgba(200,168,75,.06);
+  border:1px solid rgba(200,168,75,.15);border-radius:8px;padding:10px 12px;
+}
+.rule-label{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--gold);margin-bottom:3px;text-transform:uppercase;}
+.rule-text{font-size:11px;color:#b09040;line-height:1.6;}
+
+.mem-box{
+  margin-top:8px;background:rgba(74,170,74,.07);
+  border:1px solid rgba(74,170,74,.15);border-radius:8px;padding:10px 12px;
+}
+.mem-label{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:3px;text-transform:uppercase;}
+.mem-text{font-size:11px;color:#5fb85f;line-height:1.6;}
+
+.swipe-hint{
+  position:absolute;inset:0;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;letter-spacing:2px;
+  opacity:0;pointer-events:none;z-index:5;transition:opacity .1s;
+}
+.swipe-hint.knew{background:rgba(74,170,74,.15);color:var(--green);border:2px solid rgba(74,170,74,.3);}
+.swipe-hint.missed{background:rgba(170,74,74,.12);color:var(--red);border:2px solid rgba(170,74,74,.25);}
+
+.tap-hint{text-align:center;font-size:10px;color:var(--muted2);margin-top:6px;transition:opacity .2s;}
+.tap-hint.hidden{opacity:0;pointer-events:none;}
+
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.answer-btns.hidden{display:none;}
+.ans-btn{border:1px solid;font-size:14px;font-weight:700;padding:13px 16px;border-radius:8px;cursor:pointer;font-family:inherit;transition:transform .1s;}
+.ans-btn:active{transform:scale(0.97);}
+.btn-missed{background:var(--red-dim);border-color:rgba(170,74,74,.3);color:var(--red);}
+.btn-knew{background:var(--green-dim);border-color:rgba(74,170,74,.3);color:var(--green);}
+
+.bottom-nav{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:10px;}
+.nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nav-btn:active:not(:disabled){background:var(--border);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.nav-btn.primary:active{background:#b09040;}
+.kb-hint{text-align:center;font-size:10px;color:var(--muted2);margin-top:6px;}
+
+/* LIST VIEW */
+#list-view{display:none;padding:12px 16px 80px;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px;margin-top:6px;}
+.cat-icon{font-size:15px;}
+.cat-lbl{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.cat-count{font-size:18px;font-weight:700;color:var(--muted2);margin-left:auto;}
+.list-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-bottom:8px;}
+.list-num{font-size:28px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:4px;}
+.list-q{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.list-rule{font-size:12px;color:var(--text);line-height:1.7;margin-bottom:6px;}
+.list-mem{font-size:11px;color:#5fb85f;line-height:1.6;border-top:1px solid rgba(74,170,74,.1);padding-top:6px;}
+
+/* SCORE VIEW */
+#score-view{display:none;padding:32px 20px;text-align:center;}
+.score-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 24px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:12;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:12;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-fill.good{stroke:var(--green);}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-size:52px;font-weight:700;color:#fff;line-height:1;}
+.score-of{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.score-block{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:16px;}
+.score-block-val{font-size:36px;font-weight:700;line-height:1;margin-bottom:4px;}
+.score-block-val.g{color:var(--green);}
+.score-block-val.r{color:var(--red);}
+.score-block-lbl{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.score-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
+.restart-btn{width:100%;background:var(--gold);border:none;color:#0a0a0a;font-size:15px;font-weight:700;padding:14px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.restart-btn:active{background:#b09040;}
+</style>
+</head>
+<body>
+
+<div id="progress-rail"><div id="progress-fill"></div></div>
+
+<div class="header">
+  <div class="header-top">
+    <a class="back-link" href="PC_Dashboard.html">← Dashboard</a>
+    <span class="deck-tag">KEY NUMBERS</span>
+  </div>
+  <h1>Numbers & Limits</h1>
+  <div class="header-sub">Every dollar, day, and percentage the exam tests</div>
+</div>
+
+<div class="mode-tabs">
+  <button class="mode-tab active" onclick="setMode('flash',this)">Flashcards</button>
+  <button class="mode-tab" onclick="setMode('list',this)">Quick Ref</button>
+</div>
+
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-cell"><div class="stat-val g" id="s-knew">0</div><div class="stat-lbl">Knew It</div></div>
+  <div class="stat-cell"><div class="stat-val r" id="s-missed">0</div><div class="stat-lbl">Missed</div></div>
+  <div class="stat-cell"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Score</div></div>
+</div>
+
+<div id="flash-view">
+  <div class="card-nav-row">
+    <div class="card-pos"><strong id="cur-num">1</strong> / <span id="tot-num">0</span></div>
+    <button class="skip-btn" onclick="nextCard()">Skip →</button>
+  </div>
+
+  <div class="card-scene" id="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="cf-front"></div>
+      <div class="card-face card-back" id="cf-back"></div>
+    </div>
+    <div class="swipe-hint knew" id="sh-knew">✓ KNEW IT</div>
+    <div class="swipe-hint missed" id="sh-missed">✕ MISSED</div>
+  </div>
+
+  <div class="tap-hint" id="tap-hint">Tap card to flip</div>
+
+  <div class="answer-btns hidden" id="ans-btns">
+    <button class="ans-btn btn-missed" onclick="markCard(false)">✕ Missed It</button>
+    <button class="ans-btn btn-knew" onclick="markCard(true)">✓ Knew It</button>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀ Prev</button>
+    <button class="nav-btn primary" id="next-btn" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb-hint">Space = flip · K = knew · M = missed · ← → navigate</div>
+</div>
+
+<div id="list-view"></div>
+
+<div id="score-view">
+  <div class="score-ring-wrap">
+    <svg width="180" height="180" viewBox="0 0 180 180">
+      <circle class="ring-bg" cx="90" cy="90" r="78"/>
+      <circle class="ring-fill" id="ring-fill" cx="90" cy="90" r="78" stroke-dasharray="0 490"/>
+    </svg>
+    <div class="score-center">
+      <div class="score-pct" id="fin-pct">0%</div>
+      <div class="score-of" id="fin-of">OF 0</div>
+    </div>
+  </div>
+  <div class="score-breakdown">
+    <div class="score-block"><div class="score-block-val g" id="fin-knew">0</div><div class="score-block-lbl">Knew It</div></div>
+    <div class="score-block"><div class="score-block-val r" id="fin-missed">0</div><div class="score-block-lbl">Still Learning</div></div>
+  </div>
+  <div class="score-msg" id="score-msg"></div>
+  <button class="restart-btn" onclick="restart()">Run It Again</button>
+</div>
+
+<script>
+// t=topic, num=number to display big on front, q=question, r=rule (back), m=memory trick
+const CARDS = [
+  // ── AUTO ──
+  {t:'auto',num:'$20',unit:'/day',q:'Transportation expense coverage: how much per day after theft?',r:'<strong>$20 per day</strong>, up to a max of <strong>$600</strong> (30 days).',m:'"$20 × 30 days = $600." Not $30, not $500. Lock in $20/$600.'},
+  {t:'auto',num:'$600',unit:'max',q:'Transportation expense coverage: what is the maximum total payout?',r:'Max is <strong>$600</strong> total ($20/day × 30 days).',m:'"$20 a day for a month = $600." The $500 answer is a trap.'},
+  {t:'auto',num:'48',unit:'hrs',q:'How long after auto theft before transportation expense coverage begins?',r:'Coverage begins <strong>48 hours</strong> after the theft of the entire auto.',m:'"2 days before the rental clock starts." 48 hours = 2 days.'},
+  {t:'auto',num:'25/50',unit:'/15',q:'What does a 25/50/15 split limit mean on an auto policy?',r:'<strong>$25,000</strong> max per person (BI) · <strong>$50,000</strong> max per accident (all BI) · <strong>$15,000</strong> max for property damage.',m:'"Per-person cap first, then per-accident cap, then PD." Apply in that order.'},
+  {t:'auto',num:'3',unit:'violations',q:'How many moving violations in what time period can trigger cancellation of an auto policy in force 50+ days?',r:'<strong>3 moving violations within 18 months.</strong>',m:'"Three strikes in 18 months = out." Both numbers matter.'},
+  {t:'auto',num:'18',unit:'months',q:'What is the lookback period for moving violations that can trigger auto cancellation in Kansas?',r:'<strong>18 months.</strong> Three violations within this window = grounds for cancellation.',m:'"Year and a half lookback." 18 = 3 × 6.'},
+  {t:'auto',num:'=',unit:'BI limits',q:'In Kansas, uninsured motorist (UM) coverage limits must be what relative to bodily injury liability limits?',r:'UM limits must <strong>equal</strong> the bodily injury liability limits.',m:'"UM = BI. Same number, equal protection."'},
+
+  // ── PROPERTY ──
+  {t:'property',num:'80%',unit:'',q:'What is the standard coinsurance requirement for replacement cost coverage on a dwelling?',r:'Must insure to at least <strong>80% of replacement cost</strong> at time of loss. Underinsure and you absorb a portion of every loss.',m:'"80% or you share the pain." Underinsure = you become a co-insurer.'},
+  {t:'formula',num:'H÷N×L',unit:'',q:'What is the coinsurance formula for calculating what an insurer pays?',r:'<strong>(Have ÷ Need) × Loss</strong><br><br>Example: insured $60k on $100k house (80% = $80k needed). Loss = $40k. → 60÷80 × 40,000 = <strong>$30,000.</strong>',m:'"Have divided by Need, times the Loss." Always calculate Need first (80% × value).'},
+  {t:'property',num:'$500',unit:'/tree',q:'What is the per-tree limit for tree/shrub removal in a homeowners policy?',r:'<strong>$500 per tree</strong>, with a total policy maximum of $1,000 for all trees in one loss.',m:'"$500 a tree, $1,000 total." Two caps — both apply.'},
+  {t:'property',num:'$1,000',unit:'max',q:'What is the total policy maximum for tree and shrub removal in a homeowners policy?',r:'<strong>$1,000 total</strong> regardless of how many trees, even if individual trees are under $500 each.',m:'"$1,000 is the ceiling." 4 trees at $300 each = $1,200 claimed, but you only get $1,000.'},
+  {t:'property',num:'RC−D',unit:'',q:'What is the formula for Actual Cash Value (ACV)?',r:'<strong>Replacement Cost minus Depreciation.</strong><br><br>ACV = what it costs to replace today, minus the age/wear discount.',m:'"New price minus old age." ACV < Replacement Cost always.'},
+  {t:'property',num:'A B C D',unit:'',q:'What do Coverage A, B, C, and D represent in a dwelling/homeowners policy?',r:'<strong>A</strong> = Dwelling · <strong>B</strong> = Other Structures · <strong>C</strong> = Personal Property (Contents) · <strong>D</strong> = Loss of Use / Fair Rental Value',m:'"All Buildings Cover Dwellings." A=main, B=detached garage, C=contents, D=displacement costs.'},
+  {t:'property',num:'DP 1·2·3',unit:'',q:'What are the three dwelling policy forms and what coverage type is each?',r:'<strong>DP-1</strong> = Basic (named perils, ACV) · <strong>DP-2</strong> = Broad (named perils, RC) · <strong>DP-3</strong> = Special (open perils on dwelling)',m:'"1=Basic, 2=Broad, 3=Special." Each level adds more coverage.'},
+  {t:'property',num:'DP-2+3',unit:'only',q:'In which dwelling policy forms is Coverage E (Additional Living Expense) automatically included?',r:'Coverage E is automatic in <strong>DP-2 and DP-3 only.</strong> DP-1 does NOT include it.',m:'"Basic is bare bones — no living expense." DP-2 and DP-3 step it up.'},
+  {t:'property',num:'HO-3',unit:'vs 5',q:'How does HO-5 differ from HO-3 for contents coverage?',r:'<strong>HO-3</strong> = named perils for contents · <strong>HO-5</strong> = open perils for contents (broader). Both cover the dwelling on open peril basis.',m:'"HO-5 is the upgrade." Open peril everywhere vs. named peril on contents.'},
+
+  // ── FLOOD / NFIP ──
+  {t:'flood',num:'$250k',unit:'building',q:'Under the NFIP, what is the maximum coverage for a single-family dwelling structure?',r:'<strong>$250,000</strong> for the building/structure under the National Flood Insurance Program.',m:'"Quarter million for the building." Easy anchor number.'},
+  {t:'flood',num:'$100k',unit:'contents',q:'Under the NFIP, what is the maximum contents coverage for a single-family dwelling?',r:'<strong>$100,000</strong> for personal property/contents under NFIP.',m:'"$250k building, $100k stuff." Building is always more.'},
+
+  // ── FAIR PLAN ──
+  {t:'state',num:'$400k',unit:'max',q:'What is the maximum coverage for a residential dwelling under the Kansas FAIR Plan?',r:'Lesser of market value, ACV, or <strong>$400,000.</strong>',m:'"FAIR Plan caps at $400k." Prevents over-insuring risky properties.'},
+  {t:'state',num:'$10k',unit:'theft',q:'What is the FAIR Plan maximum for theft of personal property?',r:'<strong>$10,000</strong> maximum for theft coverage under the FAIR Plan.',m:'"FAIR Plan theft = $10k ceiling."'},
+
+  // ── KANSAS STATE LAW ──
+  {t:'state',num:'30',unit:'days',q:'How far in advance must personal lines insurance rates be filed with the Kansas Insurance Department?',r:'Rates must be filed at least <strong>30 days prior to use.</strong> If disapproved, they may not be used.',m:'"30 days before you charge them." File, wait, then use.'},
+  {t:'state',num:'10',unit:'days',q:'If an insured requests a proof of loss form after a fire or tornado, how many days does the insurer have to provide it?',r:'Insurer must send the form within <strong>10 days</strong> of the request.',m:'"10 days — insurer can\'t stall." Request it, get it in 10.'},
+  {t:'state',num:'3',unit:'years',q:'How long does the premium discount last after completing an approved motor vehicle accident prevention course in Kansas?',r:'The discount applies for <strong>3 years</strong> following course completion.',m:'"Defensive driving = 3-year discount." Not 1, not 2 — 3 years.'},
+  {t:'state',num:'Odd/Even',unit:'birth yr',q:'How is a Kansas producer\'s continuing education biennium determined?',r:'Based on <strong>birth year.</strong> Odd birth year → CE due in odd-numbered years. Even birth year → CE due in even-numbered years.',m:'"Born odd, study odd. Born even, study even."'},
+
+  // ── LIABILITY ──
+  {t:'liability',num:'$250',unit:'/day',q:'CGL supplementary payments: what is the max per-day for the insured\'s lost earnings?',r:'<strong>$250 per day</strong> for loss of earnings. (Common wrong answer: $500/day.)',m:'"$250 — not $500." This is a known trap on the exam.'},
+  {t:'liability',num:'$250',unit:'bail',q:'CGL supplementary payments: what is the limit for bail bond costs?',r:'<strong>$250</strong> for bail bonds to release the insured. (Common wrong answer: $2,000.)',m:'"$250 bail — not $2,000." Both CGL supplementary numbers are $250.'},
+
+  // ── GENERAL ──
+  {t:'general',num:'4',unit:'elements',q:'What are the 4 required elements of a valid insurance contract?',r:'<strong>1. Offer & Acceptance</strong> · <strong>2. Consideration</strong> · <strong>3. Competent Parties</strong> · <strong>4. Legal Purpose</strong>',m:'"OCCP" — Offer, Consideration, Competent parties, Purpose. Beneficiary\'s consent is NOT one of them.'},
+  {t:'general',num:'TRIA',unit:'',q:'What federal act requires all commercial insurers to offer terrorism coverage and shares risk with the industry?',r:'<strong>Terrorism Risk Insurance Act (TRIA).</strong> Covers commercial lines including workers comp. Excludes commercial auto, crop, burglary/theft.',m:'"TRIA = terrorism umbrella." Workers comp is IN. Auto and crop are OUT.'},
+  {t:'general',num:'FCRA',unit:'',q:'What act regulates consumer reports and credit reports used in insurance underwriting?',r:'<strong>Federal Fair Credit Reporting Act (FCRA).</strong> Governs consumer investigative reports and credit reports.',m:'"FCRA = Credit Files." Not TCPA (telemarketing), not BSA (money laundering).'},
+  {t:'general',num:'KIGA',unit:'',q:'What must all admitted P&C insurers in Kansas maintain as a condition of their certificate of authority?',r:'Membership in the <strong>Kansas Insurance Guaranty Association (KIGA).</strong> No exceptions for admitted insurers.',m:'"Admitted in Kansas = KIGA member, period."'},
+];
+
+const TOPIC_META={
+  auto:    {icon:'🚗',label:'Auto'},
+  property:{icon:'🏠',label:'Property'},
+  liability:{icon:'⚖️',label:'Liability'},
+  general: {icon:'📋',label:'General'},
+  state:   {icon:'🏛️',label:'Kansas State Law'},
+  flood:   {icon:'🌊',label:'NFIP / Flood'},
+  formula: {icon:'🧮',label:'Formula'},
+};
+
+let cur=0,flipped=false,scores=new Array(CARDS.length).fill(null);
+let touchStartX=0,isDragging=false;
+const CIRC=2*Math.PI*78;
+
+document.getElementById('tot-num').textContent=CARDS.length;
+document.getElementById('s-total').textContent=CARDS.length;
+document.getElementById('fin-of').textContent='OF '+CARDS.length;
+renderCard();buildListView();setupSwipe();setupKeyboard();
+
+function renderCard(){
+  if(cur>=CARDS.length){showScore();return;}
+  const c=CARDS[cur];
+  const tm=TOPIC_META[c.t]||TOPIC_META.general;
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';
+  card.style.transform='translateX(0) rotate(0deg)';
+  card.classList.remove('flipped');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+
+  document.getElementById('cf-front').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">What's the number?</div>
+    <div class="num-display">${c.num}<span class="num-unit">${c.unit||''}</span></div>
+    <div class="card-q">${c.q}</div>
+    <div class="flip-hint">Tap to see the rule</div>`;
+
+  document.getElementById('cf-back').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">The Rule</div>
+    <div class="card-a">${c.r}</div>
+    <div class="mem-box">
+      <div class="mem-label">💡 Lock It In</div>
+      <div class="mem-text">${c.m}</div>
+    </div>`;
+
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('tap-hint').className='tap-hint';
+  document.getElementById('ans-btns').className='answer-btns hidden';
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').textContent=cur===CARDS.length-1?'Finish':'Next ▶';
+  document.getElementById('sh-knew').style.opacity='0';
+  document.getElementById('sh-missed').style.opacity='0';
+  document.getElementById('progress-fill').style.width=((cur/CARDS.length)*100)+'%';
+  updateStats();
+}
+
+function flipCard(){
+  flipped=!flipped;
+  const card=document.getElementById('card');
+  if(flipped){
+    card.classList.add('flipped');
+    document.getElementById('tap-hint').className='tap-hint hidden';
+    document.getElementById('ans-btns').className='answer-btns';
+  } else {
+    card.classList.remove('flipped');
+    document.getElementById('tap-hint').className='tap-hint';
+    document.getElementById('ans-btns').className='answer-btns hidden';
+  }
+}
+
+document.getElementById('card-scene').addEventListener('click',()=>flipCard());
+
+function markCard(knew){
+  scores[cur]=knew;updateStats();
+  animateExit(knew?'right':'left');
+  setTimeout(()=>{cur++;renderCard();},350);
+}
+function nextCard(){
+  if(cur>=CARDS.length-1){showScore();return;}
+  animateExit('left');
+  setTimeout(()=>{cur++;renderCard();},350);
+}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function animateExit(dir){
+  const card=document.getElementById('card');
+  const x=dir==='right'?120:-120;
+  card.style.transition='transform .35s ease,opacity .35s ease';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='right'?6:-6}deg)`;
+  card.style.opacity='0';
+}
+
+function setupSwipe(){
+  const s=document.getElementById('card-scene');
+  s.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;isDragging=true;},{passive:true});
+  s.addEventListener('touchmove',e=>{
+    if(!isDragging||!flipped)return;
+    const dx=e.touches[0].clientX-touchStartX;
+    const card=document.getElementById('card');
+    card.style.transition='none';
+    card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/25}deg)`;
+    const sk=document.getElementById('sh-knew'),sm=document.getElementById('sh-missed');
+    if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+    else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+    else{sk.style.opacity='0';sm.style.opacity='0';}
+  },{passive:true});
+  s.addEventListener('touchend',e=>{
+    if(!isDragging)return;isDragging=false;
+    if(!flipped)return;
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(dx>80){markCard(true);}
+    else if(dx<-80){markCard(false);}
+    else{
+      const card=document.getElementById('card');
+      card.style.transition='transform .3s ease';
+      card.style.transform='rotateY(180deg)';
+      document.getElementById('sh-knew').style.opacity='0';
+      document.getElementById('sh-missed').style.opacity='0';
+    }
+  },{passive:true});
+}
+
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    else if(e.key==='ArrowRight')nextCard();
+    else if(e.key==='ArrowLeft')prevCard();
+    else if((e.key==='k'||e.key==='K')&&flipped)markCard(true);
+    else if((e.key==='m'||e.key==='M')&&flipped)markCard(false);
+  });
+}
+
+function updateStats(){
+  const knew=scores.filter(s=>s===true).length;
+  const missed=scores.filter(s=>s===false).length;
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):null;
+  document.getElementById('s-knew').textContent=knew;
+  document.getElementById('s-missed').textContent=missed;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
+}
+
+function showScore(){
+  const knew=scores.filter(s=>s===true).length;
+  const missed=scores.filter(s=>s===false).length;
+  const pct=Math.round(knew/CARDS.length*100);
+  document.getElementById('flash-view').style.display='none';
+  document.getElementById('score-view').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fin-pct').textContent=pct+'%';
+  document.getElementById('fin-knew').textContent=knew;
+  document.getElementById('fin-missed').textContent=missed;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=70)ring.classList.add('good');
+  const msgs=['Keep drilling — the numbers will stick.','Getting there. Run the weak ones again.','Solid. Almost automatic.','Strong — these are locked in.','100%. You own these numbers.'];
+  document.getElementById('score-msg').textContent=msgs[pct>=100?4:pct>=80?3:pct>=60?2:pct>=40?1:0];
+}
+
+function restart(){
+  cur=0;scores=new Array(CARDS.length).fill(null);flipped=false;
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  document.getElementById('ring-fill').classList.remove('good');
+  renderCard();updateStats();
+}
+
+function setMode(m,btn){
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('flash-view').style.display=m==='flash'?'block':'none';
+  document.getElementById('list-view').style.display=m==='list'?'block':'none';
+  document.getElementById('score-view').style.display='none';
+}
+
+function buildListView(){
+  const topics=[...new Set(CARDS.map(c=>c.t))];
+  let html='';
+  topics.forEach(t=>{
+    const cards=CARDS.filter(c=>c.t===t);
+    const tm=TOPIC_META[t]||TOPIC_META.general;
+    html+=`<div class="cat-hdr"><span class="cat-icon">${tm.icon}</span><span class="cat-lbl">${tm.label}</span><span class="cat-count">${cards.length}</span></div>`;
+    cards.forEach(c=>{
+      html+=`<div class="list-card"><div class="list-num">${c.num}<span style="font-size:14px;color:#888;margin-left:4px;">${c.unit||''}</span></div><div class="list-q">${c.q}</div><div class="list-rule">${c.r}</div><div class="list-mem">💡 ${c.m}</div></div>`;
+    });
+  });
+  document.getElementById('list-view').innerHTML=html;
+}
+</script>
+</body>
+</html>
