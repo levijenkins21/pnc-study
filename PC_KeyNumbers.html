@@ -286,6 +286,16 @@ let reviewMode=false;
 let touchStartX=0,isDragging=false;
 const CIRC=2*Math.PI*66;
 
+const TOPIC_META={
+  auto:    {icon:'🚗',label:'Auto'},
+  property:{icon:'🏠',label:'Property'},
+  liability:{icon:'⚖️',label:'Liability'},
+  general: {icon:'📋',label:'General'},
+  state:   {icon:'🏛️',label:'Kansas State Law'},
+  flood:   {icon:'🌊',label:'NFIP / Flood'},
+  formula: {icon:'🧮',label:'Formula'},
+};
+
 init();
 
 function init(){
@@ -340,16 +350,6 @@ function renderCard(){
 
   document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
 }
-
-const TOPIC_META={
-  auto:    {icon:'🚗',label:'Auto'},
-  property:{icon:'🏠',label:'Property'},
-  liability:{icon:'⚖️',label:'Liability'},
-  general: {icon:'📋',label:'General'},
-  state:   {icon:'🏛️',label:'Kansas State Law'},
-  flood:   {icon:'🌊',label:'NFIP / Flood'},
-  formula: {icon:'🧮',label:'Formula'},
-};
 
 function flipCard(){
   flipped=!flipped;
