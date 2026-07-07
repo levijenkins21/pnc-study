@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&C Exam — Study Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e2e2e2; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 720px; margin: 0 auto; }
+  .header { margin-bottom: 1.5rem; }
+  .header h1 { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .header p { font-size: 13px; color: #555; }
+
+  /* ── Confidence Summary Bar ── */
+  .conf-summary { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .conf-summary-top { display: flex; gap: 0; margin-bottom: .75rem; border-radius: 8px; overflow: hidden; height: 6px; }
+  .conf-bar-solid  { background: #4aaa4a; transition: width .4s; }
+  .conf-bar-shaky  { background: #c8a84b; transition: width .4s; }
+  .conf-bar-rough  { background: #aa4a4a; transition: width .4s; }
+  .conf-bar-none   { background: #222; transition: width .4s; }
+  .conf-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .conf-stat { display: flex; flex-direction: column; gap: 2px; }
+  .conf-val { font-size: 20px; font-weight: 700; }
+  .conf-val.solid  { color: #4aaa4a; }
+  .conf-val.shaky  { color: #c8a84b; }
+  .conf-val.rough  { color: #aa4a4a; }
+  .conf-val.none   { color: #333; }
+  .conf-label { font-size: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ── Chapter / Sections ── */
+  .chapter { margin-bottom: 1.5rem; }
+  .chapter-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; cursor: pointer; user-select: none; }
+  .chapter-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
+  .chapter-progress { font-size: 11px; color: #444; }
+  .chapter-body { display: none; }
+  .chapter-body.open { display: block; }
+
+  .section-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #141414; border: 1px solid #1e1e1e;
+    border-left: 3px solid #1e1e1e;
+    border-radius: 10px; padding: 11px 14px; margin-bottom: 6px;
+    transition: border-color 0.2s, border-left-color 0.2s;
+  }
+  .section-row:hover { border-color: #2a2a2a; }
+  .section-row.conf-solid { border-left-color: #4aaa4a; background: #0d160d; }
+  .section-row.conf-shaky { border-left-color: #c8a84b; background: #161200; }
+  .section-row.conf-rough { border-left-color: #aa4a4a; background: #160a0a; }
+
+  .section-name { font-size: 14px; color: #e2e2e2; flex: 1; }
+  .section-row.conf-solid .section-name { color: #bbb; }
+
+  .section-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .btn { padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; border-radius: 7px; border: 1px solid #2a2a2a; background: #1a1a1a; color: #e2e2e2; text-decoration: none; display: inline-block; transition: background 0.15s, border-color 0.15s; }
+  .btn:hover { background: #222; border-color: #3a3a3a; }
+  .btn-blue { border-color: #1e3a6e; background: #0d1a2e; color: #5b8dee; }
+  .btn-blue:hover { background: #112040; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+
+  /* ── Confidence Cycle Button ── */
+  .conf-btn {
+    font-size: 15px; cursor: pointer; border: none; background: none;
+    padding: 2px 4px; border-radius: 6px; line-height: 1;
+    transition: transform .1s;
+    user-select: none;
+  }
+  .conf-btn:hover { transform: scale(1.2); }
+  .conf-btn-label { font-size: 10px; color: #444; white-space: nowrap; }
+
+  .divider { border: none; border-top: 1px solid #1a1a1a; margin: 1.5rem 0; }
+
+  /* Tool rows */
+  .tool-row { display: flex; align-items: center; justify-content: space-between; background: #0a1a0a; border: 1px solid #1a2e1a; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; }
+  .tool-name { font-size: 13px; color: #7aaa7a; flex: 1; }
+
+  /* ── Notes ── */
+  .notes-section { margin-bottom: 2rem; }
+  .notes-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; cursor: pointer; user-select: none; }
+  .notes-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
+  .notes-body { }
+  .notes-card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1rem 1.1rem; }
+  .notes-add-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .notes-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; color: #e2e2e2; font-size: 13px; padding: 8px 12px; font-family: inherit; outline: none; transition: border-color .15s; }
+  .notes-input:focus { border-color: #3a3a3a; }
+  .notes-add-btn { padding: 8px 16px; font-size: 12px; font-weight: 500; cursor: pointer; border-radius: 8px; border: 1px solid #1e3a6e; background: #0d1a2e; color: #5b8dee; white-space: nowrap; }
+  .notes-add-btn:hover { background: #112040; }
+  .notes-list { display: flex; flex-direction: column; gap: 6px; }
+  .note-item { display: flex; align-items: flex-start; gap: 10px; background: #1a1a1a; border: 1px solid #242424; border-radius: 8px; padding: 10px 12px; }
+  .note-dot { width: 6px; height: 6px; border-radius: 50%; background: #5b8dee; flex-shrink: 0; margin-top: 5px; }
+  .note-text { font-size: 13px; color: #ccc; line-height: 1.5; flex: 1; word-break: break-word; }
+  .note-meta { font-size: 10px; color: #444; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .note-del { font-size: 14px; color: #333; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0 2px; transition: color .15s; }
+  .note-del:hover { color: #c05050; }
+  .notes-empty { font-size: 12px; color: #333; padding: 4px 0; }
+  .footer-note { font-size: 12px; color: #333; text-align: center; margin-top: 2rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>P&amp;C Licensing Exam</h1>
+    <p>Study dashboard — tap a chapter to expand sections</p>
+  </div>
+
+  <!-- Confidence Summary -->
+  <div class="conf-summary">
+    <div class="conf-summary-top">
+      <div class="conf-bar-solid"  id="bar-solid"  style="width:0%"></div>
+      <div class="conf-bar-shaky"  id="bar-shaky"  style="width:0%"></div>
+      <div class="conf-bar-rough"  id="bar-rough"  style="width:0%"></div>
+      <div class="conf-bar-none"   id="bar-none"   style="width:100%"></div>
+    </div>
+    <div class="conf-stats">
+      <div class="conf-stat"><span class="conf-val solid" id="cnt-solid">0</span><span class="conf-label">🟢 Solid</span></div>
+      <div class="conf-stat"><span class="conf-val shaky" id="cnt-shaky">0</span><span class="conf-label">🟡 Getting It</span></div>
+      <div class="conf-stat"><span class="conf-val rough" id="cnt-rough">0</span><span class="conf-label">🔴 Rough</span></div>
+      <div class="conf-stat"><span class="conf-val none"  id="cnt-none">0</span><span class="conf-label">— Not Rated</span></div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes-section">
+    <div class="notes-header" onclick="toggleNotes()">
+      <span class="notes-title">📋 My Notes</span>
+      <span id="notes-toggle-icon" style="font-size:11px;color:#444">▲</span>
+    </div>
+    <div id="notesBody">
+      <div class="notes-card">
+        <div class="notes-add-row">
+          <input class="notes-input" id="noteInput" type="text" placeholder="Add a note or reminder…" onkeydown="if(event.key==='Enter')addNote()">
+          <button class="notes-add-btn" onclick="addNote()">+ Add</button>
+        </div>
+        <div class="notes-list" id="notesList"></div>
+      </div>
+    </div>
+  </div>
+  <hr class="divider" style="margin-top:0">
+
+  <div id="chapters"></div>
+
+  <p class="footer-note">Tap any section to open it. Rate your confidence after each session using the emoji button.</p>
+</div>
+
+<script>
+const CHAPTERS = [
+  {
+    title: "Chapter 1",
+    name: "Chapter 1",
+    sections: []
+  },
+  {
+    title: "Chapter 2",
+    name: "Chapter 2",
+    sections: []
+  },
+  {
+    title: "Chapter 3",
+    name: "Chapter 3",
+    sections: []
+  },
+  {
+    title: "Chapter 4",
+    name: "Chapter 4 · Types of Casualty, Policies, Bonds, and Related Terms",
+    sections: [
+      { name: "Introduction", file: "PC_Ch4_Intro.html" },
+      { name: "Automotive: Personal Auto & Business Auto", file: "PC_Ch4_Personal_Business_Auto.html" },
+      { name: "Commercial General Liability (CGL)", file: "PC_Ch4_CGL.html" },
+      { name: "Businessowners Policy (BOP)", file: "PC_Ch4_BOP.html" },
+      { name: "Workers Compensation, Employers Liability, and Related Issues", file: "PC_Ch4_WorkersComp.html" },
+      { name: "Crime", file: "PC_Ch4_Crime.html" },
+      { name: "Professional Liability", file: "PC_Ch4_ProfessionalLiability.html" },
+      { name: "Umbrella and Excess Liability", file: "PC_Ch4_UmbrellaExcess.html" },
+      { name: "Bonds", file: "PC_Ch4_Bonds.html" }
+    ],
+    tools: [
+      { name: "Chapter 4 Flashcards (78 cards)", file: "PC_Ch4_Flashcards.html", icon: "🃏" },
+      { name: "Chapter 4 Quiz (40 questions)", file: "PC_Ch4_Quiz.html", icon: "📝" },
+      { name: "FX Recap Flashcards (55 cards)", file: "PC_Ch4_FX_Recap_Flashcards.html", icon: "📖" },
+      { name: "FX Chapter Exam (15 questions)", file: "PC_Ch4_FX_Quiz_Flashcards.html", icon: "🎯" }
+    ]
+  },
+  {
+    title: "Chapter 5",
+    name: "Chapter 5 · Kansas Statutes and Regulations Common to All Lines",
+    sections: [
+      { name: "Introduction & Key Terms", file: "PC_Ch5_Intro.html" },
+      { name: "Commissioner of Insurance", file: "PC_Ch5_Commissioner.html" },
+      { name: "Insurers", file: "PC_Ch5_Insurers.html" },
+      { name: "Licensing", file: "PC_Ch5_Licensing.html" },
+      { name: "Marketing Practices", file: "PC_Ch5_MarketingPractices.html" },
+      { name: "Property and Casualty Insurance Guaranty Association Act", file: "PC_Ch5_GuarantyAssociation.html" },
+      { name: "By the Numbers — Fines & Penalties", file: "PC_Ch5_ByTheNumbers.html" }
+    ],
+    tools: [
+      { name: "FX Recap Flashcards (22 cards)", file: "PC_Ch5_FX_Recap_Flashcards.html", icon: "📖" }
+    ]
+  },
+  {
+    title: "Chapter 6",
+    name: "Chapter 6 · Kansas Statutes and Regulations Common to Property and Casualty Insurance Only",
+    sections: [
+      { name: "Delivery of Contracts", file: "PC_Ch6_DeliveryOfContracts.html" },
+      { name: "Renewal, Nonrenewal, or Cancellation of Contracts", file: "PC_Ch6_CancellationNonrenewal.html" },
+      { name: "Rates", file: "PC_Ch6_Rates.html" },
+      { name: "Excess and Surplus Lines Producers", file: "PC_Ch6_ExcessSurplusLines.html" }
+    ]
+  },
+  {
+    title: "Chapter 7",
+    name: "Chapter 7 · Kansas Statutes and Regulations Pertinent to Property Insurance Only",
+    sections: [
+      { name: "Unfair Claims Settlement Practices", file: "PC_Ch7_UnfairClaimsSettlement.html" },
+      { name: "Proof of Loss", file: "PC_Ch7_ProofOfLoss.html" },
+      { name: "Marine and Inland Marine", file: "PC_Ch7_MarineInlandMarine.html" },
+      { name: "FAIR Plan", file: "PC_Ch7_FAIRPlan.html" },
+      { name: "Crop Insurance", file: "PC_Ch7_Crop.html" },
+      { name: "Flood Insurance", file: "PC_Ch7_FloodInsurance.html" }
+    ]
+  },
+  {
+    title: "Chapter 8",
+    name: "Chapter 8 · Kansas Statutes and Regulations Pertinent to Casualty Insurance Only",
+    sections: [
+      { name: "Kansas Automobile Injury Reparations Act", file: "PC_Ch8_AutoInjuryReparations.html" },
+      { name: "Uninsured and Underinsured Motorists Coverage", file: "PC_Ch8_UninsuredUnderinsured.html" },
+      { name: "Accident Prevention Courses", file: "PC_Ch8_AccidentPrevention.html" },
+      { name: "Kansas Automobile Insurance Plan (KAIP)", file: "PC_Ch8_KAIPlan.html" },
+      { name: "Kansas Workers Compensation Insurance Plan", file: "PC_Ch8_WorkersComp.html" }
+    ]
+  },
+  {
+    title: "Key Facts",
+    name: "Key Facts — Exam Critical Concepts",
+    sections: [
+      { name: "Insurance Terms and Related Concepts", file: "PC_KF_InsuranceTerms.html" },
+      { name: "Policy Provisions and Contract Law", file: "PC_KF_PolicyProvisions.html" },
+      { name: "Personal Lines — Dwelling Policy", file: "PC_KF_DwellingPolicy.html" },
+      { name: "Personal Lines — Homeowners Policy", file: "PC_KF_HomeownersPolicy.html" },
+      { name: "Commercial Lines", file: "PC_KF_CommercialLines.html" },
+      { name: "Commercial General Liability", file: "PC_KF_CGL.html" },
+      { name: "Other Property Policies", file: "PC_KF_OtherPropertyPolicies.html" },
+      { name: "Personal Auto", file: "PC_KF_PersonalAuto.html" },
+      { name: "Commercial Auto", file: "PC_KF_CommercialAuto.html" },
+      { name: "Other Casualty Coverages", file: "PC_KF_OtherCasualty.html" },
+      { name: "Kansas Statutes — Common to All Lines", file: "PC_KF_KansasStatutes.html" }
+    ]
+  },
+  {
+    title: "Learning Tests",
+    name: "Missed Questions — Flashcards & Memory Tricks",
+    sections: [
+      { name: "Learning Test 1 — 64 Missed Questions", file: "PC_LearningTest1.html" },
+      { name: "Key Numbers & Limits — Every Dollar, Day & % the Exam Tests", file: "PC_KeyNumbers.html" },
+      { name: "Learning Test 2 — 57 Missed Questions (Test 2)", file: "PC_LearningTest2.html" }
+    ]
+  }
+];
+
+// ── Confidence ────────────────────────────────────────────────
+const CONF_CYCLE = [null, 'rough', 'shaky', 'solid'];
+const CONF_EMOJI = { null: '·', rough: '🔴', shaky: '🟡', solid: '🟢' };
+const CONF_LABEL = { null: 'Rate', rough: 'Rough', shaky: 'Getting It', solid: 'Solid' };
+
+function getConf() {
+  try { return JSON.parse(localStorage.getItem('pc_conf') || '{}'); } catch { return {}; }
+}
+function setConf(file, state) {
+  const d = getConf();
+  if (state === null) { delete d[file]; } else { d[file] = state; }
+  localStorage.setItem('pc_conf', JSON.stringify(d));
+  render();
+}
+function cycleConf(file) {
+  const d = getConf();
+  const cur = d[file] || null;
+  const idx = CONF_CYCLE.indexOf(cur);
+  const next = CONF_CYCLE[(idx + 1) % CONF_CYCLE.length];
+  setConf(file, next);
+}
+
+// ── Render ────────────────────────────────────────────────────
+function render() {
+  const conf = getConf();
+  const el = document.getElementById('chapters');
+  let counts = { solid: 0, shaky: 0, rough: 0, none: 0, total: 0 };
+
+  el.innerHTML = CHAPTERS.map((ch, ci) => {
+    const hasSections = ch.sections.length > 0;
+    const chSolid = ch.sections.filter(s => conf[s.file] === 'solid').length;
+    counts.total += ch.sections.length;
+    ch.sections.forEach(s => {
+      const c = conf[s.file] || null;
+      if (c === 'solid') counts.solid++;
+      else if (c === 'shaky') counts.shaky++;
+      else if (c === 'rough') counts.rough++;
+      else counts.none++;
+    });
+
+    const rows = ch.sections.map(s => {
+      const c = conf[s.file] || null;
+      const rowClass = c ? `conf-${c}` : '';
+      return `<div class="section-row ${rowClass}">
+        <span class="section-name">${s.name}</span>
+        <div class="section-actions">
+          <button class="conf-btn" onclick="cycleConf('${s.file}')" title="${CONF_LABEL[c]}">${CONF_EMOJI[c]}</button>
+          ${s.file ? `<a class="btn btn-blue btn-sm" href="${s.file}" target="_blank">Open →</a>` : '<span style="font-size:11px;color:#333;">Coming soon</span>'}
+        </div>
+      </div>`;
+    }).join('');
+
+    const toolRows = (ch.tools || []).map(t =>
+      `<div class="tool-row">
+        <span class="tool-name">${t.icon || '🔧'} ${t.name}</span>
+        <div class="section-actions">
+          <a class="btn btn-sm" href="${t.file}" target="_blank" style="border-color:#1a3a1a;background:#0a1f0a;color:#4aaa4a">Open →</a>
+        </div>
+      </div>`
+    ).join('');
+
+    const emptyMsg = hasSections ? '' : `<div style="font-size:12px;color:#333;padding:8px 0 12px;">No sections built yet — coming soon.</div>`;
+    const prog = hasSections ? `${chSolid}/${ch.sections.length} solid` : '';
+
+    return `<div class="chapter">
+      <div class="chapter-header" onclick="toggle(${ci})">
+        <span class="chapter-title">${ch.name}</span>
+        <span class="chapter-progress">${prog}</span>
+      </div>
+      <div class="chapter-body" id="ch-${ci}">
+        ${rows}${toolRows}${emptyMsg}
+      </div>
+    </div><hr class="divider">`;
+  }).join('');
+
+  // Update summary bar
+  const t = counts.total || 1;
+  document.getElementById('bar-solid').style.width = (counts.solid / t * 100) + '%';
+  document.getElementById('bar-shaky').style.width = (counts.shaky / t * 100) + '%';
+  document.getElementById('bar-rough').style.width = (counts.rough / t * 100) + '%';
+  document.getElementById('bar-none').style.width  = (counts.none  / t * 100) + '%';
+  document.getElementById('cnt-solid').textContent = counts.solid;
+  document.getElementById('cnt-shaky').textContent = counts.shaky;
+  document.getElementById('cnt-rough').textContent = counts.rough;
+  document.getElementById('cnt-none').textContent  = counts.none;
+
+  // Keep chapter 4 open (index 3)
+  const ch4 = document.getElementById('ch-3');
+  if (ch4 && !ch4.classList.contains('_init')) { ch4.classList.add('open', '_init'); }
+}
+
+function toggle(i) {
+  document.getElementById('ch-' + i).classList.toggle('open');
+}
+
+// ── Notes ─────────────────────────────────────────────────────
+function getNotes() {
+  try { return JSON.parse(localStorage.getItem('pc_notes') || '[]'); } catch { return []; }
+}
+function saveNotes(arr) {
+  localStorage.setItem('pc_notes', JSON.stringify(arr));
+}
+function addNote() {
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const notes = getNotes();
+  const now = new Date();
+  const label = (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  notes.unshift({ text, ts: label, id: Date.now() });
+  saveNotes(notes);
+  input.value = '';
+  renderNotes();
+}
+function deleteNote(id) {
+  saveNotes(getNotes().filter(n => n.id !== id));
+  renderNotes();
+}
+function renderNotes() {
+  const notes = getNotes();
+  const el = document.getElementById('notesList');
+  if (!el) return;
+  el.innerHTML = notes.length === 0
+    ? '<div class="notes-empty">No notes yet — add one above.</div>'
+    : notes.map(n =>
+        `<div class="note-item">
+          <div class="note-dot"></div>
+          <span class="note-text">${n.text.replace(/</g,'&lt;')}</span>
+          <span class="note-meta">${n.ts}</span>
+          <span class="note-del" onclick="deleteNote(${n.id})" title="Delete">✕</span>
+        </div>`
+      ).join('');
+}
+function toggleNotes() {
+  const body = document.getElementById('notesBody');
+  const icon = document.getElementById('notes-toggle-icon');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  icon.textContent = isOpen ? '▼' : '▲';
+}
+
+// Init
+renderNotes();
+render();
+</script>
+</body>
+</html>
