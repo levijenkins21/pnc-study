@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Learning Test 2 — P&C Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1a1a1a;
+  --border:#222;--border2:#2a2a2a;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.15);
+  --green:#4aaa4a;--green-dim:rgba(74,170,74,.12);
+  --red:#aa4a4a;--red-dim:rgba(170,74,74,.12);
+  --text:#e2e2e2;--muted:#555;--muted2:#333;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .4s ease;}
+.header{padding:20px 20px 0;padding-top:22px;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.back-link{color:var(--muted);font-size:12px;text-decoration:none;}
+.deck-tag{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);padding:3px 10px;border-radius:20px;}
+.header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:2px;}
+.header-sub{font-size:12px;color:var(--muted);}
+.mode-tabs{display:flex;padding:0 20px;margin-top:16px;border-bottom:1px solid var(--border);}
+.mode-tab{font-size:12px;font-weight:500;color:var(--muted);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.mode-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-cell{background:var(--bg);padding:12px 6px;text-align:center;}
+.stat-val{font-size:24px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-val.g{color:var(--green);}
+.stat-val.r{color:var(--red);}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+#flash-view{padding:16px 16px 80px;}
+.mode-banner{display:none;background:rgba(170,74,74,.12);border:1px solid rgba(170,74,74,.25);border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:11px;color:var(--red);text-align:center;font-weight:600;letter-spacing:.5px;}
+.mode-banner.visible{display:block;}
+.card-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.card-pos{font-size:12px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.skip-btn{background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:inherit;}
+.card-scene{perspective:1200px;margin-bottom:10px;cursor:pointer;touch-action:pan-y;}
+.card{position:relative;width:100%;min-height:290px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flipped{transform:rotateY(180deg);}
+.card-face{position:absolute;top:0;left:0;right:0;min-height:290px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:18px 16px;display:flex;flex-direction:column;}
+.card-front{background:var(--surface);border:1px solid var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.card-back{background:#0a140a;border:1px solid #1a301a;box-shadow:0 4px 20px rgba(0,0,0,.4);transform:rotateY(180deg);}
+.topic-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 10px;border-radius:20px;margin-bottom:10px;width:fit-content;}
+.tp-property{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);color:#c8a84b;}
+.tp-liability{background:rgba(170,74,74,.1);border:1px solid rgba(170,74,74,.2);color:#f87171;}
+.tp-bonds{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);color:#fbbf24;}
+.tp-workers{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:#c084fc;}
+.tp-general{background:rgba(85,85,85,.15);border:1px solid rgba(85,85,85,.3);color:#888;}
+.tp-state{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);color:#60a5fa;}
+.tp-auto{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:#818cf8;}
+.tp-commercial{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:#34d399;}
+.card-label{font-size:9px;font-weight:600;letter-spacing:2px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.card-q{font-size:14px;line-height:1.75;color:var(--text);font-weight:400;flex:1;}
+.flip-cue{margin-top:12px;text-align:center;font-size:10px;color:var(--muted2);}
+.card-a{font-size:13px;line-height:1.8;color:var(--text);flex:1;}
+.card-a strong{color:var(--gold);font-weight:600;}
+.card-a .vs{margin-top:8px;padding:8px 10px;background:rgba(200,168,75,.06);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:12px;line-height:1.6;}
+.mem-box{margin-top:10px;background:rgba(74,170,74,.07);border:1px solid rgba(74,170,74,.15);border-radius:8px;padding:10px 12px;}
+.mem-label{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:3px;text-transform:uppercase;}
+.mem-text{font-size:11px;color:#5fb85f;line-height:1.6;}
+.warn-box{margin-top:8px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);border-radius:8px;padding:8px 12px;font-size:11px;color:#b89020;line-height:1.6;}
+.swipe-hint{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;transition:opacity .1s;}
+.swipe-hint.knew{background:rgba(74,170,74,.15);color:var(--green);border:2px solid rgba(74,170,74,.3);}
+.swipe-hint.missed{background:rgba(170,74,74,.12);color:var(--red);border:2px solid rgba(170,74,74,.25);}
+.flip-btn-wrap{margin-bottom:10px;}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:13px;border-radius:8px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+.flip-btn:active{background:var(--border);}
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.answer-btns.hidden{display:none;}
+.ans-btn{border:1px solid;font-size:14px;font-weight:700;padding:13px 16px;border-radius:8px;cursor:pointer;font-family:inherit;transition:transform .1s;}
+.ans-btn:active{transform:scale(0.97);}
+.btn-missed{background:var(--red-dim);border-color:rgba(170,74,74,.3);color:var(--red);}
+.btn-knew{background:var(--green-dim);border-color:rgba(74,170,74,.3);color:var(--green);}
+.bottom-nav{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:4px;}
+.nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nav-btn:active:not(:disabled){background:var(--border);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.nav-btn.primary:active{background:#b09040;}
+.kb-hint{text-align:center;font-size:10px;color:var(--muted2);margin-top:6px;}
+#list-view{display:none;padding:12px 16px 80px;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px;margin-top:6px;}
+.cat-icon{font-size:15px;}.cat-lbl{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}.cat-count{font-size:18px;font-weight:700;color:var(--muted2);margin-left:auto;}
+.list-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-bottom:8px;}
+.list-q{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.6;}
+.list-a{font-size:13px;color:var(--text);line-height:1.75;margin-bottom:6px;}
+.list-a strong{color:var(--gold);}
+.list-mem{font-size:11px;color:#5fb85f;line-height:1.6;border-top:1px solid rgba(74,170,74,.1);padding-top:6px;}
+#score-view{display:none;padding:28px 20px;text-align:center;}
+.score-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 20px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:12;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:12;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-fill.good{stroke:var(--green);}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-size:48px;font-weight:700;color:#fff;line-height:1;}
+.score-of{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.score-block{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px;}
+.score-block-val{font-size:32px;font-weight:700;line-height:1;margin-bottom:4px;}
+.score-block-val.g{color:var(--green);}
+.score-block-val.r{color:var(--red);}
+.score-block-lbl{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.score-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.score-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.score-btn{border:none;font-size:13px;font-weight:700;padding:13px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.btn-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.btn-missed-only{background:var(--red-dim);border:1px solid rgba(170,74,74,.3);color:var(--red);}
+.btn-missed-only:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="header">
+  <div class="header-top">
+    <a class="back-link" href="PC_Dashboard.html">← Dashboard</a>
+    <span class="deck-tag" id="deck-tag">LEARNING TEST 2</span>
+  </div>
+  <h1>Missed Questions</h1>
+  <div class="header-sub" id="deck-sub">57 cards — concepts explained, not just answers</div>
+</div>
+<div class="mode-tabs">
+  <button class="mode-tab active" onclick="setMode('flash',this)">Flashcards</button>
+  <button class="mode-tab" onclick="setMode('list',this)">Review All</button>
+</div>
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" id="s-total">57</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-cell"><div class="stat-val g" id="s-knew">0</div><div class="stat-lbl">Knew It</div></div>
+  <div class="stat-cell"><div class="stat-val r" id="s-missed">0</div><div class="stat-lbl">Missed</div></div>
+  <div class="stat-cell"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Score</div></div>
+</div>
+<div id="flash-view">
+  <div class="mode-banner" id="mode-banner">REVIEWING MISSED CARDS</div>
+  <div class="card-nav-row">
+    <div class="card-pos"><strong id="cur-num">1</strong> / <span id="tot-num">57</span></div>
+    <button class="skip-btn" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="card-scene" id="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="cf-front"></div>
+      <div class="card-face card-back" id="cf-back"></div>
+    </div>
+    <div class="swipe-hint knew" id="sh-knew">✓ KNEW IT</div>
+    <div class="swipe-hint missed" id="sh-missed">✕ MISSED</div>
+  </div>
+  <div class="flip-btn-wrap">
+    <button class="flip-btn" id="flip-btn" onclick="flipCard()">
+      <span>↻</span><span id="flip-label">Reveal Answer</span>
+    </button>
+  </div>
+  <div class="answer-btns hidden" id="ans-btns">
+    <button class="ans-btn btn-missed" onclick="markCard(false)">✕ Missed It</button>
+    <button class="ans-btn btn-knew" onclick="markCard(true)">✓ Knew It</button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀ Prev</button>
+    <button class="nav-btn primary" id="next-btn" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb-hint">Space = flip · K = knew · M = missed · ← → navigate</div>
+</div>
+<div id="list-view"></div>
+<div id="score-view">
+  <div class="score-ring-wrap">
+    <svg width="160" height="160" viewBox="0 0 160 160">
+      <circle class="ring-bg" cx="80" cy="80" r="66"/>
+      <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="66" stroke-dasharray="0 415"/>
+    </svg>
+    <div class="score-center">
+      <div class="score-pct" id="fin-pct">0%</div>
+      <div class="score-of" id="fin-of">OF 57</div>
+    </div>
+  </div>
+  <div class="score-breakdown">
+    <div class="score-block"><div class="score-block-val g" id="fin-knew">0</div><div class="score-block-lbl">Knew It</div></div>
+    <div class="score-block"><div class="score-block-val r" id="fin-missed">0</div><div class="score-block-lbl">Still Learning</div></div>
+  </div>
+  <div class="score-msg" id="score-msg"></div>
+  <div class="score-actions">
+    <button class="score-btn btn-restart" onclick="restart(false)">Full Deck</button>
+    <button class="score-btn btn-missed-only" id="btn-missed-only" onclick="restart(true)">Review Missed</button>
+  </div>
+</div>
+
+<script>
+const TOPIC_META={
+  property:{icon:'🏠',label:'Property'},
+  liability:{icon:'⚖️',label:'Liability'},
+  bonds:{icon:'🔒',label:'Bonds & Surety'},
+  workers:{icon:'👷',label:'Workers Comp'},
+  general:{icon:'📋',label:'General'},
+  state:{icon:'🏛️',label:'Kansas State Law'},
+  auto:{icon:'🚗',label:'Auto'},
+  commercial:{icon:'💼',label:'Commercial'},
+};
+
+const ALL_CARDS=[
+  // ── LIABILITY ──
+  {t:'liability',q:'Under contributory negligence, if an injured party contributed to their own loss in ANY way, what can happen to the other party?',
+   a:'The other party <strong>may not be held liable at all.</strong><br><br>Under contributory negligence, any degree of fault by the injured party completely bars recovery — even 1% fault means zero payout.',
+   m:'"Contributory = any fault = no recovery." One strike and you\'re out. Compare to comparative negligence where fault is split proportionally.'},
+  {t:'liability',q:'What is the definition of contributory negligence?',
+   a:'<strong>Any degree of negligence by the injured party may bar all recovery.</strong><br><br>The defendant must be 100% at fault and the claimant completely free of fault for the claimant to collect damages.',
+   m:'"Contributory = ALL or nothing." Comparative = you split the fault. Contributory = you split nothing if you\'re even slightly at fault.'},
+  {t:'liability',q:'What type of liability applies to a person who owns wild animals?',
+   a:'<strong>Absolute liability.</strong><br><br>Inherently dangerous activities — wild animals, explosives, ultrahazardous conditions — create absolute liability. The claimant does NOT need to prove negligence.',
+   m:'"Absolute = no proof needed." Wild animals are inherently dangerous. You own the risk, period. No defenses available.'},
+  {t:'liability',q:'When an umbrella policy is broader than underlying insurance and covers a loss NOT covered by the underlying policy, what does it pay?',
+   a:'It pays the <strong>excess over the self-insured retention (SIR).</strong><br><br>The SIR acts like a deductible when the umbrella drops down to fill gaps. You pay the SIR; umbrella pays the rest.',
+   m:'"Umbrella gap = pay over the SIR." No underlying coverage = umbrella pays after the retention. SIR = deductible equivalent.'},
+  {t:'liability',q:'The two types of compensatory damages are Special and General. What does each cover?',
+   a:'<strong>Special damages</strong> — tangible, measurable: medical bills, lost wages, funeral expenses, property repair costs.<br><br><strong>General damages</strong> — intangible, not specifically measurable: pain and suffering, emotional distress.',
+   m:'"Special = has a receipt. General = has feelings." Special damages you can put on a spreadsheet. General damages you can\'t.'},
+  {t:'liability',q:'Under the professional liability loss settlement provision, what must the insurer do before offering to pay a claimant to settle?',
+   a:'The insurer MUST get the <strong>insured\'s consent</strong> before offering to settle.<br><br>If the insured believes there was no negligence and their reputation is at risk, they can require the insurer to defend in court.',
+   m:'"Professional liability = the insured has veto power." Your license and reputation are on the line — the insurer can\'t settle without your OK.'},
+  {t:'liability',q:'A third party alleges the insured caused property damage. The insured notifies their homeowners insurer. What does the insurer do?',
+   a:'The insurer will <strong>either pay or defend — as IT decides.</strong><br><br>The insurer holds the choice, not the insured. They evaluate and choose the strategy.',
+   m:'"The insurer drives." You report; they decide whether to cut a check or fight it in court.'},
+
+  // ── PROPERTY ──
+  {t:'property',q:'What is the difference between Specific, Schedule, and Blanket property coverage?',
+   a:'<strong>Specific</strong> = one property/location with a specific amount (e.g., $100k building, $50k contents at one site)<br><strong>Schedule</strong> = multiple properties on ONE policy, each listed separately with its own limit<br><strong>Blanket</strong> = multiple properties under ONE combined limit shared across all locations',
+   m:'"Specific = one. Schedule = list. Blanket = one pot shared." $100k building + $50k contents at ONE address = specific.'},
+  {t:'property',q:'A commercial building has been vacant for more than 60 consecutive days. A fire occurs. What are the coverage rules?',
+   a:'For these specific perils → <strong>zero coverage</strong>: vandalism, sprinkler leakage, glass breakage, water damage, theft, attempted theft.<br><br>For any OTHER covered peril → payment is reduced by <strong>15%</strong> (not 25%).',
+   m:'"Vacant 60+ days: 6 perils = zero, others = 15% cut." The trap answer is 25% — it\'s 15%. Six named perils get eliminated entirely.'},
+  {t:'property',q:'A home has no one living in it for 3 months but still has furniture inside. In insurance terms, what is this called?',
+   a:'<strong>Unoccupied.</strong> No people, but contents remain.<br><br><strong>Vacant</strong> = no people AND no contents. Everything — people and stuff — is gone.',
+   m:'"Unoccupied = empty of people, full of stuff. Vacant = completely empty." If the couch is still there, it\'s unoccupied.'},
+  {t:'property',q:'What is Coverage E in a HOMEOWNERS policy? How does this differ from Coverage E in a DWELLING policy? ⚠️ Classic trap!',
+   a:'<strong>Homeowners policy: Coverage E = Personal Liability</strong><br><strong>Dwelling policy: Coverage E = Additional Living Expense</strong><br><br>Same letter, completely different coverage depending on the policy type.',
+   m:'"Always check the policy type first." HO: A=Dwelling, B=Other Structures, C=Contents, D=Loss of Use, <strong>E=Liability</strong>, F=Med Pay. Dwelling: E=ALE.'},
+  {t:'property',q:'Which of these IS covered by the broad theft endorsement on a dwelling policy? (A) Fabric/patterns at designer\'s home studio (B) Camera on vacation (C) Pedigreed show dog (D) Antique car',
+   a:'<strong>B — Camera on vacation.</strong><br><br>Specifically excluded from the broad theft endorsement: animals, motorized vehicles, property used for business purposes, money, and securities.',
+   m:'"Camera travels with you — covered. Pets, cars, business stuff — excluded." Know the exclusion list: animals, autos, business property.'},
+  {t:'property',q:'Under the physical damage section of a commercial auto policy, the limit of liability is the ___ of ACV or the cost to repair/replace.',
+   a:'The <strong>lesser</strong> of ACV or the repair/replacement cost.<br><br>The insurer pays whichever amount is LOWER. The trap answer says "greater."',
+   m:'"Lesser, not greater." The insurer won\'t pay more than it costs to make you whole. They pick the lower number.'},
+  {t:'property',q:'How much coverage does a standard homeowners policy automatically provide for theft or unauthorized use of a credit card?',
+   a:'<strong>$500 automatically.</strong> Can be increased by endorsement.',
+   m:'"$500 for card fraud in HO." Not $100, not $1,000 — $500 is the standard sublimit. Endorsement can raise it.'},
+  {t:'property',q:'Which provision requires the insured to prepare an inventory of damaged property and cooperate with the insurer after a loss?',
+   a:'<strong>Duties after loss.</strong><br><br>Required steps: (1) protect property from further damage, (2) create inventory of damaged items, (3) submit proof of loss, (4) cooperate with insurer. If theft: also notify police.',
+   m:'"Four duties: protect, inventory, prove, cooperate." Plus call the police for theft. These are the insured\'s post-loss obligations.'},
+  {t:'property',q:'Replacement cost is defined as:',
+   a:'<strong>Full replacement at current cost new, without any reduction for depreciation.</strong><br><br>Must maintain insurance to at least 80% of replacement cost at time of loss. No depreciation deduction — brand new equivalent.',
+   m:'"RC = brand new price, no age penalty." ACV subtracts depreciation. RC does not. Requires 80% insured-to-value to work properly.'},
+  {t:'property',q:'Which inland marine coverage condition allows the insurer to settle with the actual owners of property — not the insured — in the event of a loss?',
+   a:'<strong>Privilege to adjust with the owner.</strong><br><br>Inland marine often covers property belonging to others (in the insured\'s care, custody, or control). This condition lets the insurer go directly to whoever actually owns the damaged property.',
+   m:'"Adjust with owner = settle with the real owner." If it\'s not your property, the insurer can deal with whoever it actually belongs to.'},
+
+  // ── WORKERS COMP ──
+  {t:'workers',q:'An employer in a state with ELECTIVE workers compensation laws chooses NOT to participate. What does the employer lose?',
+   a:'The employer loses its <strong>common law defenses against employee liability suits.</strong><br><br>Workers can still sue the employer in court, and the employer can\'t use assumption of risk, contributory negligence, or fellow-servant defenses.',
+   m:'"Opt out of WC = lose your shield." WC trades no-fault benefits for lawsuit immunity. Skip WC and you keep the liability but lose the defenses.'},
+  {t:'workers',q:'Workers compensation laws provide all of the following EXCEPT which type of benefits?',
+   a:'<strong>Compensatory benefits (pain and suffering) are NOT covered by WC.</strong><br><br>WC DOES cover: medical expenses, disability income (temporary and permanent), death benefits, and rehabilitation.',
+   m:'"WC doesn\'t pay for pain and suffering." It\'s a no-fault system with defined benefits — no tort-style damages. No pain and suffering, no emotional distress.'},
+  {t:'workers',q:'Employers liability insurance (Part Two of the WC&EL policy) excludes which type of act?',
+   a:'<strong>Intentional acts of the insured.</strong><br><br>Part Two covers negligent acts by the employer. Deliberate harm is never covered.',
+   m:'"Intentional = not insurable in Part Two." Accidents and negligence = covered. Deliberately hurting an employee = excluded.'},
+
+  // ── BONDS ──
+  {t:'bonds',q:'A surety bond is written for a set limit. What is this limit called?',
+   a:'The <strong>bond penalty.</strong><br><br>If the principal fails to fulfill their obligation and the amount exceeds the bond penalty, the surety is only liable up to that penalty limit.',
+   m:'"Bond penalty = the surety\'s maximum exposure." Not limit of liability, not face value — the surety industry calls it the penalty.'},
+  {t:'bonds',q:'Equipment breakdown coverage is written with a single per-accident limit. What is the sublimit for hazardous substance cleanup or contaminated property?',
+   a:'<strong>$25,000</strong> for hazardous substance cleanup, repair, or replacement of contaminated property.<br><br>All four EQ breakdown sublimits are the same: $25,000 each for expediting expenses, hazardous substance, ammonia contamination, and water damage.',
+   m:'"All four EQ sublimits = $25k each." Easy to remember — same number across the board.'},
+  {t:'bonds',q:'A bank has had employee dishonesty involving fraudulent fund transfers through the computer system. Which bond rider applies?',
+   a:'<strong>Computer systems rider.</strong><br><br>Protects against misuse of telephone or computer by a customer or employee to request a fraudulent fund transfer.',
+   m:'"Computer systems rider = digital wire fraud." When the theft happens through a computer or phone system, you need this rider specifically.'},
+  {t:'bonds',q:'The Employee Theft crime policy form covers employees temporarily working outside the coverage territory for how long?',
+   a:'<strong>60 days</strong> outside the coverage territory.',
+   m:'"60 days abroad." Not 30, not 90 — 60. Two months of coverage outside the home territory.'},
+
+  // ── AUTO ──
+  {t:'auto',q:'Which vehicle would NOT qualify as a "newly acquired" vehicle under a personal auto policy?',
+   a:'<strong>A truck used solely for farming.</strong><br><br>PAP newly acquired pickup/van coverage requires: not used for farming or ranching, gross vehicle weight under 10,000 lbs, not used for commercial delivery of goods.',
+   m:'"Farm truck = no PAP." Farming and ranching are explicitly carved out. A standard pickup for personal use = covered. Farm use = needs farm policy.'},
+  {t:'auto',q:'Which loss is covered under property damage LIABILITY in a personal auto policy?',
+   a:'<strong>Damage to a rented garage when the insured failed to stop in time.</strong><br><br>PD liability covers damage you cause to NON-OWNED property. A rented garage is non-owned. Passenger injury = BI. Own vehicle damage = collision/comprehensive.',
+   m:'"PD liability = damage to their stuff." You drove into a borrowed/rented garage = PD liability. Your car damage = different coverage.'},
+  {t:'auto',q:'What is the time limit for filing personal injury protection (PIP) claims in Kansas?',
+   a:'<strong>2 years from the date of injury.</strong><br><br>Claims not submitted within 2 years of the injury date are not payable.',
+   m:'"PIP = 2 years to file." Not 90 days, not 1 year — 2 full years from the date of injury.'},
+
+  // ── COMMERCIAL ──
+  {t:'commercial',q:'Which BOP endorsement covers loss of BUSINESS INCOME when a covered peril (like lightning) disrupts utility service and the business can\'t operate?',
+   a:'<strong>Utility services — time element endorsement.</strong><br><br>Time element = covers lost income and extra expense from the disruption. Direct damage endorsement = covers physical damage to the utility infrastructure itself.',
+   m:'"Time element = lost time = lost income." Direct damage = the utility equipment broke. Time element = you can\'t open because of the outage.'},
+  {t:'commercial',q:'Which common policy condition is correct: (A) Insurer can audit books for 5 years (B) Insurer needs prior approval for inspections (C) Only first named insured can request policy changes?',
+   a:'<strong>C is correct</strong> — only the first named insured may request policy changes.<br><br>Audit rights = <strong>3 years</strong> (not 5). Inspections require <strong>no prior approval</strong> — the insurer has automatic rights.',
+   m:'"3 years, no approval needed, first named insured only." Three things to lock in. The 5-year audit option is the trap.'},
+  {t:'commercial',q:'What is a Certificate of Insurance, and does it obligate the insurer to the certificate holder?',
+   a:'A Certificate of Insurance shows the <strong>types and amounts of coverage</strong> purchased — it is NOT a policy and does <strong>NOT obligate the insurer</strong> to the certificate holder.',
+   m:'"COI = proof of coverage, not a promise." The certificate holder can see you have insurance. They\'re not named on the policy.'},
+  {t:'commercial',q:'The cancellation provision in a BOP does NOT include which item? (A) Insurer\'s cancellation requirements (B) Method of transferring owner\'s rights (C) Refund of unearned premiums (D) Insured\'s cancellation requirements',
+   a:'<strong>B — Method of transferring the owner\'s rights</strong> is in the ASSIGNMENT provision, not the cancellation provision.<br><br>Cancellation = who can cancel and how. Assignment = how to transfer the policy to someone else.',
+   m:'"Transfer of rights = assignment, not cancellation." Cancellation ends the policy. Assignment transfers it. Two different provisions.'},
+  {t:'commercial',q:'What method of premium computation relates an employer\'s losses, payroll, and premiums to rating bureau classifications?',
+   a:'<strong>Experience modification factor.</strong><br><br>Developed by a rating bureau. Compares the employer\'s actual loss history to expected losses for their class. Good history = credit (below 1.0). Bad history = debit (above 1.0).',
+   m:'"Exp mod = your track record vs. the average." A 0.85 mod = 15% discount. A 1.20 mod = 20% surcharge. Your claims drive it.'},
+  {t:'commercial',q:'Which is a covered cause of loss in BOP property coverage? (A) Agricultural smoke (B) Fire extinguisher leakage (C) Rain (D) Pollution',
+   a:'<strong>B — Leakage from fire-extinguishing equipment</strong> is the only covered cause listed.<br><br>Agricultural smoke, rain (without a covered opening), and pollution are all excluded.',
+   m:'"Sprinkler saved the building but soaked the stock — covered." The equipment that puts fires out is treated as a covered cause when it leaks or discharges.'},
+  {t:'commercial',q:'The garage coverage form is designed for which type of business?',
+   a:'<strong>Auto businesses</strong> — dealerships, auto repair shops, service stations, parking garages, businesses that regularly have other people\'s vehicles in their care, custody, or control.',
+   m:'"Garage form = businesses that handle other people\'s cars." Not general contractors, not truckers — businesses where customer vehicles are always on the premises.'},
+  {t:'commercial',q:'Business Personal Property (BPP) coverage excludes which type of property?',
+   a:'<strong>Automobiles held for sale</strong> are excluded from BPP.<br><br>BPP covers: furniture, fixtures, stock, machinery not permanently installed, labor and materials. Auto dealers need separate coverage for their inventory.',
+   m:'"Dealer inventory = not BPP." Regular business contents are in. Cars sitting on a dealer lot need their own coverage form.'},
+  {t:'commercial',q:'Under a BOP, if an insurer won\'t renew for nonpayment of premium, how many days before expiration must it notify the mortgageholder?',
+   a:'<strong>10 days</strong> before the policy expires.',
+   m:'"10 days for nonpayment mortgageholder notice." Nonpayment = shortest notice window. Other nonrenewal reasons have longer requirements.'},
+  {t:'commercial',q:'Which part of an insurance policy covers claims expenses, protection of damaged property from further loss, and defense costs — at no additional premium?',
+   a:'<strong>Additional coverages.</strong><br><br>These provide extra amounts for specific loss expenses (debris removal, fire dept charges, defense costs) built into the policy at no additional premium.',
+   m:'"Additional coverage = built-in bonus for loss expenses." Not coverage you buy extra — it\'s already there. No extra premium required.'},
+  {t:'commercial',q:'When must an insurer notify the first named insured when nonrenewing a COMMERCIAL insurance policy?',
+   a:'<strong>60 days advance written notice</strong> before expiration.',
+   m:'"Commercial nonrenewal = 60 days." Personal lines may differ. Commercial policies require the longer 60-day window.'},
+
+  // ── GENERAL ──
+  {t:'general',q:'Untrue statements on an application made UNINTENTIONALLY by the insured that would change the underwriting decision — what are these called?',
+   a:'<strong>Material misrepresentations.</strong><br><br>Material = would change the underwriting decision. Unintentional = not fraud. Intentional untrue statements = fraud.',
+   m:'"Material misrepresentation = unintentional false statement that matters." The unintentional part separates it from fraud. Both are serious.'},
+  {t:'general',q:'What is another term for an "authorized" insurer?',
+   a:'<strong>Admitted.</strong><br><br>An authorized (admitted) insurer has met state financial requirements and is approved to transact business in the state. Unauthorized = non-admitted = surplus lines.',
+   m:'"Authorized = admitted = approved by the state." Non-admitted = surplus lines. Knowing this terminology matters for the exam.'},
+  {t:'general',q:'What must common carriers issue to every shipper for whom they transport goods?',
+   a:'A <strong>uniform bill of lading.</strong><br><br>This is the required transport contract/receipt between shipper and carrier that defines liability and terms.',
+   m:'"Common carrier = uniform bill of lading." Required for every shipment. It\'s the standard document that goes with every load they haul.'},
+  {t:'general',q:'What is the "privilege to adjust with the owner" condition in inland marine insurance?',
+   a:'The insurer may settle directly with the <strong>actual owners of damaged property</strong> — not necessarily with the insured.<br><br>Since inland marine often covers property of others in the insured\'s care, custody, or control, the insurer can deal with whoever truly owns it.',
+   m:'"Adjust with owner = go to the real owner." Makes sense — if the damaged property belongs to your customer, the insurer settles with them directly.'},
+  {t:'general',q:'Inland marine insurance is used to cover which type of property?',
+   a:'<strong>Property that is mobile in nature and being transported over land.</strong><br><br>Not property at a fixed business location (that\'s commercial property). Inland marine = things that move — contractor equipment, fine art on loan, goods in transit.',
+   m:'"Inland marine = mobile property on land." Ocean marine = on water. Inland marine = moving around on land or being transported.'},
+  {t:'general',q:'Under a Film Coverage Form, how long must the insured maintain records of each production?',
+   a:'<strong>3 years after the policy expires</strong> — not after production completion.',
+   m:'"3 years after the POLICY, not after filming wraps." The clock starts when coverage ends, not when the cameras stop rolling.'},
+  {t:'general',q:'TRIA (Terrorism Risk Insurance Act) covers which type of insurance? What is specifically excluded?',
+   a:'TRIA covers commercial property and liability including <strong>workers compensation</strong> and directors & officers.<br><br><strong>EXCLUDED</strong>: commercial auto, crop insurance, burglary and theft.',
+   m:'"TRIA: WC in, auto and crop out." Same rule across both practice tests — memorize the three exclusions.'},
+
+  // ── KANSAS STATE LAW ──
+  {t:'state',q:'What are the minimum liability limits for motor vehicle insurance in Kansas?',
+   a:'<strong>$25,000</strong> per person (BI) · <strong>$50,000</strong> per accident (BI) · <strong>$25,000</strong> per accident (PD)<br><br>Kansas = <strong>25/50/25</strong>. Also requires PIP for named insured, resident relatives, passengers, and others in the vehicle.',
+   m:'"25/50/25 in Kansas." Person/accident/PD. The PD minimum ($25k) matches the per-person BI minimum.'},
+  {t:'state',q:'Each willful violation of insurance statutes regarding unfair methods of competition may result in fines up to how much? What is the maximum aggregate?',
+   a:'<strong>$5,000 per willful violation</strong>, up to a maximum aggregate penalty of <strong>$50,000.</strong>',
+   m:'"$5k per violation, $50k max." Ten violations = the ceiling. Memorize both numbers — they both show up.'},
+  {t:'state',q:'How many credit hours in ethics are required in each Kansas CE renewal period?',
+   a:'<strong>3 credit hours in ethics</strong> in each CE renewal period.',
+   m:'"3 ethics hours every renewal." Not 2, not 4. Three hours of ethics required every biennium.'},
+  {t:'state',q:'Which of the following is NOT a rebate? (A) Sharing commissions (B) Stocks/securities (C) Dividends from a mutual insurer (D) Offer of employment',
+   a:'<strong>C — Dividends from a mutual insurer are NOT a rebate.</strong><br><br>The policy itself states that dividends might be paid, so they were disclosed upfront — not a secret inducement to buy.',
+   m:'"Policy says dividends may come → not a rebate." Everything else in that list is an illegal inducement. Disclosed policy dividends = contractual, not corrupt.'},
+  {t:'state',q:'Is rebating allowed if it\'s in the best interest of the client?',
+   a:'<strong>No — rebating is NEVER allowed, regardless of intent or benefit to the client.</strong><br><br>Rebating is an illegal act involving anything of monetary value given as an inducement to purchase insurance.',
+   m:'"No good-intention exception." Best interest doesn\'t legalize rebating. It\'s illegal, period. Return of unused premium is NOT rebating.'},
+  {t:'state',q:'What is the nature of insurer membership in the Kansas FAIR Plan? How does this differ from KIGA?',
+   a:'<strong>FAIR Plan membership = OPTIONAL.</strong> Insurers choose to participate.<br><br><strong>KIGA (Kansas Insurance Guaranty Association) = REQUIRED</strong> for all admitted P&C insurers — no exceptions.',
+   m:'"FAIR Plan = optional. KIGA = mandatory." Don\'t confuse these two. FAIR = voluntary pool helping hard-to-insure property. KIGA = required safety net.'},
+  {t:'state',q:'When an insurer cancels an auto liability policy for a reason other than nonpayment, what must the insurer tell the insured?',
+   a:'The insured must be informed about possible eligibility for coverage through the <strong>Kansas Automobile Insurance Plan (KAIP).</strong>',
+   m:'"Cancelled (not nonpayment) → insurer notifies about KAIP." Nonpayment cancellation does NOT trigger this notice requirement.'},
+  {t:'state',q:'What premium tax must excess (surplus) lines agents remit to the State of Kansas?',
+   a:'<strong>6% of the gross premium.</strong>',
+   m:'"Excess lines = 6% gross." Gross = total premium received, not net. 6% goes to the state.'},
+  {t:'state',q:'A temporary insurance agent license may be issued for all of the following EXCEPT which reason?',
+   a:'<strong>Agent\'s retirement</strong> is NOT a valid reason for a temporary license.<br><br>Valid reasons: agent\'s disability, military service, or death of an agent (for business continuity).',
+   m:'"Retirement = no temp license." You planned to retire — no emergency. Disability, military, and death = sudden unplanned absences that justify a temp.'},
+  {t:'state',q:'After the initial period, a temporary insurance agent license can be extended for an additional how many days?',
+   a:'<strong>180 days</strong> for one additional period (at the Commissioner\'s discretion under special circumstances).',
+   m:'"Temp extension = 180 days." Six more months. Not 60, not 90 — 180.'},
+  {t:'state',q:'Which category of insurance is NOT exempt from rate filing rules in Kansas? (A) Inland marine (B) Small commercial risks that are manual rated (C) Highly protected risks (D) Boiler and machinery',
+   a:'<strong>B — Small commercial risks that are manual rated</strong> are NOT exempt.<br><br>Exempt: inland marine, highly protected risks, boiler and machinery, and large/specialized commercial risks meeting specific size criteria.',
+   m:'"Manual-rated small commercial = not exempt." Only large or specialized risks that deviate from manual rating get filing exemptions.'},
+  {t:'state',q:'Which type of licensee represents the insurance COMPANY — not the client?',
+   a:'<strong>Agent.</strong><br><br>An agent is appointed by and represents one or more insurance companies. A broker represents the insured/client and shops on their behalf.',
+   m:'"Agent = company side. Broker = client side." Agent is appointed BY the company. Broker is hired BY you. Two different principals.'},
+  {t:'state',q:'Which provision in an inland marine policy says the insurer will settle with the actual owner of damaged property?',
+   a:'<strong>Privilege to adjust with the owner</strong> condition.',
+   m:'"Adjust with owner = insurer goes to the real owner." When the damaged property belongs to someone other than the insured, the insurer settles directly with that person.'},
+  {t:'state',q:'Which statement about coinsurance is NOT true: the formula applies to total losses OR it only applies to partial losses?',
+   a:'<strong>The coinsurance formula does NOT apply to total losses.</strong> In a total loss, the full face amount of the policy is paid regardless of whether the coinsurance requirement was met.<br><br>Coinsurance only penalizes underinsurance on PARTIAL losses.',
+   m:'"Total loss? Coinsurance steps aside. Full face amount paid." The underinsurance penalty only kicks in when part of the property survives.'},
+];
+
+let deck=[...ALL_CARDS];
+let cur=0,flipped=false;
+let scores=new Array(ALL_CARDS.length).fill(null);
+let deckIndices=[...Array(ALL_CARDS.length).keys()];
+let touchStartX=0,isDragging=false;
+const CIRC=2*Math.PI*66;
+
+document.getElementById('tot-num').textContent=ALL_CARDS.length;
+document.getElementById('s-total').textContent=ALL_CARDS.length;
+document.getElementById('fin-of').textContent='OF '+ALL_CARDS.length;
+buildListView();setupSwipe();setupKeyboard();renderCard();updateStats();
+
+function renderCard(){
+  if(cur>=deck.length){showScore();return;}
+  const c=deck[cur];
+  const tm=TOPIC_META[c.t]||TOPIC_META.general;
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';
+  card.style.transform='translateX(0) rotate(0deg)';
+  card.style.opacity='1';
+  card.classList.remove('flipped');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+  document.getElementById('cf-front').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">Question</div>
+    <div class="card-q">${c.q}</div>
+    <div class="flip-cue">Tap card or "Reveal Answer" ↓</div>`;
+  document.getElementById('cf-back').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">Answer</div>
+    <div class="card-a">${c.a}</div>
+    <div class="mem-box"><div class="mem-label">💡 Lock It In</div><div class="mem-text">${c.m}</div></div>`;
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('tot-num').textContent=deck.length;
+  document.getElementById('ans-btns').className='answer-btns hidden';
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').textContent=cur===deck.length-1?'Finish':'Next ▶';
+  document.getElementById('sh-knew').style.opacity='0';
+  document.getElementById('sh-missed').style.opacity='0';
+  const fb=document.getElementById('flip-btn');
+  fb.style.background='';
+  document.getElementById('flip-label').textContent='Reveal Answer';
+  document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
+}
+
+function flipCard(){
+  flipped=!flipped;
+  const card=document.getElementById('card');
+  if(flipped){
+    card.classList.add('flipped');
+    document.getElementById('ans-btns').className='answer-btns';
+    document.getElementById('flip-label').textContent='Back to Question';
+  } else {
+    card.classList.remove('flipped');
+    document.getElementById('ans-btns').className='answer-btns hidden';
+    document.getElementById('flip-label').textContent='Reveal Answer';
+  }
+}
+document.getElementById('card-scene').addEventListener('click',()=>flipCard());
+
+function markCard(knew){
+  const origIdx=deckIndices[cur]!==undefined?deckIndices[cur]:cur;
+  scores[origIdx]=knew;updateStats();
+  animateExit(knew?'right':'left');
+  setTimeout(()=>{cur++;renderCard();},350);
+}
+function nextCard(){if(cur>=deck.length-1){showScore();return;}animateExit('left');setTimeout(()=>{cur++;renderCard();},350);}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function animateExit(dir){
+  const card=document.getElementById('card');
+  const x=dir==='right'?120:-120;
+  card.style.transition='transform .35s ease,opacity .35s ease';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='right'?6:-6}deg)`;
+  card.style.opacity='0';
+}
+function setupSwipe(){
+  const s=document.getElementById('card-scene');
+  s.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;isDragging=true;},{passive:true});
+  s.addEventListener('touchmove',e=>{
+    if(!isDragging||!flipped)return;
+    const dx=e.touches[0].clientX-touchStartX;
+    const card=document.getElementById('card');
+    card.style.transition='none';
+    card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/25}deg)`;
+    const sk=document.getElementById('sh-knew'),sm=document.getElementById('sh-missed');
+    if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+    else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+    else{sk.style.opacity='0';sm.style.opacity='0';}
+  },{passive:true});
+  s.addEventListener('touchend',e=>{
+    if(!isDragging)return;isDragging=false;
+    if(!flipped)return;
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(dx>80){markCard(true);}
+    else if(dx<-80){markCard(false);}
+    else{
+      const card=document.getElementById('card');
+      card.style.transition='transform .3s ease';
+      card.style.transform='rotateY(180deg)';
+      document.getElementById('sh-knew').style.opacity='0';
+      document.getElementById('sh-missed').style.opacity='0';
+    }
+  },{passive:true});
+}
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    else if(e.key==='ArrowRight')nextCard();
+    else if(e.key==='ArrowLeft')prevCard();
+    else if((e.key==='k'||e.key==='K')&&flipped)markCard(true);
+    else if((e.key==='m'||e.key==='M')&&flipped)markCard(false);
+  });
+}
+function updateStats(){
+  const knew=scores.filter(s=>s===true).length;
+  const missed=scores.filter(s=>s===false).length;
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):null;
+  document.getElementById('s-knew').textContent=knew;
+  document.getElementById('s-missed').textContent=missed;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
+}
+function showScore(){
+  const knew=scores.filter(s=>s===true).length;
+  const missedCards=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):0;
+  document.getElementById('flash-view').style.display='none';
+  document.getElementById('score-view').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fin-pct').textContent=pct+'%';
+  document.getElementById('fin-knew').textContent=knew;
+  document.getElementById('fin-missed').textContent=missedCards.length;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=80)ring.classList.add('good');else ring.classList.remove('good');
+  const msgs=['Keep drilling — concepts take reps.','Getting there. Run the missed ones.','Solid. You\'re building the pattern.','Strong — most of these are locked.','Everything locked. You\'re ready.'];
+  document.getElementById('score-msg').textContent=msgs[pct>=100?4:pct>=80?3:pct>=60?2:pct>=40?1:0];
+  const btn=document.getElementById('btn-missed-only');
+  btn.disabled=missedCards.length===0;
+  btn.textContent=`Review Missed (${missedCards.length})`;
+}
+function restart(missedOnly){
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  document.getElementById('ring-fill').classList.remove('good');
+  if(missedOnly){
+    const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+    deck=mi.map(i=>ALL_CARDS[i]);deckIndices=mi;
+    mi.forEach(i=>scores[i]=null);
+    document.getElementById('mode-banner').className='mode-banner visible';
+    document.getElementById('deck-tag').textContent='MISSED CARDS';
+  } else {
+    deck=[...ALL_CARDS];deckIndices=[...Array(ALL_CARDS.length).keys()];
+    scores=new Array(ALL_CARDS.length).fill(null);
+    document.getElementById('mode-banner').className='mode-banner';
+    document.getElementById('deck-tag').textContent='LEARNING TEST 2';
+  }
+  cur=0;flipped=false;renderCard();updateStats();
+}
+function setMode(m,btn){
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('flash-view').style.display=m==='flash'?'block':'none';
+  document.getElementById('list-view').style.display=m==='list'?'block':'none';
+  document.getElementById('score-view').style.display='none';
+}
+function buildListView(){
+  const topics=[...new Set(ALL_CARDS.map(c=>c.t))];
+  let html='';
+  topics.forEach(t=>{
+    const cards=ALL_CARDS.filter(c=>c.t===t);
+    const tm=TOPIC_META[t]||TOPIC_META.general;
+    html+=`<div class="cat-hdr"><span class="cat-icon">${tm.icon}</span><span class="cat-lbl">${tm.label}</span><span class="cat-count">${cards.length}</span></div>`;
+    cards.forEach(c=>{
+      html+=`<div class="list-card"><div class="list-q">${c.q}</div><div class="list-a">${c.a}</div><div class="list-mem">💡 ${c.m}</div></div>`;
+    });
+  });
+  document.getElementById('list-view').innerHTML=html;
+}
+</script>
+</body>
+</html>
