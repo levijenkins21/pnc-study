@@ -415,7 +415,7 @@ function renderCard(){
   card.style.transform='translateX(0) rotate(0deg)';
   card.style.opacity='1';
   card.classList.remove('flipped');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';card.style.transform='';}));
   document.getElementById('cf-front').innerHTML=`
     <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
     <div class="card-label">Question</div>
