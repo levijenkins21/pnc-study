@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Parking Lot — Last 5 Min</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050505;--surface:#111;--surface2:#181818;
+  --border:#1e1e1e;--border2:#252525;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.12);
+  --green:#3d9e3d;--green-dim:rgba(61,158,61,.12);
+  --red:#9e3d3d;--red-dim:rgba(158,61,61,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.1);
+  --text:#ddd;--muted:#555;--muted2:#2a2a2a;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+.top-bar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.deck-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);padding:3px 10px;border-radius:20px;}
+.timer-wrap{display:flex;align-items:center;gap:5px;}
+.timer{font-size:14px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;}
+.timer.urgent{color:#e05;}
+.title-block{padding:10px 16px 0;}
+.title-block h1{font-size:20px;font-weight:700;color:#fff;}
+.title-block p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pulse-bar{background:linear-gradient(90deg,rgba(200,168,75,.15),rgba(200,168,75,.05));border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:9px 14px;margin:10px 16px 0;text-align:center;font-size:11px;color:#aaa;line-height:1.6;}
+.pulse-bar strong{color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{background:var(--bg);padding:8px 4px;text-align:center;}
+.stat-n{font-size:20px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-n.g{color:var(--green);}
+.stat-n.r{color:#e05;}
+.stat-l{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:1px;text-transform:uppercase;}
+#flash{padding:12px 16px 90px;}
+.card-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-pos{font-size:11px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.scene{perspective:1000px;cursor:pointer;}
+.card{position:relative;width:100%;min-height:240px;transform-style:preserve-3d;transition:transform .4s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flip{transform:rotateY(180deg);}
+.face{position:absolute;top:0;left:0;right:0;min-height:240px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:14px 14px;display:flex;flex-direction:column;}
+.front{background:var(--surface);border:1px solid var(--border2);}
+.back{background:#040d06;border:1px solid #091a0c;transform:rotateY(180deg);}
+.cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;margin-bottom:8px;width:fit-content;}
+.cp-prop{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);color:var(--gold);}
+.cp-cas{background:var(--blue-dim);border:1px solid rgba(74,144,217,.2);color:var(--blue);}
+.cp-ks{background:var(--purple-dim);border:1px solid rgba(168,85,247,.2);color:var(--purple);}
+.cp-gen{background:var(--green-dim);border:1px solid rgba(61,158,61,.2);color:var(--green);}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);flex:1;}
+.tap-cue{margin-top:8px;font-size:9px;color:var(--muted2);text-align:center;text-transform:uppercase;letter-spacing:1px;}
+.a-text{font-size:13px;line-height:1.8;color:var(--text);flex:1;}
+.a-text strong{color:#5ec97b;}
+.lock-box{margin-top:8px;background:rgba(61,158,61,.07);border:1px solid rgba(61,158,61,.15);border-radius:7px;padding:7px 10px;}
+.lock-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:2px;}
+.lock-txt{font-size:11px;color:#5a8f5a;line-height:1.6;}
+.swipe-overlay{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;}
+.swo-k{background:rgba(61,158,61,.15);color:var(--green);border:2px solid rgba(61,158,61,.3);}
+.swo-m{background:rgba(158,61,61,.12);color:var(--red);border:2px solid rgba(158,61,61,.25);}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;margin-bottom:7px;}
+.ans-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.ans-row.hidden{display:none;}
+.ab{border:1px solid;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.ab-m{background:var(--red-dim);border-color:rgba(158,61,61,.3);color:#cc5555;}
+.ab-k{background:var(--green-dim);border-color:rgba(61,158,61,.3);color:var(--green);}
+.nav-row{display:grid;grid-template-columns:1fr 2fr;gap:7px;}
+.nb{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nb:disabled{opacity:.2;cursor:not-allowed;}
+.nb.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.kb{text-align:center;font-size:9px;color:var(--muted2);margin-top:4px;}
+#score{display:none;padding:24px 16px;text-align:center;}
+.ring-wrap{position:relative;width:130px;height:130px;margin:0 auto 14px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.rb{fill:none;stroke:var(--border);stroke-width:10;}
+.rf{fill:none;stroke:var(--gold);stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.rf.pass{stroke:var(--green);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-size:40px;font-weight:700;color:#fff;line-height:1;}
+.ring-of{font-size:9px;color:var(--muted);}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.sg{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;}
+.sg-n{font-size:24px;font-weight:700;line-height:1;margin-bottom:2px;}
+.sg-n.g{color:var(--green);}
+.sg-n.r{color:#cc5555;}
+.sg-l{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.sc-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
+.sc-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.sc-btn{border:none;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.sc-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.sc-shaky{background:var(--red-dim);border:1px solid rgba(158,61,61,.3);color:#cc5555;}
+.sc-shaky:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="top-bar">
+  <span class="deck-label">PARKING LOT</span>
+  <div class="timer-wrap"><span style="font-size:9px;color:var(--muted);letter-spacing:1px">TIME</span> <span class="timer" id="tmr">5:00</span></div>
+</div>
+<div class="title-block">
+  <h1>Last 5 Minutes</h1>
+  <p>20 highest-yield concepts — Ch3, Ch4 &amp; Kansas</p>
+</div>
+<div class="pulse-bar">You're ready. <strong>Lock these in</strong> before you walk through the door.</div>
+<div class="stats-row">
+  <div class="stat"><div class="stat-n" id="sn-t">20</div><div class="stat-l">Total</div></div>
+  <div class="stat"><div class="stat-n g" id="sn-k">0</div><div class="stat-l">Locked</div></div>
+  <div class="stat"><div class="stat-n r" id="sn-m">0</div><div class="stat-l">Shaky</div></div>
+</div>
+<div id="flash">
+  <div class="card-row" style="margin-top:12px;">
+    <div class="card-pos"><strong id="cn">1</strong> / <span id="ct">20</span></div>
+    <button style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="scene" id="scene">
+    <div class="card" id="card">
+      <div class="face front" id="cf"></div>
+      <div class="face back" id="cb"></div>
+    </div>
+    <div class="swipe-overlay swo-k" id="sw-k">✓ LOCKED</div>
+    <div class="swipe-overlay swo-m" id="sw-m">✕ SHAKY</div>
+  </div>
+  <button class="flip-btn" onclick="flipCard()">↻ <span id="fl">Reveal Answer</span></button>
+  <div class="ans-row hidden" id="ans">
+    <button class="ab ab-m" onclick="mark(false)">✕ Shaky</button>
+    <button class="ab ab-k" onclick="mark(true)">✓ Locked</button>
+  </div>
+  <div class="nav-row">
+    <button class="nb" id="pb" onclick="prevCard()" disabled>◀</button>
+    <button class="nb primary" id="nb" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb">Space = flip · K = locked · M = shaky · ← →</div>
+</div>
+<div id="score">
+  <div class="ring-wrap">
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <circle class="rb" cx="65" cy="65" r="53"/>
+      <circle class="rf" id="rf" cx="65" cy="65" r="53" stroke-dasharray="0 333"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" id="fp">0%</div>
+      <div class="ring-of">OF 20</div>
+    </div>
+  </div>
+  <div class="score-grid">
+    <div class="sg"><div class="sg-n g" id="fk">0</div><div class="sg-l">Locked In</div></div>
+    <div class="sg"><div class="sg-n r" id="fm">0</div><div class="sg-l">Still Shaky</div></div>
+  </div>
+  <div class="sc-msg" id="sm"></div>
+  <div class="sc-btns">
+    <button class="sc-btn sc-restart" onclick="restart(false)">Run Again</button>
+    <button class="sc-btn sc-shaky" id="shaky-btn" onclick="restart(true)">Shaky Only</button>
+  </div>
+</div>
+
+<script>
+const CARDS=[
+// PROPERTY
+{c:'prop',e:'🏠 Property',
+ q:'Name the 6 HO forms.',
+ a:'<strong>HO-2</strong> Broad · <strong>HO-3</strong> Special (most common) · <strong>HO-4</strong> Renters · <strong>HO-5</strong> Comprehensive · <strong>HO-6</strong> Condo · <strong>HO-8</strong> Modified (old homes)',
+ m:'"2-Broad 3-Special 4-Rent 5-Comp 6-Condo 8-Modified"'},
+{c:'prop',e:'🏠 Property',
+ q:'What does each HO Coverage letter pay for? (A–F)',
+ a:'<strong>A</strong> Dwelling · <strong>B</strong> Other Structures · <strong>C</strong> Personal Property · <strong>D</strong> Loss of Use · <strong>E</strong> Personal Liability · <strong>F</strong> Medical Payments',
+ m:'"ABCDEF = Dwelling, Other, Personal, Loss, Liability, Med." Every exam has at least one of these.'},
+{c:'prop',e:'🏠 Property',
+ q:'What is the 80% coinsurance rule in commercial property?',
+ a:'Insured must carry at least <strong>80% of replacement cost</strong> to collect full replacement cost at loss.<br>Formula if under-insured: (Amount carried ÷ 80% of RCV) × Loss = Payout',
+ m:'"Carry 80% or pay the penalty." Under 80% = you share the loss proportionally.'},
+{c:'prop',e:'🏠 Property',
+ q:'In a BOP, which businesses are NOT eligible?',
+ a:'NOT eligible: <strong>bars/taverns, banks, auto dealers, parking lots, professional offices over size limits.</strong><br>Eligible: condominiums, small retail, small offices, restaurants (limited).',
+ m:'"Bars, banks, auto dealers = no BOP." When in doubt, think: risky or large = no BOP.'},
+{c:'prop',e:'🏠 Property',
+ q:'Under a commercial property policy, what are the limits for property in transit and property off-premises?',
+ a:'<strong>Property in Transit: $5,000</strong><br><strong>Property Off-Premises: $10,000</strong>',
+ m:'"Transit $5k, Off-prem $10k." Transit is riskier and gets less. Off-premises gets more.'},
+{c:'prop',e:'🏠 Property',
+ q:'What makes bailee coverage unique compared to standard liability?',
+ a:'Bailee coverage pays for <strong>damage to customers\' property whether or not the bailee was negligent.</strong><br><br>Standard liability requires proof of negligence. Bailee = automatic coverage.',
+ m:'"Bailee = no fault required." A dry cleaner loses your suit = covered, regardless of fault.'},
+// CASUALTY
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'Give the commercial auto symbol for: Any auto · No-fault · UM · Hired · Nonowned',
+ a:'<strong>1</strong> = Any Auto<br><strong>5</strong> = Owned, No-Fault states<br><strong>6</strong> = Owned, UM states<br><strong>8</strong> = Hired Autos<br><strong>9</strong> = Nonowned Autos',
+ m:'"1=Any, 5=No-fault, 6=UM, 8=Hired, 9=Nonowned." 5 and 6 are the exam favorites.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'What are the Kansas minimum auto liability limits?',
+ a:'<strong>25/50/25</strong><br>$25,000 per person · $50,000 per accident · $25,000 property damage',
+ m:'"Kansas = 25/50/25." Not 50/100, not 100/300. 25/50/25.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'What is the difference between UM and UIM coverage?',
+ a:'<strong>UM (Uninsured Motorist)</strong> = other driver has <em>NO</em> insurance (hit-and-run, uninsured driver)<br><strong>UIM (Underinsured Motorist)</strong> = other driver has insurance but <em>not enough</em> to cover your damages',
+ m:'"UM = zero insurance. UIM = not enough." Simple split: none vs. insufficient.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'Under a PAP, how is a nonowned auto defined?',
+ a:'A vehicle <strong>titled to another person and used with the insured\'s permission.</strong><br><br>Leased 12+ months = owned auto. Borrowed from employee = nonowned. Rented = may be hired auto.',
+ m:'"Nonowned = someone else\'s title + your permission." 12-month lease = owned. Borrowed from friend = nonowned.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'Are self-propelled snow removal vehicles classified as mobile equipment or autos?',
+ a:'<strong>AUTOS</strong> — not mobile equipment.<br><br>Also autos: street cleaners, road maintenance vehicles, cherry pickers on auto chassis, vehicles subject to financial responsibility laws.',
+ m:'"Snow plows = autos." Bulldozers and cranes = mobile equipment. Anything on a road = usually auto.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'A CGL policy has a $1M aggregate. After $1M in claims, what happens to defense costs?',
+ a:'<strong>The insurer stops paying defense costs.</strong> Once the aggregate is exhausted, the duty to defend ends — even though supplementary payments normally don\'t reduce limits.',
+ m:'"Aggregate gone = defense gone." This is the classic CGL trick question.'},
+{c:'cas',e:'🚗 Auto/Casualty',
+ q:'Under the products and completed operations hazard, is there a time limit on when injury must occur after work is done?',
+ a:'<strong>No time limit.</strong> Injury or damage can occur years after the work was completed.<br><br>Three conditions: (1) away from insured\'s premises, (2) after releasing possession, (3) arising from insured\'s product or work.',
+ m:'"Completed ops = no time limit." The exam will say "90 days." Wrong. No limit.'},
+// KANSAS / GENERAL
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'What do "Certificate of Authority," "Authorized Insurer," and "Admitted Insurer" mean?',
+ a:'They all mean the same thing — the insurer is <strong>licensed by the Kansas Insurance Commissioner</strong> to write business in Kansas.<br><br>Without a Certificate of Authority = non-admitted = surplus lines only.',
+ m:'"Certificate = Authorized = Admitted." Three names, one concept. The exam loves this triple.'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'Excess & surplus lines producers place coverage with admitted or non-admitted insurers?',
+ a:'<strong>Eligible non-admitted (surplus lines) insurers.</strong> NOT admitted/authorized insurers.<br><br>E&S fills the gap when admitted market rejects the risk.',
+ m:'"E&S = non-admitted." Admitted = state licensed. E&S = not licensed but eligible. Don\'t get tricked.'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'What is the Kansas Automobile Insurance Plan (KAIP) and when is notice NOT required?',
+ a:'KAIP provides coverage for high-risk drivers rejected by the voluntary market.<br><br><strong>Notice NOT required</strong> when cancellation is due to <strong>nonpayment of premium.</strong> All other cancellations must include KAIP notice.',
+ m:'"No KAIP notice = nonpayment only." Any other reason = must notify. Nonpayment = their fault.'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'What are the penalties for nonwillful vs. willful unfair trade practice violations in Kansas?',
+ a:'<strong>Nonwillful:</strong> up to $1,000 per violation, max $10,000 aggregate<br><strong>Willful:</strong> up to $25,000 per violation<br><strong>FCRA habitual willful:</strong> $2,500',
+ m:'"Nonwillful = $1k/$10k. Willful = $25k. FCRA = $2,500." Three tiers, three numbers.'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'What notice must the Commissioner give before a hearing and how must it be delivered?',
+ a:'<strong>15 days advance notice</strong> delivered by <strong>registered mail</strong>, stating time, place, and purpose of hearing.',
+ m:'"15 days, registered mail." Not 10, not 20. 15. And it must be registered (not just regular) mail.'},
+{c:'gen',e:'✅ General',
+ q:'What is "consideration" in an insurance contract?',
+ a:'Something of value each party gives the other.<br><br><strong>Insured gives:</strong> premium payment + truthful representations on the application.<br><strong>Insurer gives:</strong> promise to pay covered losses.',
+ m:'"Consideration = premium + truthful app." Both parties give something. Insured gives money AND honest answers.'},
+{c:'gen',e:'✅ General',
+ q:'What is the Gramm-Leach-Bliley Act and what notices does it require?',
+ a:'Protects <strong>private customer information at financial institutions.</strong><br><br>Requires: (1) notice at start of business relationship, (2) notice before sharing info with third parties, (3) annual notice.',
+ m:'"GLB = protect private info." 2 notices upfront + 1 annual. Insurers = financial institutions under GLB.'},
+];
+
+const TOTAL=CARDS.length;
+const CIRC=2*Math.PI*53;
+let deck=[...CARDS],cur=0,flipped=false,scores=new Array(TOTAL).fill(null),deckIdx=[...Array(TOTAL).keys()];
+let touchStartX=0,touchStartY=0,isDrag=false;
+let timerEl=document.getElementById('tmr'),timerSec=300,timerInt=null;
+
+function startTimer(){
+  timerInt=setInterval(()=>{
+    timerSec--;
+    const m=Math.floor(timerSec/60),s=timerSec%60;
+    timerEl.textContent=m+':'+(s<10?'0':'')+s;
+    if(timerSec<=60)timerEl.classList.add('urgent');
+    if(timerSec<=0){clearInterval(timerInt);timerEl.textContent='GO!';}
+  },1000);
+}
+startTimer();
+
+function getClass(c){return c==='prop'?'cp-prop':c==='cas'?'cp-cas':c==='ks'?'cp-ks':'cp-gen';}
+function renderCard(){
+  if(cur>=deck.length){showScore();return;}
+  const c=deck[cur];
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';card.style.transform='';card.style.opacity='1';
+  card.classList.remove('flip');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+  document.getElementById('cf').innerHTML=`<div class="cat-pill ${getClass(c.c)}">${c.e}</div><div class="q-text">${c.q}</div><div class="tap-cue">tap to reveal</div>`;
+  document.getElementById('cb').innerHTML=`<div class="cat-pill ${getClass(c.c)}">${c.e}</div><div class="a-text">${c.a}</div><div class="lock-box"><div class="lock-lbl">🔒 Lock It</div><div class="lock-txt">${c.m}</div></div>`;
+  document.getElementById('cn').textContent=cur+1;
+  document.getElementById('ct').textContent=deck.length;
+  document.getElementById('ans').className='ans-row hidden';
+  document.getElementById('pb').disabled=cur===0;
+  document.getElementById('nb').textContent=cur===deck.length-1?'Finish':'Next ▶';
+  document.getElementById('fl').textContent='Reveal Answer';
+  document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';
+  document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
+}
+function flipCard(){
+  flipped=!flipped;const card=document.getElementById('card');
+  if(flipped){card.classList.add('flip');document.getElementById('ans').className='ans-row';document.getElementById('fl').textContent='Back to Question';}
+  else{card.classList.remove('flip');document.getElementById('ans').className='ans-row hidden';document.getElementById('fl').textContent='Reveal Answer';}
+}
+document.getElementById('scene').addEventListener('click',()=>flipCard());
+function mark(knew){
+  const oi=deckIdx[cur]!==undefined?deckIdx[cur]:cur;
+  scores[oi]=knew;updateStats();exitAnim(knew?'r':'l');setTimeout(()=>{cur++;renderCard();},300);
+}
+function nextCard(){if(cur>=deck.length-1){showScore();return;}exitAnim('l');setTimeout(()=>{cur++;renderCard();},300);}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function exitAnim(dir){
+  const card=document.getElementById('card');const x=dir==='r'?100:-100;
+  card.style.transition='transform .3s,opacity .3s';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='r'?5:-5}deg)`;card.style.opacity='0';
+}
+// Swipe
+document.getElementById('scene').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;isDrag=true;},{passive:true});
+document.getElementById('scene').addEventListener('touchmove',e=>{
+  if(!isDrag||!flipped)return;const dx=e.touches[0].clientX-touchStartX;
+  const card=document.getElementById('card');card.style.transition='none';
+  card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/30}deg)`;
+  const sk=document.getElementById('sw-k'),sm=document.getElementById('sw-m');
+  if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+  else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+  else{sk.style.opacity='0';sm.style.opacity='0';}
+},{passive:true});
+document.getElementById('scene').addEventListener('touchend',e=>{
+  if(!isDrag)return;isDrag=false;if(!flipped)return;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(dx>80)mark(true);else if(dx<-80)mark(false);
+  else{const card=document.getElementById('card');card.style.transition='transform .3s';card.style.transform='rotateY(180deg)';document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';}
+},{passive:true});
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+  else if(e.key==='ArrowRight')nextCard();
+  else if(e.key==='ArrowLeft')prevCard();
+  else if((e.key==='k'||e.key==='K')&&flipped)mark(true);
+  else if((e.key==='m'||e.key==='M')&&flipped)mark(false);
+});
+function updateStats(){
+  document.getElementById('sn-k').textContent=scores.filter(s=>s===true).length;
+  document.getElementById('sn-m').textContent=scores.filter(s=>s===false).length;
+}
+function showScore(){
+  clearInterval(timerInt);
+  const knew=scores.filter(s=>s===true).length;
+  const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):0;
+  document.getElementById('flash').style.display='none';
+  document.getElementById('score').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fp').textContent=pct+'%';
+  document.getElementById('fk').textContent=knew;
+  document.getElementById('fm').textContent=mi.length;
+  const rf=document.getElementById('rf');
+  rf.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=80)rf.classList.add('pass');
+  document.getElementById('sm').textContent=pct>=80?'You\'re ready. Walk in and own it.':mi.length>0?'Run the shaky ones once more, then go.':'Go get that license.';
+  document.getElementById('shaky-btn').disabled=mi.length===0;
+  document.getElementById('shaky-btn').textContent=`Shaky (${mi.length})`;
+}
+function restart(missedOnly){
+  document.getElementById('score').style.display='none';
+  document.getElementById('flash').style.display='block';
+  document.getElementById('rf').classList.remove('pass');
+  if(missedOnly){
+    const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+    deck=mi.map(i=>CARDS[i]);deckIdx=mi;mi.forEach(i=>scores[i]=null);
+  } else {
+    deck=[...CARDS];deckIdx=[...Array(TOTAL).keys()];scores=new Array(TOTAL).fill(null);
+  }
+  cur=0;flipped=false;timerSec=300;timerEl.classList.remove('urgent');timerEl.textContent='5:00';
+  clearInterval(timerInt);startTimer();renderCard();updateStats();
+}
+renderCard();
+</script>
+</body>
+</html>
