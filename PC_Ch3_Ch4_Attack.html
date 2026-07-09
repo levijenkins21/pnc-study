@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Ch 3 & 4 Attack Deck</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1a1a1a;
+  --border:#222;--border2:#2a2a2a;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.12);
+  --green:#4aaa4a;--green-dim:rgba(74,170,74,.12);
+  --red:#aa4a4a;--red-dim:rgba(170,74,74,.12);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,.1);
+  --text:#e2e2e2;--muted:#555;--muted2:#333;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .4s ease;}
+.header{padding:20px 20px 0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.back-link{color:var(--muted);font-size:12px;text-decoration:none;}
+.deck-tag{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--red);background:var(--red-dim);border:1px solid rgba(170,74,74,.3);padding:3px 10px;border-radius:20px;}
+.header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:2px;}
+.header-sub{font-size:12px;color:var(--muted);}
+.score-bar{background:var(--red-dim);border:1px solid rgba(170,74,74,.2);border-radius:8px;padding:10px 14px;margin:12px 20px 0;display:flex;align-items:center;gap:10px;}
+.score-bar-icon{font-size:18px;}
+.score-bar-text{font-size:12px;color:#f87171;line-height:1.5;}
+.score-bar-text strong{color:#fff;}
+.filter-row{display:flex;gap:8px;padding:12px 16px 0;flex-wrap:wrap;}
+.filter-btn{flex:1;min-width:0;padding:10px 6px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid var(--border2);background:var(--surface);color:var(--muted);text-align:center;transition:all .15s;font-family:inherit;line-height:1.3;}
+.filter-btn.active-all{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+.filter-btn.active-ch3{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+.filter-btn.active-ch4{border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
+.filter-count{display:block;font-size:18px;font-weight:800;color:inherit;}
+.mode-tabs{display:flex;padding:0 20px;margin-top:14px;border-bottom:1px solid var(--border);}
+.mode-tab{font-size:12px;font-weight:500;color:var(--muted);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.mode-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-cell{background:var(--bg);padding:12px 6px;text-align:center;}
+.stat-val{font-size:24px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-val.g{color:var(--green);}
+.stat-val.r{color:var(--red);}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+#flash-view{padding:16px 16px 80px;}
+.mode-banner{display:none;background:rgba(170,74,74,.12);border:1px solid rgba(170,74,74,.25);border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:11px;color:var(--red);text-align:center;font-weight:600;letter-spacing:.5px;}
+.mode-banner.visible{display:block;}
+.card-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.card-pos{font-size:12px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.skip-btn{background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:inherit;}
+.card-scene{perspective:1200px;margin-bottom:10px;cursor:pointer;touch-action:pan-y;}
+.card{position:relative;width:100%;min-height:280px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flipped{transform:rotateY(180deg);}
+.card-face{position:absolute;top:0;left:0;right:0;min-height:280px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:18px 16px;display:flex;flex-direction:column;pointer-events:none;}
+.card-front{background:var(--surface);border:1px solid var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.card-back{background:#050f0a;border:1px solid #0a2015;box-shadow:0 4px 20px rgba(0,0,0,.4);transform:rotateY(180deg);}
+.topic-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 10px;border-radius:20px;margin-bottom:10px;width:fit-content;}
+.tp-ch3{background:var(--gold-dim);border:1px solid rgba(200,168,75,.2);color:var(--gold);}
+.tp-ch4{background:var(--blue-dim);border:1px solid rgba(96,165,250,.2);color:var(--blue);}
+.card-label{font-size:9px;font-weight:600;letter-spacing:2px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.card-q{font-size:14px;line-height:1.75;color:var(--text);font-weight:400;flex:1;}
+.flip-cue{margin-top:12px;text-align:center;font-size:10px;color:var(--muted2);}
+.card-a{font-size:13px;line-height:1.85;color:var(--text);flex:1;}
+.card-a strong{color:#6ee7b7;font-weight:600;}
+.mem-box{margin-top:10px;background:rgba(74,170,74,.07);border:1px solid rgba(74,170,74,.15);border-radius:8px;padding:10px 12px;}
+.mem-label{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:3px;text-transform:uppercase;}
+.mem-text{font-size:11px;color:#5fb85f;line-height:1.6;}
+.swipe-hint{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;transition:opacity .1s;}
+.swipe-hint.knew{background:rgba(74,170,74,.15);color:var(--green);border:2px solid rgba(74,170,74,.3);}
+.swipe-hint.missed{background:rgba(170,74,74,.12);color:var(--red);border:2px solid rgba(170,74,74,.25);}
+.flip-btn-wrap{margin-bottom:10px;}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:13px;border-radius:8px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+.flip-btn:active{background:var(--border);}
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.answer-btns.hidden{display:none;}
+.ans-btn{border:1px solid;font-size:14px;font-weight:700;padding:13px 16px;border-radius:8px;cursor:pointer;font-family:inherit;transition:transform .1s;}
+.ans-btn:active{transform:scale(0.97);}
+.btn-missed{background:var(--red-dim);border-color:rgba(170,74,74,.3);color:var(--red);}
+.btn-knew{background:var(--green-dim);border-color:rgba(74,170,74,.3);color:var(--green);}
+.bottom-nav{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:4px;}
+.nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nav-btn:active:not(:disabled){background:var(--border);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.nav-btn.primary:active{background:#b09040;}
+.kb-hint{text-align:center;font-size:10px;color:var(--muted2);margin-top:6px;}
+#list-view{display:none;padding:12px 16px 80px;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px;margin-top:6px;}
+.cat-icon{font-size:15px;}.cat-lbl{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}.cat-count{font-size:18px;font-weight:700;color:var(--muted2);margin-left:auto;}
+.list-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-bottom:8px;}
+.list-q{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.6;}
+.list-a{font-size:13px;color:var(--text);line-height:1.75;margin-bottom:6px;}
+.list-a strong{color:#6ee7b7;}
+.list-mem{font-size:11px;color:#5fb85f;line-height:1.6;border-top:1px solid rgba(74,170,74,.1);padding-top:6px;}
+#score-view{display:none;padding:28px 20px;text-align:center;}
+.score-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 20px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:12;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:12;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-fill.good{stroke:var(--green);}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-size:48px;font-weight:700;color:#fff;line-height:1;}
+.score-of{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.score-block{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:14px;}
+.score-block-val{font-size:32px;font-weight:700;line-height:1;margin-bottom:4px;}
+.score-block-val.g{color:var(--green);}
+.score-block-val.r{color:var(--red);}
+.score-block-lbl{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.score-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.score-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.score-btn{border:none;font-size:13px;font-weight:700;padding:13px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.btn-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.btn-missed-only{background:var(--red-dim);border:1px solid rgba(170,74,74,.3);color:var(--red);}
+.btn-missed-only:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="header">
+  <div class="header-top">
+    <a class="back-link" href="PC_Dashboard.html">← Dashboard</a>
+    <span class="deck-tag">CH 3 & 4 ATTACK</span>
+  </div>
+  <h1>Chapter 3 & 4 Drill</h1>
+  <div class="header-sub">50 cards — property policies, casualty, bonds</div>
+</div>
+<div class="score-bar">
+  <div class="score-bar-icon">🎯</div>
+  <div class="score-bar-text"><strong>You scored 32% on Ch3 and 48% on Ch4.</strong> These 50 cards target exactly what's failing you. Run this until you're hitting 80%+.</div>
+</div>
+<div class="filter-row">
+  <button class="filter-btn active-all" id="fb-all" onclick="setFilter('all',this)"><span class="filter-count" id="fc-all">50</span>All Cards</button>
+  <button class="filter-btn" id="fb-ch3" onclick="setFilter('ch3',this)"><span class="filter-count" id="fc-ch3">23</span>🏠 Ch3 Property</button>
+  <button class="filter-btn" id="fb-ch4" onclick="setFilter('ch4',this)"><span class="filter-count" id="fc-ch4">27</span>💼 Ch4 Casualty</button>
+</div>
+<div class="mode-tabs">
+  <button class="mode-tab active" onclick="setMode('flash',this)">Flashcards</button>
+  <button class="mode-tab" onclick="setMode('list',this)">Review All</button>
+</div>
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" id="s-total">50</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-cell"><div class="stat-val g" id="s-knew">0</div><div class="stat-lbl">Knew It</div></div>
+  <div class="stat-cell"><div class="stat-val r" id="s-missed">0</div><div class="stat-lbl">Missed</div></div>
+  <div class="stat-cell"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Score</div></div>
+</div>
+<div id="flash-view">
+  <div class="mode-banner" id="mode-banner">REVIEWING MISSED CARDS</div>
+  <div class="card-nav-row">
+    <div class="card-pos"><strong id="cur-num">1</strong> / <span id="tot-num">50</span></div>
+    <button class="skip-btn" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="card-scene" id="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="cf-front"></div>
+      <div class="card-face card-back" id="cf-back"></div>
+    </div>
+    <div class="swipe-hint knew" id="sh-knew">✓ KNEW IT</div>
+    <div class="swipe-hint missed" id="sh-missed">✕ MISSED</div>
+  </div>
+  <div class="flip-btn-wrap">
+    <button class="flip-btn" id="flip-btn" onclick="flipCard()">
+      <span>↻</span><span id="flip-label">Reveal Answer</span>
+    </button>
+  </div>
+  <div class="answer-btns hidden" id="ans-btns">
+    <button class="ans-btn btn-missed" onclick="markCard(false)">✕ Missed It</button>
+    <button class="ans-btn btn-knew" onclick="markCard(true)">✓ Knew It</button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀ Prev</button>
+    <button class="nav-btn primary" id="next-btn" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb-hint">Space = flip · K = knew · M = missed · ← → navigate</div>
+</div>
+<div id="list-view"></div>
+<div id="score-view">
+  <div class="score-ring-wrap">
+    <svg width="160" height="160" viewBox="0 0 160 160">
+      <circle class="ring-bg" cx="80" cy="80" r="66"/>
+      <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="66" stroke-dasharray="0 415"/>
+    </svg>
+    <div class="score-center">
+      <div class="score-pct" id="fin-pct">0%</div>
+      <div class="score-of" id="fin-of">OF 50</div>
+    </div>
+  </div>
+  <div class="score-breakdown">
+    <div class="score-block"><div class="score-block-val g" id="fin-knew">0</div><div class="score-block-lbl">Knew It</div></div>
+    <div class="score-block"><div class="score-block-val r" id="fin-missed">0</div><div class="score-block-lbl">Still Learning</div></div>
+  </div>
+  <div class="score-msg" id="score-msg"></div>
+  <div class="score-actions">
+    <button class="score-btn btn-restart" onclick="restart(false)">Full Deck</button>
+    <button class="score-btn btn-missed-only" id="btn-missed-only" onclick="restart(true)">Review Missed</button>
+  </div>
+</div>
+
+<script>
+const ALL_CARDS=[
+// ── CHAPTER 3 · PROPERTY POLICIES ──
+{t:'ch3',
+ q:'What are the three dwelling policy forms and what type of coverage does each provide?',
+ a:'<strong>DP-1 (Basic Form):</strong> Named perils — fire, lightning, internal explosion only (plus a few additions).<br><br><strong>DP-2 (Broad Form):</strong> Named perils — broader list including windstorm, hail, and more.<br><br><strong>DP-3 (Special Form):</strong> Open perils on the dwelling (all-risk); named perils on contents.',
+ m:'"1=basic, 2=broad, 3=special." DP-3 is the best — open perils on structure. Same pattern as HO-3.'},
+{t:'ch3',
+ q:'What are the 11 basic form named perils covered under a standard fire/dwelling policy?',
+ a:'<strong>Fire & lightning, windstorm & hail, explosion, riot & civil commotion, aircraft, vehicles, smoke, vandalism & malicious mischief, theft, volcanic eruption, and falling objects.</strong><br><br>(Some sources combine to 11; the key ones are fire, lightning, windstorm, explosion, riot, aircraft, vehicles, smoke, vandalism, theft.)',
+ m:'"FELVERSTAVT" or just remember: fire + lightning are always covered. Everything else is extra. Basic = bare minimum.'},
+{t:'ch3',
+ q:'What 6 additional perils does the broad form add on top of the basic form perils?',
+ a:'<strong>1.</strong> Falling objects<br><strong>2.</strong> Weight of ice, snow, or sleet<br><strong>3.</strong> Accidental discharge or overflow of water/steam<br><strong>4.</strong> Sudden tearing/bulging of heating or AC systems<br><strong>5.</strong> Freezing of plumbing<br><strong>6.</strong> Sudden and accidental damage from electrical current',
+ m:'"Broad adds the frozen pipe, ice weight, and water backup type stuff." Think winter damage scenarios + electrical.'},
+{t:'ch3',
+ q:'What homeowners form covers renters (tenants), and what coverages does it include?',
+ a:'<strong>HO-4 (Contents Broad Form)</strong> — for renters/tenants.<br><br>Includes: Coverage C (personal property), Coverage D (loss of use), Coverage E (personal liability), Coverage F (medical payments).<br><br>No Coverage A (dwelling) or Coverage B (other structures) — the renter doesn\'t own the building.',
+ m:'"HO-4 = renter. No A or B — not your building." C, D, E, F only.'},
+{t:'ch3',
+ q:'What homeowners form covers condo unit owners?',
+ a:'<strong>HO-6 (Unit Owners Form)</strong> — for condominium owners.<br><br>Coverage A covers the interior of the unit (walls-in). The condo association\'s master policy covers the exterior structure.',
+ m:'"HO-6 = condo, walls-in only." The building\'s exterior is the HOA\'s problem.'},
+{t:'ch3',
+ q:'What is the HO-8 form designed for, and what makes its coverage different?',
+ a:'<strong>HO-8 (Modified Coverage Form)</strong> is designed for older homes where the replacement cost exceeds the market value.<br><br>It pays the <strong>functional replacement cost</strong> (modern materials that serve the same function) rather than exact same materials — preventing over-insurance on historic properties.',
+ m:'"HO-8 = old house, functional replacement." A Victorian with custom plasterwork gets drywall — same function, not same materials.'},
+{t:'ch3',
+ q:'What is the standard amount of Coverage C (personal property) in a homeowners policy?',
+ a:'<strong>50% of Coverage A</strong> (the dwelling limit).<br><br>Example: $300,000 Coverage A → $150,000 automatic Coverage C for personal property.',
+ m:'"Coverage C = 50% of A." Not 10% (that\'s B). Not 20% (that\'s D). C = 50%.'},
+{t:'ch3',
+ q:'What is the standard amount of Coverage D (loss of use) in a homeowners policy?',
+ a:'<strong>20% of Coverage A</strong> for HO-3 and most homeowners forms.<br><br>(HO-4 renters and HO-6 condo use 20-30% of Coverage C instead.)',
+ m:'"Coverage D = 20% of A." B=10%, C=50%, D=20%. Or think: B-C-D = 10-50-20.'},
+{t:'ch3',
+ q:'What is actual cash value (ACV) and how is it calculated?',
+ a:'<strong>ACV = Replacement Cost − Depreciation</strong><br><br>ACV pays what the item is worth TODAY, factoring in age and wear — not what it costs to buy new.',
+ m:'"ACV = RC minus depreciation." Your 10-year-old laptop cost $1,000 new. ACV might be $200. RC pays to replace it with a new one.'},
+{t:'ch3',
+ q:'To collect full replacement cost (no depreciation) under a property policy, what must the insured do?',
+ a:'Insure the property to at least <strong>80% of its replacement cost</strong> at the time of loss.<br><br>If underinsured, the coinsurance penalty applies and the insurer only pays a proportional share.',
+ m:'"80% rule for full RC." Insure to 80% of what it costs to rebuild — or you eat part of every loss.'},
+{t:'ch3',
+ q:'What is the coinsurance formula used to calculate how much an insurer pays?',
+ a:'<strong>(Amount Carried ÷ Amount Required) × Loss = Payment</strong><br><br>Amount Required = 80% of the property\'s replacement cost.<br><br>Example: $60k carried / $80k required × $20k loss = $15k paid (insured eats $5k).',
+ m:'"Carried over required, times the loss." You carry less than 80%? You become a co-insurer on your own property.'},
+{t:'ch3',
+ q:'What does an agreed value clause do to the coinsurance requirement?',
+ a:'It <strong>suspends the coinsurance clause.</strong><br><br>The insurer and insured agree upfront on the value of the property. At total loss, the insurer pays the full agreed amount — no coinsurance penalty.',
+ m:'"Agreed value = coinsurance off." Both parties lock in the value at policy inception. No math at claim time.'},
+{t:'ch3',
+ q:'What is a valued policy vs. an open policy?',
+ a:'<strong>Valued policy:</strong> The insured value is agreed upon at policy inception. Total loss = insurer pays the face amount, no questions.<br><br><strong>Open policy:</strong> The value is determined AT THE TIME OF LOSS (most property policies are open policies).',
+ m:'"Valued = agreed upfront. Open = figured out at loss." Valued policies eliminate disputes over value at claim time.'},
+{t:'ch3',
+ q:'What does business income (BI) coverage pay for?',
+ a:'Business income coverage pays for <strong>lost net income plus continuing normal operating expenses</strong> (like payroll, rent) during the period the business is shut down due to a covered loss.<br><br>It does NOT cover extra costs to speed up restoration — that\'s extra expense.',
+ m:'"BI = what you would have made, minus what you still spend." Income lost + bills that keep running while you\'re closed.'},
+{t:'ch3',
+ q:'What does extra expense coverage pay for, and how is it different from business income?',
+ a:'<strong>Extra expense</strong> pays for <strong>costs above normal expenses</strong> that allow the business to continue operating after a loss (e.g., renting temporary space, expediting repairs).<br><br>BI pays for income lost because you had to close. Extra expense pays the additional costs to stay open.',
+ m:'"Extra expense = cost to keep running. BI = income lost while closed." A newspaper using extra expense rents presses elsewhere. A restaurant using BI just waits.'},
+{t:'ch3',
+ q:'What does accounts receivable coverage protect against?',
+ a:'It covers losses when records are destroyed and the business <strong>cannot collect money owed by customers.</strong><br><br>Covers: amounts customers owed, collection expenses, interest on loans taken while awaiting payment.',
+ m:'"AR coverage = protect your receivables book." Fire destroys your billing records. AR coverage pays what you can\'t collect because you can\'t prove who owes what.'},
+{t:'ch3',
+ q:'What does valuable papers and records coverage protect?',
+ a:'Covers the <strong>cost to research and reconstruct valuable papers and records</strong> (contracts, deeds, maps, manuscripts) that are lost or destroyed by a covered peril.<br><br>Does NOT cover the monetary value of the paper itself (like currency) — just the cost to recreate it.',
+ m:'"Valuable papers = cost to recreate, not the paper itself." Architects losing blueprints = covered. Cash = not covered.'},
+{t:'ch3',
+ q:'What is a builder\'s risk policy and when does it terminate?',
+ a:'A <strong>builder\'s risk policy</strong> covers buildings under construction — the structure, materials on site, and in transit to the site.<br><br>Terminates when: (1) the project is complete and occupied, (2) the policy expires, or (3) the insured\'s financial interest ends.',
+ m:'"Builder\'s risk ends when construction ends." Once the owner moves in or takes possession, builder\'s risk is done — they need a regular property policy.'},
+{t:'ch3',
+ q:'What is a peak season endorsement on a commercial property policy?',
+ a:'It <strong>automatically increases the coverage limit during specified peak periods</strong> (like holiday season for retailers) when inventory is higher than normal.<br><br>Prevents underinsurance during busy seasons without buying a higher limit year-round.',
+ m:'"Peak season = auto-boost during busy months." A toy store\'s inventory doubles in November-December. Peak season endorsement covers the surge.'},
+{t:'ch3',
+ q:'What are the maximum NFIP flood coverage amounts for a residential building and its contents?',
+ a:'Residential: <strong>$250,000 for the building</strong> and <strong>$100,000 for contents.</strong><br><br>Commercial: $500,000 for the building and $500,000 for contents.',
+ m:'"NFIP residential: 250k structure, 100k stuff." $250/$100 for homes. $500/$500 for business. Commercial doubles everything.'},
+{t:'ch3',
+ q:'What is the difference between blanket, scheduled, and specific insurance coverage?',
+ a:'<strong>Specific:</strong> One property insured for a specific amount on its own policy.<br><br><strong>Scheduled:</strong> Multiple properties listed on ONE policy, each with its OWN limit.<br><br><strong>Blanket:</strong> Multiple properties on ONE policy with ONE combined limit shared across all.',
+ m:'"Specific = one and done. Scheduled = list with individual limits. Blanket = one pool for all." Blanket is most flexible — any property can draw from the combined limit.'},
+{t:'ch3',
+ q:'What is a reporting form in commercial property insurance?',
+ a:'A reporting form is used when inventory values fluctuate. The insured reports actual values periodically (monthly or annually) and the premium is adjusted accordingly.<br><br>If the insured underreports, a coinsurance-like penalty applies at loss time.',
+ m:'"Reporting form = report what you actually have, pay for that." Good for businesses with variable inventory. Underreport = you share the loss.'},
+{t:'ch3',
+ q:'What is the functional replacement cost method used in HO-8?',
+ a:'Pays to repair or replace with <strong>less costly, modern materials that perform the same function</strong> — not necessarily the same quality or style as the original.<br><br>Used for older or historic homes where exact restoration would cost far more than the home\'s market value.',
+ m:'"Functional = same job, cheaper materials." Ornate plaster ceilings → standard drywall. Same function, much less cost.'},
+
+// ── CHAPTER 4 · CASUALTY, BONDS, RELATED TERMS ──
+{t:'ch4',
+ q:'What are the four coverages in a Personal Auto Policy (PAP) and what does each cover?',
+ a:'<strong>A — Liability:</strong> Bodily injury and property damage you cause to others.<br><br><strong>B — Medical Payments:</strong> Medical expenses for you and passengers, regardless of fault.<br><br><strong>C — Uninsured/Underinsured Motorist:</strong> Your injuries when at-fault driver has no/insufficient coverage.<br><br><strong>D — Physical Damage:</strong> Damage to your own vehicle (collision + comprehensive).',
+ m:'"A-B-C-D: Liability, Medical, UM/UIM, Physical Damage." A protects others. B and C protect you. D protects your car.'},
+{t:'ch4',
+ q:'What is the difference between collision and comprehensive (other-than-collision) coverage?',
+ a:'<strong>Collision:</strong> Damage from your vehicle hitting another vehicle or object, or rolling over.<br><br><strong>Comprehensive (OTC):</strong> Damage from ANY cause OTHER THAN collision or overturn — fire, theft, vandalism, hail, animals, falling objects.',
+ m:'"Collision = you hit something. Comprehensive = everything else." Hit a deer = comprehensive. Hit a car = collision. Hit a deer, swerve, hit a car = comprehensive (proximate cause).'},
+{t:'ch4',
+ q:'What is an uninsured motorist (UM) claim vs. an underinsured motorist (UIM) claim?',
+ a:'<strong>UM:</strong> The at-fault driver has NO liability insurance at all.<br><br><strong>UIM:</strong> The at-fault driver HAS insurance but their limits are INSUFFICIENT to cover all your damages.<br><br>Both are covered under PAP Coverage C.',
+ m:'"UM = none. UIM = not enough." Your UM/UIM coverage fills the gap when the other driver can\'t pay your bills.'},
+{t:'ch4',
+ q:'What is a named non-owner auto policy?',
+ a:'Coverage written for someone who <strong>does not own a vehicle but regularly uses non-owned autos</strong> (rentals, borrowed cars).<br><br>Provides liability coverage as excess over any coverage on the vehicle itself.',
+ m:'"Named non-owner = liability coverage when you don\'t own a car." Good for someone who always rents or borrows but needs personal liability coverage.'},
+{t:'ch4',
+ q:'What is the key difference between split limits and a combined single limit (CSL) in auto liability?',
+ a:'<strong>Split limits:</strong> Three separate limits — per-person BI / per-occurrence BI / per-occurrence PD (e.g., 25/50/25 = $25k per person, $50k per accident, $25k property damage).<br><br><strong>CSL:</strong> One single limit applies to ALL claims from one accident — BI and PD combined.',
+ m:'"Split = three buckets. CSL = one big bucket." CSL is more flexible — the full limit can go to bodily injury, property damage, or any combination.'},
+{t:'ch4',
+ q:'What are the three CGL coverage parts and what does each cover?',
+ a:'<strong>Coverage A — Bodily Injury & Property Damage Liability:</strong> Third-party BI and PD claims arising from operations, premises, products, or completed work.<br><br><strong>Coverage B — Personal & Advertising Injury:</strong> Libel, slander, wrongful eviction, copyright infringement in ads.<br><br><strong>Coverage C — Medical Payments:</strong> Immediate medical costs for injuries on your premises, regardless of fault.',
+ m:'"CGL: A=accidents, B=reputation/ad injury, C=quick med pay." C has no deductible and no liability admission — just goodwill coverage.'},
+{t:'ch4',
+ q:'What is the difference between a per-occurrence limit and an aggregate limit in a CGL policy?',
+ a:'<strong>Per-occurrence limit:</strong> Maximum the insurer pays for ANY SINGLE occurrence (accident or event).<br><br><strong>Aggregate limit:</strong> Maximum the insurer pays for ALL occurrences during the entire policy period combined.',
+ m:'"Per-occurrence = one event cap. Aggregate = total annual cap." Once the aggregate is exhausted, the insurer pays nothing more that year.'},
+{t:'ch4',
+ q:'What does products-completed operations coverage protect against?',
+ a:'Covers liability for <strong>bodily injury or property damage arising from products you sold or work you completed</strong> after the product has left your control or the work has been finished.<br><br>Included in CGL Coverage A.',
+ m:'"Products-completed ops = after it leaves your hands." You sell a defective toaster; it burns someone\'s house down six months later. Products liability covers it.'},
+{t:'ch4',
+ q:'What is fire legal liability coverage?',
+ a:'Covers a tenant\'s liability for <strong>fire damage to the portion of the building they rent.</strong><br><br>Standard CGL excludes damage to property in the insured\'s care, custody, or control — fire legal liability is a carve-out for fire damage to rented premises only.',
+ m:'"Fire legal = you burned your landlord\'s building." Standard CGL excludes property you\'re responsible for. Fire legal liability adds it back for fire damage to rented space.'},
+{t:'ch4',
+ q:'What is liquor liability coverage and who needs it?',
+ a:'Covers liability for <strong>bodily injury or property damage caused by an intoxicated person</strong> to whom the insured sold or served alcohol.<br><br>Needed by bars, restaurants, liquor stores, and event venues. Standard CGL excludes liquor liability if the insured is in the business of selling/serving alcohol.',
+ m:'"Liquor liability = dram shop coverage." If you serve someone who then drives drunk and injures someone, you can be liable. CGL won\'t cover it without this.'},
+{t:'ch4',
+ q:'What is the difference between a fidelity bond and a surety bond?',
+ a:'<strong>Fidelity bond:</strong> Protects an EMPLOYER against financial loss from <strong>dishonest acts of employees</strong> (theft, embezzlement).<br><br><strong>Surety bond:</strong> Guarantees that a PRINCIPAL will fulfill an obligation to an OBLIGEE (a performance guarantee, not an employee honesty product).',
+ m:'"Fidelity = your employees stealing from you. Surety = guaranteeing you\'ll do what you promised." Fidelity = internal. Surety = external obligation.'},
+{t:'ch4',
+ q:'Who are the three parties in a surety bond?',
+ a:'<strong>Principal:</strong> The party who buys the bond and is obligated to perform.<br><br><strong>Obligee:</strong> The party protected by the bond (the one the principal promised something to).<br><br><strong>Surety:</strong> The insurance company that guarantees the principal\'s performance.',
+ m:'"Principal performs. Obligee is owed. Surety guarantees." Contractor (principal) promises to build (for the city = obligee). Surety backs up the promise.'},
+{t:'ch4',
+ q:'What is the difference between a bid bond, performance bond, and payment bond?',
+ a:'<strong>Bid bond:</strong> Guarantees the contractor will accept the contract if awarded the bid at the bid price.<br><br><strong>Performance bond:</strong> Guarantees the contractor will complete the project according to contract terms.<br><br><strong>Payment bond:</strong> Guarantees the contractor will pay subcontractors, laborers, and material suppliers.',
+ m:'"Bid=will take the job, Performance=will finish it, Payment=will pay everyone." Federal contracts over $100k require all three.'},
+{t:'ch4',
+ q:'What is a surety bond — is it insurance?',
+ a:'<strong>A surety bond is NOT insurance.</strong><br><br>Key differences: (1) The principal is expected to perform — no losses are anticipated. (2) If the surety pays a claim, the surety has the RIGHT OF INDEMNIFICATION — it can recover the amount paid from the principal. (3) There is no pooling of risk like in insurance.',
+ m:'"Surety is NOT insurance — it expects the principal to pay back any claims." If the contractor defaults and the surety pays, the surety comes after the contractor for reimbursement.'},
+{t:'ch4',
+ q:'What is the difference between a name schedule fidelity bond, position schedule bond, and commercial blanket bond?',
+ a:'<strong>Name schedule:</strong> Lists specific named employees; pays per employee limit for losses caused by those individuals.<br><br><strong>Position schedule:</strong> Lists positions (not people); new employees in that position are automatically covered.<br><br><strong>Commercial blanket:</strong> Covers ALL employees; pays one limit per occurrence regardless of how many employees were involved.',
+ m:'"Name=specific people, Position=specific roles, Blanket=everyone." Commercial blanket is the most comprehensive — one limit for the whole workforce.'},
+{t:'ch4',
+ q:'What does Workers Compensation Part A cover vs. Part B?',
+ a:'<strong>Part A — Workers Compensation:</strong> Pays statutory WC benefits (medical, disability income, death benefits) as required by state law — no dollar limit on Part A benefits.<br><br><strong>Part B — Employers Liability:</strong> Covers the employer\'s legal liability to employees for work-related injuries BEYOND what WC provides (lawsuits, third-party actions).',
+ m:'"Part A = legal WC benefits, unlimited. Part B = lawsuits beyond WC." Part A has no cap. Part B has specific dollar limits.'},
+{t:'ch4',
+ q:'What are the four types of workers compensation disability benefits?',
+ a:'<strong>1. Temporary Total Disability (TTD):</strong> Can\'t work at all; expected to recover.<br><strong>2. Temporary Partial Disability (TPD):</strong> Can work but at reduced capacity temporarily.<br><strong>3. Permanent Total Disability (PTD):</strong> Can never return to any gainful work.<br><strong>4. Permanent Partial Disability (PPD):</strong> Permanent impairment but can still work in some capacity.',
+ m:'"Temp vs Perm, Total vs Partial — four combinations." TTD is most common. PTD is most severe and costly.'},
+{t:'ch4',
+ q:'What is the difference between excess liability and umbrella liability?',
+ a:'<strong>Excess liability:</strong> Sits above a SPECIFIC underlying policy, follows its exact terms — provides additional limits only, no broader coverage.<br><br><strong>Umbrella:</strong> Sits above multiple underlying policies AND provides BROADER coverage than the underlying — may cover gaps not in any underlying policy (subject to a self-insured retention).',
+ m:'"Excess = just more money, same rules. Umbrella = more money AND broader coverage." Umbrella can cover things the underlying won\'t — that\'s what makes it valuable.'},
+{t:'ch4',
+ q:'What is Employment Practices Liability Insurance (EPLI) and what does it cover?',
+ a:'EPLI covers employers for <strong>wrongful acts in the employment process</strong>:<br>• Wrongful termination<br>• Discrimination (age, sex, race, disability)<br>• Sexual harassment<br>• Failure to promote<br>• Hostile work environment',
+ m:'"EPLI = lawsuit from your own employees." Discrimination, harassment, wrongful termination claims against the company. Standard CGL does NOT cover this.'},
+{t:'ch4',
+ q:'What is the difference between Errors & Omissions (E&O) and professional malpractice coverage?',
+ a:'<strong>E&O:</strong> Covers non-medical professionals (architects, insurance agents, lawyers, accountants) for errors or omissions in professional services that cause financial harm to clients.<br><br><strong>Malpractice:</strong> Covers medical professionals (doctors, nurses, dentists) for professional negligence causing bodily injury.',
+ m:'"E&O = professional service errors. Malpractice = medical mistakes." Both are claims-made forms. The difference is who has the policy and what type of harm results.'},
+{t:'ch4',
+ q:'Why is professional liability (E&O/malpractice) typically written on a claims-made form rather than occurrence?',
+ a:'Because <strong>professional errors may not be discovered until years after they occur.</strong><br><br>An occurrence form would require the insurer to stay at risk indefinitely. A claims-made form limits liability to claims filed during the policy period (or extended reporting period).',
+ m:'"Claims-made for professional liability because discovery is delayed." A bad accounting advice might not show up as a loss for 3 years. Claims-made manages that tail exposure.'},
+{t:'ch4',
+ q:'What is a Directors & Officers (D&O) liability policy and what does it cover?',
+ a:'D&O covers directors and officers of corporations for <strong>wrongful acts committed in their official capacity</strong> — bad business decisions, breach of fiduciary duty, misleading statements to investors, regulatory violations.<br><br>Often covers both the individual AND the company\'s indemnification of the individual.',
+ m:'"D&O = executive decision liability." CEO makes a bad acquisition that tanks stock? Shareholders sue. D&O covers it.'},
+{t:'ch4',
+ q:'What is a commercial output policy (COP)?',
+ a:'A specialty inland marine policy covering a manufacturer\'s property on an <strong>open peril basis wherever it is</strong> — at the plant, in transit, at customer locations, at exhibitions.<br><br>Designed for manufacturers whose goods move through the commercial distribution chain.',
+ m:'"COP = manufacturer\'s goods everywhere, open perils." Unlike standard commercial property which only covers fixed locations, COP follows the product.'},
+{t:'ch4',
+ q:'In a CGL policy, what triggers coverage under the occurrence form vs. the claims-made form?',
+ a:'<strong>Occurrence form:</strong> The policy in effect when the <em>injury or damage occurred</em> responds — regardless of when the claim is filed.<br><br><strong>Claims-made form:</strong> The policy in effect when the <em>claim is first made</em> must be active — the injury must also occur after the retroactive date.',
+ m:'"Occurrence = when it happened. Claims-made = when you reported it." Occurrence has no time limit on filing. Claims-made requires an active policy when the claim comes in.'},
+{t:'ch4',
+ q:'What is a retroactive date on a claims-made CGL policy?',
+ a:'The <strong>earliest date from which incidents are covered</strong> under a claims-made policy. Injuries or damage that occurred before the retroactive date are NOT covered — even if the claim is filed during the policy period.',
+ m:'"Retroactive date = how far back the policy looks." Set it to your first day in business to cover everything. Move it forward and you create a gap.'},
+{t:'ch4',
+ q:'What is an extended reporting period (ERP) — also called a "tail" — on a claims-made policy?',
+ a:'A period after the policy expires during which <strong>claims can still be reported</strong> for incidents that occurred during the policy period.<br><br><strong>Basic ERP:</strong> 5-year mini-tail, automatically included.<br><strong>Supplemental ERP:</strong> Unlimited tail, purchased separately.',
+ m:'"Tail = protection after the policy ends." When you retire or switch insurers, buy an ERP so old incidents can still be reported.'},
+{t:'ch4',
+ q:'What is products liability vs. completed operations liability?',
+ a:'<strong>Products liability:</strong> Injury or damage caused by a <em>product you manufactured or sold</em> after it left your control.<br><br><strong>Completed operations:</strong> Injury or damage arising from <em>work you finished</em> after you left the job site.<br><br>Both are covered under CGL Coverage A.',
+ m:'"Products = your stuff hurts someone. Completed ops = your work hurts someone after you\'re done." Electrician finishes wiring; six months later it causes a fire. Completed ops covers it.'},
+{t:'ch4',
+ q:'What does the "personal and advertising injury" coverage (CGL Coverage B) protect against?',
+ a:'Covers liability for:<br>• <strong>Libel and slander</strong><br>• <strong>False arrest or detention</strong><br>• <strong>Malicious prosecution</strong><br>• <strong>Wrongful eviction</strong><br>• <strong>Copyright infringement in advertising</strong><br>• <strong>Oral or written publication that violates privacy</strong>',
+ m:'"Coverage B = reputation and rights violations." It\'s not about physical injuries — it\'s about harm to someone\'s reputation, privacy, or rights through your words or actions.'},
+{t:'ch4',
+ q:'What is the difference between monoline and package policies?',
+ a:'<strong>Monoline policy:</strong> A single policy covering only one type of insurance (e.g., CGL only).<br><br><strong>Package policy (CPP):</strong> Multiple coverages combined in one policy — property + liability + other lines. The Commercial Package Policy (CPP) allows combining various commercial lines.<br><br>BOP is a self-contained prepackaged policy — NOT a monoline, NOT a CPP.',
+ m:'"Monoline = one line. Package = multiple lines combined." BOP is its own thing — it\'s prepackaged for small businesses, separate from the CPP structure.'},
+{t:'ch4',
+ q:'What businesses are typically NOT eligible for a BOP?',
+ a:'Ineligible businesses include:<br>• <strong>Large/high-risk businesses</strong> (manufacturing, mining)<br>• <strong>Auto dealers and service stations</strong><br>• <strong>Financial institutions</strong><br>• <strong>Farms</strong><br>• <strong>Any business with more than a certain number of employees or revenue (varies by insurer)</strong>',
+ m:'"BOP = small, low-risk business only." Restaurants, retail shops, small offices = yes. Steel mills, car dealers, banks = no.'},
+{t:'ch4',
+ q:'What is the BOP property coverage form — replacement cost or ACV?',
+ a:'BOP covers buildings and business personal property on a <strong>replacement cost basis</strong> — no depreciation deduction.<br><br>Business personal property of others is also covered at replacement cost.',
+ m:'"BOP property = replacement cost." No depreciation headache. If your equipment burns, you get what it costs to buy new.'},
+{t:'ch4',
+ q:'What is an installation floater and who uses it?',
+ a:'An installation floater covers <strong>materials and equipment being installed by a contractor</strong> from the time they leave the supplier until installation is complete and accepted by the owner.<br><br>Used by plumbers, electricians, HVAC contractors, and similar trades.',
+ m:'"Installation floater = contractor\'s stuff during a job." Between leaving the warehouse and being accepted by the building owner — that\'s when the installation floater applies.'},
+];
+
+const TOTAL=ALL_CARDS.length;
+let deck=[...ALL_CARDS];
+let cur=0,flipped=false;
+let scores=new Array(TOTAL).fill(null);
+let deckIndices=[...Array(TOTAL).keys()];
+let touchStartX=0,isDragging=false;
+const CIRC=2*Math.PI*66;
+const TOPIC_META={
+  ch3:{icon:'🏠',label:'Ch 3 · Property Policies'},
+  ch4:{icon:'💼',label:'Ch 4 · Casualty & Bonds'},
+};
+
+const CH3_COUNT=ALL_CARDS.filter(c=>c.t==='ch3').length;
+const CH4_COUNT=ALL_CARDS.filter(c=>c.t==='ch4').length;
+document.getElementById('fc-all').textContent=TOTAL;
+document.getElementById('fc-ch3').textContent=CH3_COUNT;
+document.getElementById('fc-ch4').textContent=CH4_COUNT;
+document.getElementById('s-total').textContent=TOTAL;
+document.getElementById('tot-num').textContent=TOTAL;
+document.getElementById('fin-of').textContent='OF '+TOTAL;
+buildListView();setupSwipe();setupKeyboard();renderCard();updateStats();
+
+function setFilter(f,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>{b.className='filter-btn';});
+  if(f==='ch3')btn.className='filter-btn active-ch3';
+  else if(f==='ch4')btn.className='filter-btn active-ch4';
+  else btn.className='filter-btn active-all';
+  if(f==='all'){deck=[...ALL_CARDS];deckIndices=[...Array(TOTAL).keys()];}
+  else{const idxs=ALL_CARDS.map((c,i)=>c.t===f?i:null).filter(i=>i!==null);deck=idxs.map(i=>ALL_CARDS[i]);deckIndices=idxs;}
+  scores=new Array(TOTAL).fill(null);
+  cur=0;flipped=false;
+  document.getElementById('s-total').textContent=deck.length;
+  document.getElementById('tot-num').textContent=deck.length;
+  document.getElementById('fin-of').textContent='OF '+deck.length;
+  document.getElementById('mode-banner').className='mode-banner';
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  renderCard();updateStats();
+}
+
+function renderCard(){
+  if(cur>=deck.length){showScore();return;}
+  const c=deck[cur];
+  const tm=TOPIC_META[c.t];
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';
+  card.style.transform='translateX(0) rotate(0deg)';
+  card.style.opacity='1';
+  card.classList.remove('flipped');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';card.style.transform='';}));
+  document.getElementById('cf-front').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">Question</div>
+    <div class="card-q">${c.q}</div>
+    <div class="flip-cue">Tap card or "Reveal Answer" ↓</div>`;
+  document.getElementById('cf-back').innerHTML=`
+    <div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div>
+    <div class="card-label">Answer</div>
+    <div class="card-a">${c.a}</div>
+    <div class="mem-box"><div class="mem-label">💡 Lock It In</div><div class="mem-text">${c.m}</div></div>`;
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('tot-num').textContent=deck.length;
+  document.getElementById('ans-btns').className='answer-btns hidden';
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').textContent=cur===deck.length-1?'Finish':'Next ▶';
+  document.getElementById('sh-knew').style.opacity='0';
+  document.getElementById('sh-missed').style.opacity='0';
+  document.getElementById('flip-label').textContent='Reveal Answer';
+  document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
+}
+function flipCard(){
+  flipped=!flipped;
+  const card=document.getElementById('card');
+  if(flipped){card.classList.add('flipped');document.getElementById('ans-btns').className='answer-btns';document.getElementById('flip-label').textContent='Back to Question';}
+  else{card.classList.remove('flipped');document.getElementById('ans-btns').className='answer-btns hidden';document.getElementById('flip-label').textContent='Reveal Answer';}
+}
+document.getElementById('card-scene').addEventListener('click',()=>flipCard());
+function markCard(knew){
+  const origIdx=deckIndices[cur]!==undefined?deckIndices[cur]:cur;
+  scores[origIdx]=knew;updateStats();
+  animateExit(knew?'right':'left');
+  setTimeout(()=>{cur++;renderCard();},350);
+}
+function nextCard(){if(cur>=deck.length-1){showScore();return;}animateExit('left');setTimeout(()=>{cur++;renderCard();},350);}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function animateExit(dir){
+  const card=document.getElementById('card');
+  const x=dir==='right'?120:-120;
+  card.style.transition='transform .35s ease,opacity .35s ease';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='right'?6:-6}deg)`;
+  card.style.opacity='0';
+}
+function setupSwipe(){
+  const s=document.getElementById('card-scene');
+  s.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;isDragging=true;},{passive:true});
+  s.addEventListener('touchmove',e=>{
+    if(!isDragging||!flipped)return;
+    const dx=e.touches[0].clientX-touchStartX;
+    const card=document.getElementById('card');
+    card.style.transition='none';
+    card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/25}deg)`;
+    const sk=document.getElementById('sh-knew'),sm=document.getElementById('sh-missed');
+    if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+    else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+    else{sk.style.opacity='0';sm.style.opacity='0';}
+  },{passive:true});
+  s.addEventListener('touchend',e=>{
+    if(!isDragging)return;isDragging=false;
+    if(!flipped)return;
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(dx>80){markCard(true);}
+    else if(dx<-80){markCard(false);}
+    else{
+      const card=document.getElementById('card');
+      card.style.transition='transform .3s ease';
+      card.style.transform='rotateY(180deg)';
+      document.getElementById('sh-knew').style.opacity='0';
+      document.getElementById('sh-missed').style.opacity='0';
+    }
+  },{passive:true});
+}
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    else if(e.key==='ArrowRight')nextCard();
+    else if(e.key==='ArrowLeft')prevCard();
+    else if((e.key==='k'||e.key==='K')&&flipped)markCard(true);
+    else if((e.key==='m'||e.key==='M')&&flipped)markCard(false);
+  });
+}
+function updateStats(){
+  const knew=scores.filter(s=>s===true).length;
+  const missed=scores.filter(s=>s===false).length;
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):null;
+  document.getElementById('s-knew').textContent=knew;
+  document.getElementById('s-missed').textContent=missed;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
+}
+function showScore(){
+  const knew=scores.filter(s=>s===true).length;
+  const missedCards=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):0;
+  document.getElementById('flash-view').style.display='none';
+  document.getElementById('score-view').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fin-pct').textContent=pct+'%';
+  document.getElementById('fin-knew').textContent=knew;
+  document.getElementById('fin-missed').textContent=missedCards.length;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=80)ring.classList.add('good');else ring.classList.remove('good');
+  const msgs=['Keep drilling — Ch3 and Ch4 take reps.','Getting there. Hammer the missed ones.','Past halfway. Run it again.','Strong — getting exam-ready.','80%+ means you pass tomorrow.'];
+  document.getElementById('score-msg').textContent=msgs[pct>=80?4:pct>=60?3:pct>=40?2:pct>=20?1:0];
+  const btn=document.getElementById('btn-missed-only');
+  btn.disabled=missedCards.length===0;
+  btn.textContent=`Review Missed (${missedCards.length})`;
+}
+function restart(missedOnly){
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  document.getElementById('ring-fill').classList.remove('good');
+  if(missedOnly){
+    const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+    deck=mi.map(i=>ALL_CARDS[i]);deckIndices=mi;
+    mi.forEach(i=>scores[i]=null);
+    document.getElementById('mode-banner').className='mode-banner visible';
+    document.getElementById('deck-tag').textContent='MISSED CARDS';
+  } else {
+    deck=[...ALL_CARDS];deckIndices=[...Array(TOTAL).keys()];
+    scores=new Array(TOTAL).fill(null);
+    document.getElementById('mode-banner').className='mode-banner';
+    document.getElementById('deck-tag').textContent='CH 3 & 4 ATTACK';
+  }
+  cur=0;flipped=false;renderCard();updateStats();
+}
+function setMode(m,btn){
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('flash-view').style.display=m==='flash'?'block':'none';
+  document.getElementById('list-view').style.display=m==='list'?'block':'none';
+  document.getElementById('score-view').style.display='none';
+}
+function buildListView(){
+  const cats=['ch3','ch4'];
+  let html='';
+  cats.forEach(t=>{
+    const cards=ALL_CARDS.filter(c=>c.t===t);
+    const tm=TOPIC_META[t];
+    html+=`<div class="cat-hdr"><span class="cat-icon">${tm.icon}</span><span class="cat-lbl">${tm.label}</span><span class="cat-count">${cards.length}</span></div>`;
+    cards.forEach(c=>{
+      html+=`<div class="list-card"><div class="list-q">${c.q}</div><div class="list-a">${c.a}</div><div class="list-mem">💡 ${c.m}</div></div>`;
+    });
+  });
+  document.getElementById('list-view').innerHTML=html;
+}
+</script>
+</body>
+</html>
