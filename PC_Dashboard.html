@@ -254,6 +254,7 @@ const CHAPTERS = [
       { name: "Learning Test 1 — 64 Missed Questions", file: "PC_LearningTest1.html" },
       { name: "Key Numbers & Limits — Every Dollar, Day & % the Exam Tests", file: "PC_KeyNumbers.html" },
       { name: "Learning Test 2 — 57 Missed Questions (Test 2)", file: "PC_LearningTest2.html" },
+      { name: "Learning Test 3 — 54 Missed Questions (Test 3)", file: "PC_LearningTest3.html" },
       { name: "🏛️ Kansas State Law — Low-Hanging Fruit", file: "PC_KansasLaw.html" }
     ]
   }
@@ -345,9 +346,7 @@ function render() {
   document.getElementById('cnt-rough').textContent = counts.rough;
   document.getElementById('cnt-none').textContent  = counts.none;
 
-  // Keep chapter 4 open (index 3)
-  const ch4 = document.getElementById('ch-3');
-  if (ch4 && !ch4.classList.contains('_init')) { ch4.classList.add('open', '_init'); }
+  // No chapters auto-open
 }
 
 function toggle(i) {
