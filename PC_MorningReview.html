@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Morning Review — Exam Day</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1a1a1a;
+  --border:#222;--border2:#2a2a2a;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.12);
+  --green:#4aaa4a;--green-dim:rgba(74,170,74,.12);
+  --red:#aa4a4a;--red-dim:rgba(170,74,74,.12);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.1);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,.1);
+  --text:#e2e2e2;--muted:#555;--muted2:#333;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .4s ease;}
+.header{padding:20px 20px 0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.deck-tag{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.3);padding:3px 10px;border-radius:20px;}
+.header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:2px;}
+.header-sub{font-size:12px;color:var(--muted);}
+.exam-alert{background:linear-gradient(135deg,rgba(200,168,75,.15),rgba(200,168,75,.05));border:1px solid rgba(200,168,75,.3);border-radius:10px;padding:12px 14px;margin:12px 16px 0;text-align:center;}
+.exam-alert-title{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:2px;}
+.exam-alert-sub{font-size:11px;color:#888;line-height:1.5;}
+.filter-row{display:flex;gap:6px;padding:12px 16px 0;flex-wrap:wrap;}
+.filter-btn{flex:1;min-width:0;padding:9px 4px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid var(--border2);background:var(--surface);color:var(--muted);text-align:center;transition:all .15s;font-family:inherit;line-height:1.3;}
+.filter-btn.fa{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+.filter-btn.fc{border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
+.filter-btn.fl{border-color:#4aaa4a;background:rgba(74,170,74,.12);color:#4aaa4a;}
+.filter-btn.fk{border-color:var(--purple);background:var(--purple-dim);color:var(--purple);}
+.filter-count{display:block;font-size:16px;font-weight:800;color:inherit;}
+.mode-tabs{display:flex;padding:0 16px;margin-top:12px;border-bottom:1px solid var(--border);}
+.mode-tab{font-size:12px;font-weight:500;color:var(--muted);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.mode-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-cell{background:var(--bg);padding:10px 6px;text-align:center;}
+.stat-val{font-size:22px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-val.g{color:var(--green);}
+.stat-val.r{color:var(--red);}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+#flash-view{padding:14px 16px 80px;}
+.mode-banner{display:none;background:rgba(170,74,74,.12);border:1px solid rgba(170,74,74,.25);border-radius:8px;padding:7px 12px;margin-bottom:10px;font-size:11px;color:var(--red);text-align:center;font-weight:600;}
+.mode-banner.visible{display:block;}
+.card-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.card-pos{font-size:12px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.skip-btn{background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:inherit;}
+.card-scene{perspective:1200px;margin-bottom:8px;cursor:pointer;touch-action:pan-y;}
+.card{position:relative;width:100%;min-height:260px;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flipped{transform:rotateY(180deg);}
+.card-face{position:absolute;top:0;left:0;right:0;min-height:260px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:16px 14px;display:flex;flex-direction:column;pointer-events:none;}
+.card-front{background:var(--surface);border:1px solid var(--border2);box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.card-back{background:#050f0a;border:1px solid #0a2015;box-shadow:0 4px 16px rgba(0,0,0,.4);transform:rotateY(180deg);}
+.topic-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.5px;padding:2px 9px;border-radius:20px;margin-bottom:8px;width:fit-content;}
+.tp-general{background:var(--gold-dim);border:1px solid rgba(200,168,75,.2);color:var(--gold);}
+.tp-casualty{background:var(--blue-dim);border:1px solid rgba(96,165,250,.2);color:var(--blue);}
+.tp-liability{background:rgba(74,170,74,.12);border:1px solid rgba(74,170,74,.2);color:#4aaa4a;}
+.tp-state{background:var(--purple-dim);border:1px solid rgba(192,132,252,.2);color:var(--purple);}
+.card-q{font-size:14px;line-height:1.7;color:var(--text);flex:1;}
+.flip-cue{margin-top:10px;text-align:center;font-size:10px;color:var(--muted2);}
+.card-a{font-size:13px;line-height:1.8;color:var(--text);flex:1;}
+.card-a strong{color:#6ee7b7;}
+.mem-box{margin-top:8px;background:rgba(74,170,74,.07);border:1px solid rgba(74,170,74,.15);border-radius:8px;padding:9px 11px;}
+.mem-label{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:2px;text-transform:uppercase;}
+.mem-text{font-size:11px;color:#5fb85f;line-height:1.6;}
+.swipe-hint{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;}
+.swipe-hint.knew{background:rgba(74,170,74,.15);color:var(--green);border:2px solid rgba(74,170,74,.3);}
+.swipe-hint.missed{background:rgba(170,74,74,.12);color:var(--red);border:2px solid rgba(170,74,74,.25);}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.answer-btns.hidden{display:none;}
+.ans-btn{border:1px solid;font-size:13px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.btn-missed{background:var(--red-dim);border-color:rgba(170,74,74,.3);color:var(--red);}
+.btn-knew{background:var(--green-dim);border-color:rgba(74,170,74,.3);color:var(--green);}
+.bottom-nav{display:grid;grid-template-columns:1fr 2fr;gap:8px;}
+.nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.kb-hint{text-align:center;font-size:10px;color:var(--muted2);margin-top:5px;}
+#list-view{display:none;padding:12px 16px 80px;}
+.list-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:8px;}
+.list-q{font-size:12px;color:var(--muted);margin-bottom:5px;line-height:1.5;}
+.list-a{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:5px;}
+.list-a strong{color:#6ee7b7;}
+.list-mem{font-size:11px;color:#5fb85f;line-height:1.5;border-top:1px solid rgba(74,170,74,.1);padding-top:5px;}
+.cat-sep{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;padding:14px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+#score-view{display:none;padding:24px 20px;text-align:center;}
+.score-ring-wrap{position:relative;width:140px;height:140px;margin:0 auto 16px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:10;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-fill.good{stroke:var(--green);}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-pct{font-size:44px;font-weight:700;color:#fff;line-height:1;}
+.score-of{font-size:10px;color:var(--muted);margin-top:2px;}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.score-block{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px;}
+.score-block-val{font-size:28px;font-weight:700;line-height:1;margin-bottom:3px;}
+.score-block-val.g{color:var(--green);}
+.score-block-val.r{color:var(--red);}
+.score-block-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.score-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
+.score-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.score-btn{border:none;font-size:13px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.btn-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.btn-missed-only{background:var(--red-dim);border:1px solid rgba(170,74,74,.3);color:var(--red);}
+.btn-missed-only:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="header">
+  <div class="header-top">
+    <span style="font-size:12px;color:var(--muted)">Exam Day</span>
+    <span class="deck-tag">MORNING REVIEW</span>
+  </div>
+  <h1>Morning Review</h1>
+  <div class="header-sub">37 cards — missed questions + flagged review topics</div>
+</div>
+<div class="exam-alert">
+  <div class="exam-alert-title">🎯 Exam at 8:30 AM · Drive 40 min</div>
+  <div class="exam-alert-sub">Run this once over coffee. Flag anything still shaky and drill it before you leave.</div>
+</div>
+<div class="filter-row">
+  <button class="filter-btn fa" id="fb-all" onclick="setFilter('all',this)"><span class="filter-count" id="fc-all">37</span>All</button>
+  <button class="filter-btn" id="fb-general" onclick="setFilter('general',this)"><span class="filter-count">12</span>📋 General</button>
+  <button class="filter-btn" id="fb-casualty" onclick="setFilter('casualty',this)"><span class="filter-count">10</span>🚗 Auto/Cas</button>
+  <button class="filter-btn" id="fb-liability" onclick="setFilter('liability',this)"><span class="filter-count">7</span>⚖️ Liability</button>
+  <button class="filter-btn" id="fb-state" onclick="setFilter('state',this)"><span class="filter-count">8</span>🏛️ KS Law</button>
+</div>
+<div class="mode-tabs">
+  <button class="mode-tab active" onclick="setMode('flash',this)">Flashcards</button>
+  <button class="mode-tab" onclick="setMode('list',this)">Review All</button>
+</div>
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" id="s-total">25</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-cell"><div class="stat-val g" id="s-knew">0</div><div class="stat-lbl">Knew It</div></div>
+  <div class="stat-cell"><div class="stat-val r" id="s-missed">0</div><div class="stat-lbl">Review</div></div>
+  <div class="stat-cell"><div class="stat-val" id="s-pct">—</div><div class="stat-lbl">Score</div></div>
+</div>
+
+<div id="flash-view">
+  <div class="mode-banner" id="mode-banner">REVIEWING MISSED CARDS</div>
+  <div class="card-nav-row">
+    <div class="card-pos"><strong id="cur-num">1</strong> / <span id="tot-num">25</span></div>
+    <button class="skip-btn" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="card-scene" id="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="cf-front"></div>
+      <div class="card-face card-back" id="cf-back"></div>
+    </div>
+    <div class="swipe-hint knew" id="sh-knew">✓ KNEW IT</div>
+    <div class="swipe-hint missed" id="sh-missed">✕ REVIEW</div>
+  </div>
+  <button class="flip-btn" onclick="flipCard()">↻ <span id="flip-label">Reveal Answer</span></button>
+  <div class="answer-btns hidden" id="ans-btns">
+    <button class="ans-btn btn-missed" onclick="markCard(false)">✕ Review It</button>
+    <button class="ans-btn btn-knew" onclick="markCard(true)">✓ Locked In</button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()" disabled>◀</button>
+    <button class="nav-btn primary" id="next-btn" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb-hint">Space = flip · K = locked · M = review · ← → navigate</div>
+</div>
+<div id="list-view"></div>
+<div id="score-view">
+  <div class="score-ring-wrap">
+    <svg width="140" height="140" viewBox="0 0 140 140">
+      <circle class="ring-bg" cx="70" cy="70" r="57"/>
+      <circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="57" stroke-dasharray="0 358"/>
+    </svg>
+    <div class="score-center">
+      <div class="score-pct" id="fin-pct">0%</div>
+      <div class="score-of" id="fin-of">OF 37</div>
+    </div>
+  </div>
+  <div class="score-breakdown">
+    <div class="score-block"><div class="score-block-val g" id="fin-knew">0</div><div class="score-block-lbl">Locked In</div></div>
+    <div class="score-block"><div class="score-block-val r" id="fin-missed">0</div><div class="score-block-lbl">Still Review</div></div>
+  </div>
+  <div class="score-msg" id="score-msg"></div>
+  <div class="score-actions">
+    <button class="score-btn btn-restart" onclick="restart(false)">Run Again</button>
+    <button class="score-btn btn-missed-only" id="btn-missed-only" onclick="restart(true)">Review Shaky</button>
+  </div>
+</div>
+
+<script>
+const ALL_CARDS=[
+// ── GENERAL CONCEPTS ──
+{t:'general',
+ q:'Which is named on the declarations page — first named insured, additional insureds, all insureds, or beneficiaries?',
+ a:'<strong>First named insured</strong> — the individual listed first on the policy declarations.<br><br>Additional insureds are added by endorsement, not listed on the declarations page.',
+ m:'"Dec page = first named insured only." Additional insureds are on endorsements. Beneficiaries are a life insurance term.'},
+{t:'general',
+ q:'Which method of loss valuation is contrary to the basic concept of indemnity?',
+ a:'<strong>Replacement cost</strong> — because it pays to replace property with new, which may be MORE than the actual cash value the insured lost. This puts the insured in a BETTER position than before the loss.<br><br>Indemnity = restore to same position, no better.',
+ m:'"RC contradicts indemnity." ACV = exact value lost. RC = new for old. New for old = better off = not true indemnity.'},
+{t:'general',
+ q:'A person NOT named on the declarations page but still protected by the policy is called what?',
+ a:'An <strong>additional insured</strong> — usually added by endorsement.<br><br>Named insured = on the dec page. First named insured = listed first. Additional insured = protected but NOT on dec page.',
+ m:'"Additional insured = protected without being named." Endorsement adds them. Not on the declarations.'},
+{t:'general',
+ q:'What is stated amount coverage and how does it handle coinsurance?',
+ a:'Stated amount coverage pays the agreed stated amount at total loss — <strong>NOT subject to any coinsurance provision.</strong><br><br>If loss is less than total, insurer has salvage rights; insured has first right of refusal on salvage.',
+ m:'"Stated amount = no coinsurance math." The value is locked in at policy inception. Insurer pays it at total loss, no questions.'},
+{t:'general',
+ q:'Which of these is NOT a condition commonly found in an insurance policy: cancellation, insuring agreement, appraisal, or subrogation?',
+ a:'<strong>Insuring agreement</strong> is NOT a condition — it\'s a separate section that describes what the insurer promises to cover.<br><br>Conditions are the rules and duties: cancellation, appraisal, subrogation, duties after loss.',
+ m:'"Insuring agreement is NOT a condition." Conditions = rules. Insuring agreement = promise to pay. They\'re in separate policy sections.'},
+{t:'general',
+ q:'What type of information is found in a policy\'s insuring agreement vs. the declarations?',
+ a:'<strong>Insuring agreement:</strong> Parties to the contract, effective and renewal dates, description of coverages provided, perils covered.<br><br><strong>Declarations:</strong> Location of premises, policy limits, insured\'s name and address, insurer\'s name.',
+ m:'"Insuring agreement = what\'s covered and when. Declarations = who, where, how much." Dates are in the insuring agreement. Limits and location are in declarations.'},
+{t:'general',
+ q:'Which type of valuation works best for property whose value does not fluctuate much?',
+ a:'<strong>Agreed value</strong> — both parties agree on the value upfront. At total loss, the policy pays the agreed amount regardless of appreciation or depreciation.<br><br>Best for stable-value items like fine art, jewelry, antiques.',
+ m:'"Agreed value = locked in, stable items." No arguing at claim time. Both sides agreed upfront.'},
+{t:'general',
+ q:'What is the maximum amount a homeowners policy pays for a loss assessment from a homeowners association?',
+ a:'<strong>$1,000</strong> as an additional coverage.<br><br>If the HOA assesses all members for a covered loss (like the community clubhouse burning down), the HO policy pays up to $1,000 of the individual\'s share.',
+ m:'"HO loss assessment = $1,000 max." The HOA sends you a bill for their loss. Your HO pays up to $1,000 of it.'},
+{t:'general',
+ q:'What does the Equipment Dealers inland marine policy pay for pollution cleanup and removal, and for how long a period?',
+ a:'Maximum of <strong>$10,000 for all expenses incurred during a 12-month period.</strong>',
+ m:'"Equipment dealers pollution = $10k per 12 months." Specific number. $10,000. 12 months. Not $15k, not $5k.'},
+
+// ── AUTO & CASUALTY ──
+{t:'casualty',
+ q:'An insured is at fault in an auto accident and their own car is damaged. Which coverage pays?',
+ a:'<strong>Collision</strong> — covers damage to the insured\'s own vehicle from impact with another vehicle or object, or from rollover.<br><br>Liability pays for the OTHER person\'s damages. Comprehensive covers non-collision causes.',
+ m:'"At fault + own car = collision." Your fault, your car = collision. Other person\'s car = liability. Deer = comprehensive.'},
+{t:'casualty',
+ q:'Under a PAP, which vehicle qualifies as a nonowned auto — one titled to another and borrowed with permission, one leased for 12 months, one rented for personal use, or one driven by a household family member?',
+ a:'<strong>A vehicle titled to another person and used with permission</strong> is a nonowned auto.<br><br>A vehicle leased for 12+ months = treated as an owned vehicle. A rented vehicle for personal use may be considered a "hired auto."',
+ m:'"Nonowned = someone else\'s car, used with permission." 12-month lease = owned. Borrowed from a stranger = nonowned.'},
+{t:'casualty',
+ q:'Which of the following is NOT mobile equipment under a commercial auto policy: crane vehicles, crawler treads, bulldozers, or snow removal vehicles?',
+ a:'<strong>Self-propelled vehicles used for snow removal are NOT mobile equipment — they are autos.</strong><br><br>Also classified as autos (not mobile equipment): street cleaners, road maintenance vehicles, cherry pickers mounted on autos, vehicles subject to financial responsibility laws.',
+ m:'"Snow plows = autos, NOT mobile equipment." Bulldozers and crane carriers = mobile equipment. Snow removal = auto.'},
+{t:'casualty',
+ q:'A private passenger auto borrowed from an employee or partner — how is it classified under the PAP?',
+ a:'<strong>Nonowned auto.</strong><br><br>Autos leased, hired, rented, or borrowed from employees or partners are nonowned autos — NOT hired autos.',
+ m:'"Borrowed from employee = nonowned." Hired auto = rented from a company. Borrowed from your business partner = nonowned.'},
+{t:'casualty',
+ q:'What are the two major sections of commercial crime policies?',
+ a:'<strong>Commercial entities</strong> and <strong>government entities.</strong><br><br>Within each section, the insured selects either a Discovery form or a Loss Sustained form as the coverage trigger.',
+ m:'"Crime = commercial entities + government entities." Two sections, then two form options within each. The exam tried to make you think discovery/loss sustained were the two sections — they\'re not, they\'re the forms.'},
+{t:'casualty',
+ q:'A homeowner purchased NFIP flood coverage 10 days after her community entered an emergency program. When does coverage begin?',
+ a:'<strong>12:01 AM the day after application and premium payment are mailed.</strong><br><br>During the FIRST 30 DAYS after a community enters the emergency or normal program, the standard 30-day waiting period is waived — coverage starts the next day.',
+ m:'"First 30 days of emergency program = next-day coverage." After that initial 30-day window, the normal 30-day wait applies.'},
+{t:'casualty',
+ q:'What does the Utility Services – Direct Damage BOP endorsement cover?',
+ a:'Covers <strong>direct damage to insured property caused by disruption of utility services</strong> (power, water, communications) when the disruption was caused by a covered peril.<br><br>Different from Utility Services – Time Element, which covers lost business income from the disruption.',
+ m:'"Direct Damage = physical damage from losing utilities. Time Element = lost income from losing utilities." Two separate endorsements, two separate losses.'},
+{t:'casualty',
+ q:'Under an equipment breakdown policy with a $200,000 limit, a boiler explosion causes $100k to the boiler, $50k to the building, and $30k in expediting expenses. How much does the insurer pay?',
+ a:'<strong>$175,000.</strong><br><br>Expediting expenses are capped at <strong>$25,000</strong> (even though actual expenses were $30k). Total = $100k + $50k + $25k = $175k. All within the $200k limit.',
+ m:'"Equipment breakdown expediting = capped at $25k." $100k + $50k + $25k (not $30k) = $175k. The cap on expediting expenses is the trick.'},
+{t:'casualty',
+ q:'Under a workers compensation policy, what right does a premium auditor have at the end of the policy period?',
+ a:'The premium auditor has the right to <strong>examine the insured\'s payroll records</strong> to determine the actual premium basis.<br><br>WC premiums are initially based on ESTIMATED payrolls. The audit adjusts the final premium up or down based on actual payrolls.',
+ m:'"WC premium = estimated first, audited after." Initial premium = estimate. Final premium = based on actual payrolls after audit.'},
+
+// ── LIABILITY ──
+{t:'liability',
+ q:'Under a CGL supplementary payments provision, what happens to defense cost payments once the aggregate limit is reached?',
+ a:'<strong>Defense cost payments STOP once the aggregate limit is exhausted.</strong><br><br>The insurer has no obligation to defend or pay for defense once the aggregate is used up — even though supplementary payments otherwise don\'t reduce limits.',
+ m:'"Aggregate gone = no more defense." Once the insurer\'s total obligation is exhausted, the duty to defend ends too.'},
+{t:'liability',
+ q:'Under the products and completed operations hazard of a CGL, is there a time limit on when the injury or damage must occur after work is completed?',
+ a:'<strong>No time limit.</strong><br><br>Conditions that must exist: (1) injury arises from insured\'s product or work, (2) occurs away from insured premises, (3) occurs after insured released possession. There is NO 90-day or any other time restriction.',
+ m:'"Products/completed ops = no time limit." The exam tried "within 90 days." Wrong. Injury can happen years later.'},
+{t:'liability',
+ q:'Under a professional liability policy, which situation would NOT be covered?',
+ a:'<strong>Intentional breach of duty</strong> is not covered — professional liability only covers negligent acts, errors, or omissions.<br><br>Covered: negligence, errors, failure to meet professional standards. NOT covered: intentional, deliberate acts.',
+ m:'"Professional liability = negligence only, not intentional." The attorney who deliberately tanked a case out of personal dislike = intentional. Not covered.'},
+{t:'liability',
+ q:'Homeowners medical payments coverage — does it cover the insured\'s mother-in-law who breaks her leg on the front steps?',
+ a:'<strong>Yes — HO medical payments covers any guests or visitors</strong> on the insured\'s premises with permission, regardless of fault.<br><br>Does NOT cover residents of the household or the named insured themselves.',
+ m:'"HO med pay = guests with permission, no fault required." Mother-in-law visiting = guest = covered. Doesn\'t matter if there\'s no negligence.'},
+
+// ── KANSAS STATE LAW ──
+{t:'state',
+ q:'What is the maximum penalty for HABITUAL WILLFUL noncompliance with the Fair Credit Reporting Act?',
+ a:'<strong>$2,500</strong> — for general pattern or business practice of willful violations.<br><br>Individual violations = $100. Criminal liability also possible for willful/knowing violations.',
+ m:'"FCRA habitual willful = $2,500." $100 per individual violation. Pattern of violations = $2,500.'},
+{t:'state',
+ q:'How many days\' notice must the Commissioner give interested parties before a hearing, and how must it be delivered?',
+ a:'<strong>15 days notice by registered mail</strong> — stating the time, place, and purpose of the hearing.',
+ m:'"Commissioner hearing = 15 days, registered mail." Not 10 days, not 20 days. 15 days. And it must be registered mail, not just any mail.'},
+{t:'state',
+ q:'What is the maximum fine per violation and aggregate maximum for a NONWILLFUL unfair trade practice violation in Kansas?',
+ a:'<strong>$1,000 per violation</strong> (nonwillful), with a <strong>maximum aggregate of $10,000.</strong><br><br>Willful violations: up to $25,000 per violation.',
+ m:'"Nonwillful fine = $1k per / $10k max." Willful = $25k per. Nonwillful = $1k per, capped at $10k total.'},
+{t:'state',
+ q:'In Kansas, a rate is considered unfairly discriminatory if it does what?',
+ a:'A rate is unfairly discriminatory if it <strong>fails to reflect the differences in losses and expenses among policyholders.</strong><br><br>Rates CAN differ between policyholders — they just must accurately reflect real differences in risk.',
+ m:'"Unfair discrimination = ignoring real differences." Charging different rates for different risks = fine. Charging the same rate despite very different risks = discriminatory.'},
+
+// ── ADDED FROM FLAGGED QUESTIONS + NOTES ──
+{t:'casualty',
+ q:'In commercial auto, what does Symbol 5 cover? Symbol 6?',
+ a:'<strong>Symbol 5</strong> = Owned autos subject to <strong>no-fault</strong> laws.<br><strong>Symbol 6</strong> = Owned autos subject to <strong>uninsured motorist</strong> laws.<br><br>Other key symbols: 1=Any Auto, 2=Owned Autos, 7=Specifically Described, 8=Hired, 9=Nonowned.',
+ m:'"5=no-fault, 6=UM." Two symbols tied to mandatory state laws. The exam loves these two specifically.'},
+{t:'casualty',
+ q:'A vehicle has ACV of $10,000. Repair estimate is $8,000. What is the insurer\'s limit of liability?',
+ a:'<strong>$8,000</strong> — the insurer pays the <strong>lesser of ACV or repair cost.</strong><br><br>The goal is indemnity, not betterment. If it costs less to repair than the car is worth, the insurer only pays to repair.',
+ m:'"Lesser of ACV or repair." $10k ACV vs $8k repair → pay $8k. Always the smaller number.'},
+{t:'liability',
+ q:'In a personal umbrella policy, what is the term for the amount the insured pays out-of-pocket for losses NOT covered under primary coverage?',
+ a:'<strong>Self-insured retention</strong> — the umbrella equivalent of a deductible for uncovered exposures.<br><br>In <em>property</em> insurance: deductible. In <em>casualty/umbrella</em>: retention.',
+ m:'"Umbrella gap = self-insured retention." Property = deductible. Casualty/umbrella = retention. Different words, same idea.'},
+{t:'liability',
+ q:'An insured fails to maintain required underlying policy limits under their personal umbrella. What happens at claim time?',
+ a:'The insured is <strong>personally responsible for the gap</strong> — the umbrella treats the required underlying amount as a deductible. The umbrella still pays above that threshold, but the insured eats the missing underlying coverage.',
+ m:'"Drop underlying = insured fills the gap." Umbrella doesn\'t disappear; it just attaches higher. Insured is on the hook for the layer they dropped.'},
+{t:'liability',
+ q:'A personal umbrella policy does NOT provide which type of coverage?',
+ a:'<strong>Errors and Omissions (E&O) / professional liability.</strong><br><br>Umbrella covers personal exposures only. Professional mistakes (agent errors, malpractice, etc.) require a separate professional liability policy.',
+ m:'"Umbrella = personal ONLY, no E&O." An insurance agent who makes a coverage mistake needs a separate E&O policy, not their personal umbrella.'},
+{t:'general',
+ q:'What is the purpose of the Gramm-Leach-Bliley Act, and what notices are required?',
+ a:'Protects <strong>private customer information filed with financial institutions.</strong><br><br>Requires: (1) initial notice at onset of business, (2) notice before information is disclosed to third parties, and (3) an annual updated disclosure notice.',
+ m:'"GLB = protect your private info." 2 notices upfront + 1 annual. Insurers are financial institutions under this act.'},
+{t:'general',
+ q:'When an insured makes truthful statements on the application and pays premium, what insurance contract element does this represent?',
+ a:'<strong>Consideration</strong> — something of value each party gives the other.<br><br>Insured\'s consideration = premium payment + truthful representations on the application. Insurer\'s consideration = promise to pay covered losses.',
+ m:'"Consideration = premium + truthful application." Both parties must give something. Insured gives money AND honest answers.'},
+{t:'general',
+ q:'Name all six HO forms and what each covers.',
+ a:'<strong>HO-2</strong> = Broad Form<br><strong>HO-3</strong> = Special Form (most common — open perils on dwelling, broad on contents)<br><strong>HO-4</strong> = Contents Broad Form (Renters)<br><strong>HO-5</strong> = Comprehensive Form (open perils on both)<br><strong>HO-6</strong> = Condo Unit Owners<br><strong>HO-8</strong> = Modified Coverage (older homes)',
+ m:'"2-Broad, 3-Special, 4-Renters, 5-Comp, 6-Condo, 8-Modified." HO-3 is the exam standard. HO-4 = renters. HO-8 = old homes.'},
+{t:'state',
+ q:'Which Kansas act provides a means to promptly compensate persons for accidental bodily injury from motor vehicle use, in lieu of proving liability?',
+ a:'The <strong>Kansas Automobile Injury Reparations Act</strong> — Kansas\'s no-fault auto law.<br><br>Provides prompt compensation without requiring the injured party to prove the other driver was at fault.',
+ m:'"Kansas Injury Reparations Act = no-fault auto." Reparations = compensate without proving fault. Kansas minimum PIP ties into this.'},
+{t:'state',
+ q:'When cancelling an auto policy, when is an insurer NOT required to notify the insured of KAIP (Kansas Automobile Insurance Plan) eligibility?',
+ a:'When the cancellation is due to <strong>nonpayment of premium.</strong><br><br>For ALL other reasons (underwriting, non-renewal, etc.), the insurer MUST notify the insured of their potential eligibility for coverage through the KAIP.',
+ m:'"No KAIP notice = nonpayment cancellation only." Every other cancellation reason = must give KAIP notice. Nonpayment = their fault, no notice required.'},
+{t:'state',
+ q:'What do the terms "Certificate of Authority," "Authorized Insurer," and "Admitted Insurer" have in common?',
+ a:'They all mean the same thing — the insurer is <strong>licensed by the state</strong> to write insurance there.<br><br>If an insurer does NOT have a Certificate of Authority, they are non-admitted (surplus lines).',
+ m:'"Certificate = Authorized = Admitted." Three words, one concept. Non-admitted = eligible surplus lines only.'},
+{t:'state',
+ q:'Excess and surplus lines producers place coverage with what type of insurer — admitted or non-admitted?',
+ a:'<strong>Eligible non-admitted (surplus lines) insurers</strong> — NOT admitted/authorized insurers.<br><br>E&S fills coverage gaps when the admitted market won\'t write the risk. The insurer is not licensed by the state but is approved to write surplus lines.',
+ m:'"E&S = non-admitted." Admitted = state licensed. E&S = not licensed but eligible. The exam will try to trick you into saying admitted.'},
+];
+
+const TOTAL=ALL_CARDS.length;
+const CIRC=2*Math.PI*57;
+let deck=[...ALL_CARDS],cur=0,flipped=false;
+let scores=new Array(TOTAL).fill(null);
+let deckIndices=[...Array(TOTAL).keys()];
+let touchStartX=0,isDragging=false;
+const TM={
+  general:{icon:'📋',label:'General Concepts'},
+  casualty:{icon:'🚗',label:'Auto & Casualty'},
+  liability:{icon:'⚖️',label:'Liability'},
+  state:{icon:'🏛️',label:'Kansas Law'},
+};
+document.getElementById('s-total').textContent=TOTAL;
+document.getElementById('tot-num').textContent=TOTAL;
+document.getElementById('fin-of').textContent='OF '+TOTAL;
+buildListView();setupSwipe();setupKeyboard();renderCard();updateStats();
+
+function setFilter(f,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>{b.className='filter-btn';});
+  const classes={all:'fa',general:'fl',casualty:'fc',liability:'fl',state:'fk'};
+  btn.className='filter-btn '+(classes[f]||'fa');
+  if(f==='all'){deck=[...ALL_CARDS];deckIndices=[...Array(TOTAL).keys()];}
+  else{const idxs=ALL_CARDS.map((c,i)=>c.t===f?i:null).filter(i=>i!==null);deck=idxs.map(i=>ALL_CARDS[i]);deckIndices=idxs;}
+  scores=new Array(TOTAL).fill(null);cur=0;flipped=false;
+  document.getElementById('s-total').textContent=deck.length;
+  document.getElementById('tot-num').textContent=deck.length;
+  document.getElementById('fin-of').textContent='OF '+deck.length;
+  document.getElementById('mode-banner').className='mode-banner';
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  renderCard();updateStats();
+}
+function renderCard(){
+  if(cur>=deck.length){showScore();return;}
+  const c=deck[cur];const tm=TM[c.t];
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';card.style.transform='';card.style.opacity='1';
+  card.classList.remove('flipped');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+  document.getElementById('cf-front').innerHTML=`<div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div><div class="card-q">${c.q}</div><div class="flip-cue">Tap to reveal ↓</div>`;
+  document.getElementById('cf-back').innerHTML=`<div class="topic-pill tp-${c.t}">${tm.icon} ${tm.label}</div><div class="card-a">${c.a}</div><div class="mem-box"><div class="mem-label">💡 Lock It In</div><div class="mem-text">${c.m}</div></div>`;
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('tot-num').textContent=deck.length;
+  document.getElementById('ans-btns').className='answer-btns hidden';
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').textContent=cur===deck.length-1?'Finish':'Next ▶';
+  document.getElementById('sh-knew').style.opacity='0';document.getElementById('sh-missed').style.opacity='0';
+  document.getElementById('flip-label').textContent='Reveal Answer';
+  document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
+}
+function flipCard(){
+  flipped=!flipped;const card=document.getElementById('card');
+  if(flipped){card.classList.add('flipped');document.getElementById('ans-btns').className='answer-btns';document.getElementById('flip-label').textContent='Back to Question';}
+  else{card.classList.remove('flipped');document.getElementById('ans-btns').className='answer-btns hidden';document.getElementById('flip-label').textContent='Reveal Answer';}
+}
+document.getElementById('card-scene').addEventListener('click',()=>flipCard());
+function markCard(knew){
+  const oi=deckIndices[cur]!==undefined?deckIndices[cur]:cur;
+  scores[oi]=knew;updateStats();animateExit(knew?'right':'left');setTimeout(()=>{cur++;renderCard();},320);
+}
+function nextCard(){if(cur>=deck.length-1){showScore();return;}animateExit('left');setTimeout(()=>{cur++;renderCard();},320);}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function animateExit(dir){
+  const card=document.getElementById('card');const x=dir==='right'?110:-110;
+  card.style.transition='transform .32s ease,opacity .32s ease';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='right'?5:-5}deg)`;
+  card.style.opacity='0';
+}
+function setupSwipe(){
+  const s=document.getElementById('card-scene');
+  s.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;isDragging=true;},{passive:true});
+  s.addEventListener('touchmove',e=>{
+    if(!isDragging||!flipped)return;const dx=e.touches[0].clientX-touchStartX;
+    const card=document.getElementById('card');card.style.transition='none';
+    card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/25}deg)`;
+    const sk=document.getElementById('sh-knew'),sm=document.getElementById('sh-missed');
+    if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+    else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+    else{sk.style.opacity='0';sm.style.opacity='0';}
+  },{passive:true});
+  s.addEventListener('touchend',e=>{
+    if(!isDragging)return;isDragging=false;if(!flipped)return;
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(dx>80)markCard(true);else if(dx<-80)markCard(false);
+    else{const card=document.getElementById('card');card.style.transition='transform .3s ease';card.style.transform='rotateY(180deg)';document.getElementById('sh-knew').style.opacity='0';document.getElementById('sh-missed').style.opacity='0';}
+  },{passive:true});
+}
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    else if(e.key==='ArrowRight')nextCard();
+    else if(e.key==='ArrowLeft')prevCard();
+    else if((e.key==='k'||e.key==='K')&&flipped)markCard(true);
+    else if((e.key==='m'||e.key==='M')&&flipped)markCard(false);
+  });
+}
+function updateStats(){
+  const knew=scores.filter(s=>s===true).length;
+  const missed=scores.filter(s=>s===false).length;
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):null;
+  document.getElementById('s-knew').textContent=knew;
+  document.getElementById('s-missed').textContent=missed;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
+}
+function showScore(){
+  const knew=scores.filter(s=>s===true).length;
+  const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):0;
+  document.getElementById('flash-view').style.display='none';
+  document.getElementById('score-view').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fin-pct').textContent=pct+'%';
+  document.getElementById('fin-knew').textContent=knew;
+  document.getElementById('fin-missed').textContent=mi.length;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=80)ring.classList.add('good');else ring.classList.remove('good');
+  document.getElementById('score-msg').textContent=pct>=80?'You\'re ready. Go pass it.':pct>=60?'Almost there — run the shaky ones once more.':'Hit the shaky ones before you drive.';
+  const btn=document.getElementById('btn-missed-only');
+  btn.disabled=mi.length===0;btn.textContent=`Review Shaky (${mi.length})`;
+}
+function restart(missedOnly){
+  document.getElementById('score-view').style.display='none';
+  document.getElementById('flash-view').style.display='block';
+  document.getElementById('ring-fill').classList.remove('good');
+  if(missedOnly){
+    const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+    deck=mi.map(i=>ALL_CARDS[i]);deckIndices=mi;mi.forEach(i=>scores[i]=null);
+    document.getElementById('mode-banner').className='mode-banner visible';
+  } else {
+    deck=[...ALL_CARDS];deckIndices=[...Array(TOTAL).keys()];
+    scores=new Array(TOTAL).fill(null);
+    document.getElementById('mode-banner').className='mode-banner';
+  }
+  cur=0;flipped=false;renderCard();updateStats();
+}
+function setMode(m,btn){
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('flash-view').style.display=m==='flash'?'block':'none';
+  document.getElementById('list-view').style.display=m==='list'?'block':'none';
+  document.getElementById('score-view').style.display='none';
+}
+function buildListView(){
+  const cats=['general','casualty','liability','state'];
+  let html='';
+  cats.forEach(t=>{
+    const cards=ALL_CARDS.filter(c=>c.t===t);const tm=TM[t];
+    html+=`<div class="cat-sep">${tm.icon} ${tm.label} (${cards.length})</div>`;
+    cards.forEach(c=>{html+=`<div class="list-card"><div class="list-q">${c.q}</div><div class="list-a">${c.a}</div><div class="list-mem">💡 ${c.m}</div></div>`;});
+  });
+  document.getElementById('list-view').innerHTML=html;
+}
+</script>
+</body>
+</html>
