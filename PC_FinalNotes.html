@@ -362,19 +362,23 @@ function restart(shakyOnly){
 }
 
 // touch swipe
-let tx=0,ty=0;
+let tx=0,ty=0,touchFired=false;
 document.getElementById('scene').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
 document.getElementById('scene').addEventListener('touchend',e=>{
+  touchFired=true;setTimeout(()=>{touchFired=false;},500);
   const dx=e.changedTouches[0].clientX-tx;
   const dy=e.changedTouches[0].clientY-ty;
   if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){
     if(!flipped){flipCard();return;}
     if(dx>0)mark(true); else mark(false);
-  } else if(Math.abs(dy)<10&&Math.abs(dx)<10){
+  } else {
     flipCard();
   }
 },{passive:true});
-document.getElementById('scene').addEventListener('click',flipCard);
+document.getElementById('scene').addEventListener('click',e=>{
+  if(touchFired)return;
+  flipCard();
+});
 
 // keyboard
 document.addEventListener('keydown',e=>{
