@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Final Night — Missed Questions</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050505;--surface:#111;--surface2:#181818;
+  --border:#1e1e1e;--border2:#252525;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.12);
+  --green:#3d9e3d;--green-dim:rgba(61,158,61,.12);
+  --red:#9e3d3d;--red-dim:rgba(158,61,61,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.1);
+  --text:#ddd;--muted:#555;--muted2:#2a2a2a;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+.top-bar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.deck-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);padding:3px 10px;border-radius:20px;}
+.card-counter{font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;}
+.card-counter span{color:var(--gold);}
+.title-block{padding:10px 16px 0;}
+.title-block h1{font-size:20px;font-weight:700;color:#fff;}
+.title-block p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pulse-bar{background:linear-gradient(90deg,rgba(200,168,75,.15),rgba(200,168,75,.05));border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:9px 14px;margin:10px 16px 0;text-align:center;font-size:11px;color:#aaa;line-height:1.6;}
+.pulse-bar strong{color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{background:var(--bg);padding:8px 4px;text-align:center;}
+.stat-n{font-size:20px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-n.g{color:var(--green);}
+.stat-n.r{color:#e05;}
+.stat-l{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:1px;text-transform:uppercase;}
+#flash{padding:12px 16px 90px;}
+.card-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-pos{font-size:11px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.scene{perspective:1000px;cursor:pointer;}
+.card{position:relative;width:100%;min-height:240px;transform-style:preserve-3d;transition:transform .4s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flip{transform:rotateY(180deg);}
+.face{position:absolute;top:0;left:0;right:0;min-height:240px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:14px 14px;display:flex;flex-direction:column;}
+.front{background:var(--surface);border:1px solid var(--border2);}
+.back{background:#040d06;border:1px solid #091a0c;transform:rotateY(180deg);}
+.cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;margin-bottom:8px;width:fit-content;}
+.cp-prop{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);color:var(--gold);}
+.cp-cas{background:var(--blue-dim);border:1px solid rgba(74,144,217,.2);color:var(--blue);}
+.cp-ks{background:var(--purple-dim);border:1px solid rgba(168,85,247,.2);color:var(--purple);}
+.cp-gen{background:var(--green-dim);border:1px solid rgba(61,158,61,.2);color:var(--green);}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);flex:1;}
+.tap-cue{margin-top:8px;font-size:9px;color:var(--muted2);text-align:center;text-transform:uppercase;letter-spacing:1px;}
+.a-text{font-size:13px;line-height:1.8;color:var(--text);flex:1;}
+.a-text strong{color:#5ec97b;}
+.lock-box{margin-top:8px;background:rgba(61,158,61,.07);border:1px solid rgba(61,158,61,.15);border-radius:7px;padding:7px 10px;}
+.lock-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:2px;}
+.lock-txt{font-size:11px;color:#5a8f5a;line-height:1.6;}
+.swipe-overlay{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;}
+.swo-k{background:rgba(61,158,61,.15);color:var(--green);border:2px solid rgba(61,158,61,.3);}
+.swo-m{background:rgba(158,61,61,.12);color:var(--red);border:2px solid rgba(158,61,61,.25);}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;margin-bottom:7px;}
+.ans-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.ans-row.hidden{display:none;}
+.ab{border:1px solid;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.ab-m{background:var(--red-dim);border-color:rgba(158,61,61,.3);color:#cc5555;}
+.ab-k{background:var(--green-dim);border-color:rgba(61,158,61,.3);color:var(--green);}
+.nav-row{display:grid;grid-template-columns:1fr 2fr;gap:7px;}
+.nb{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nb:disabled{opacity:.2;cursor:not-allowed;}
+.nb.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.kb{text-align:center;font-size:9px;color:var(--muted2);margin-top:4px;}
+#score{display:none;padding:24px 16px;text-align:center;}
+.ring-wrap{position:relative;width:130px;height:130px;margin:0 auto 14px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.rb{fill:none;stroke:var(--border);stroke-width:10;}
+.rf{fill:none;stroke:var(--gold);stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.rf.pass{stroke:var(--green);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-size:40px;font-weight:700;color:#fff;line-height:1;}
+.ring-of{font-size:9px;color:var(--muted);}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.sg{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;}
+.sg-n{font-size:24px;font-weight:700;line-height:1;margin-bottom:2px;}
+.sg-n.g{color:var(--green);}
+.sg-n.r{color:#cc5555;}
+.sg-l{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.sc-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
+.sc-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.sc-btn{border:none;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.sc-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.sc-shaky{background:var(--red-dim);border:1px solid rgba(158,61,61,.3);color:#cc5555;}
+.sc-shaky:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="top-bar">
+  <span class="deck-label">FINAL NIGHT</span>
+  <div class="card-counter">Card <span id="cc-cur">1</span> of <span id="cc-tot">20</span></div>
+</div>
+<div class="title-block">
+  <h1>Missed Questions</h1>
+  <p>Every question you got wrong tonight — exam at 8:30 AM</p>
+</div>
+<div class="pulse-bar">You're at <strong>83%</strong>. These 20 are all that's between you and the license.</div>
+<div class="stats-row">
+  <div class="stat"><div class="stat-n" id="sn-t">20</div><div class="stat-l">Total</div></div>
+  <div class="stat"><div class="stat-n g" id="sn-k">0</div><div class="stat-l">Locked</div></div>
+  <div class="stat"><div class="stat-n r" id="sn-m">0</div><div class="stat-l">Shaky</div></div>
+</div>
+<div id="flash">
+  <div class="card-row" style="margin-top:12px;">
+    <div class="card-pos"><strong id="cn">1</strong> / <span id="ct">20</span></div>
+    <button style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="scene" id="scene">
+    <div class="card" id="card">
+      <div class="face front" id="cf"></div>
+      <div class="face back" id="cb"></div>
+    </div>
+    <div class="swipe-overlay swo-k" id="sw-k">✓ LOCKED</div>
+    <div class="swipe-overlay swo-m" id="sw-m">✕ SHAKY</div>
+  </div>
+  <button class="flip-btn" onclick="flipCard()">↻ <span id="fl">Reveal Answer</span></button>
+  <div class="ans-row hidden" id="ans">
+    <button class="ab ab-m" onclick="mark(false)">✕ Shaky</button>
+    <button class="ab ab-k" onclick="mark(true)">✓ Locked</button>
+  </div>
+  <div class="nav-row">
+    <button class="nb" id="pb" onclick="prevCard()" disabled>◀</button>
+    <button class="nb primary" id="nb" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb">Space = flip · K = locked · M = shaky · ← →</div>
+</div>
+<div id="score">
+  <div class="ring-wrap">
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <circle class="rb" cx="65" cy="65" r="53"/>
+      <circle class="rf" id="rf" cx="65" cy="65" r="53" stroke-dasharray="0 333"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" id="fp">0%</div>
+      <div class="ring-of">OF 20</div>
+    </div>
+  </div>
+  <div class="score-grid">
+    <div class="sg"><div class="sg-n g" id="fk">0</div><div class="sg-l">Locked In</div></div>
+    <div class="sg"><div class="sg-n r" id="fm">0</div><div class="sg-l">Still Shaky</div></div>
+  </div>
+  <div class="sc-msg" id="sm"></div>
+  <div class="sc-btns">
+    <button class="sc-btn sc-restart" onclick="restart(false)">Run Again</button>
+    <button class="sc-btn sc-shaky" id="shaky-btn" onclick="restart(true)">Shaky Only</button>
+  </div>
+</div>
+
+<script>
+const CARDS=[
+{c:'prop',e:'🏠 Property',
+ q:'Limited theft endorsement — who is it intended for?',
+ a:'A property where the <strong>OWNER DOES NOT RESIDE</strong> (e.g., apartment building owner doesn\'t live there). This endorsement limits theft coverage to specific items.',
+ m:'"Limited theft = landlord absent"'},
+{c:'cas',e:'🚗 Auto/PAP',
+ q:'PAP supplemental payments — which is NOT included?',
+ a:'NOT included: <strong>cost to release a vehicle from an impoundment lot.</strong><br><br>PAP DOES pay: appeal bonds, bail bonds up to <strong>$250</strong>, loss of earnings up to <strong>$200/day</strong>.',
+ m:'"Impound = not our problem"'},
+{c:'gen',e:'✅ General',
+ q:'Primary objective of workers compensation?',
+ a:'Pay benefits to employees for injuries <strong>ARISING OUT OF employment</strong> — employment-related injuries only. Off-the-job injuries are NOT covered.',
+ m:'"On the job only"'},
+{c:'prop',e:'🏠 Property',
+ q:'Homeowners policy — how much for business property ON premises?',
+ a:'Up to <strong>$2,500</strong> under "Your Contents" (Coverage C) for business property kept on the premises.',
+ m:'"HO = $2,500 for biz on-site"'},
+{c:'gen',e:'✅ General',
+ q:'Pure risk vs. speculative risk — which is insurable?',
+ a:'<strong>PURE RISK</strong> = only possibility of loss OR no loss → <strong>INSURABLE</strong>.<br><br><strong>SPECULATIVE RISK</strong> = could gain OR lose (e.g., gambling) → <strong>NOT insurable.</strong>',
+ m:'"Pure = insure. Speculate = no gate."'},
+{c:'cas',e:'🚗 Auto/PAP',
+ q:'PAP temporary substitute auto — what qualifies?',
+ a:'Any non-owned vehicle used while your covered auto is out of normal use due to <strong>BREAKDOWN, REPAIR, or SERVICING.</strong><br><br>Does NOT apply to vehicles furnished for your regular use.',
+ m:'"Temp sub = repair only, not your company car"'},
+{c:'gen',e:'✅ General',
+ q:'Which section of a policy contains exclusions?',
+ a:'The <strong>EXCLUSIONS</strong> section — a separate section of the policy.<br><br>Declarations contain: who, what, where, when, how much, premium. <strong>Exclusions are NOT in declarations.</strong>',
+ m:'"Dec page = the good stuff. Exclusions are separate."'},
+{c:'prop',e:'🏠 Property',
+ q:'Dwelling policy standard deductible amount?',
+ a:'<strong>$250</strong> — applies to all property coverage EXCEPT:<br>• Fair rental value<br>• Additional living expense<br>• Fire dept service charge',
+ m:'"DP deductible = $250, except ALE/rental/fire dept"'},
+{c:'prop',e:'🏠 Property',
+ q:'Which part of a policy covers defense expenses and expenses to protect damaged property from further loss?',
+ a:'The <strong>ADDITIONAL COVERAGE</strong> section — not the insuring agreement, not declarations.',
+ m:'"Additional coverage = defense + protect damaged property"'},
+{c:'prop',e:'🏠 Property',
+ q:'Professional photographers and musicians insure their commercial equipment with what?',
+ a:'A <strong>Commercial Articles Floater</strong> — an inland marine form designed for commercial equipment like cameras and musical instruments.',
+ m:'"Camera + guitar = Commercial Articles"'},
+{c:'prop',e:'🏠 Property',
+ q:'What coverage does HO have that a dwelling policy does NOT?',
+ a:'<strong>LIABILITY coverage</strong> (Coverage E — Personal Liability, and Coverage F — Medical Payments).<br><br>Dwelling policy = property only. HO = property + liability.',
+ m:'"HO = home + liability. DP = no liability."'},
+{c:'cas',e:'🚗 Auto/PAP',
+ q:'Insured hits a pothole, gets a flat tire. Covered under PAP?',
+ a:'<strong>NOT COVERED.</strong> Road hazards (potholes causing flat tires) are specifically excluded — not collision, not comprehensive. It\'s a road hazard exclusion.',
+ m:'"Pothole flat = no coverage, road hazard excluded"'},
+{c:'cas',e:'🚗 Auto/PAP',
+ q:'PAP medical payments — how long after accident must expenses be incurred?',
+ a:'<strong>3 YEARS</strong> from the date of accident. Both the expenses incurred AND services rendered must be within 3 years.',
+ m:'"Med pay = 3 years"'},
+{c:'prop',e:'🏠 Property',
+ q:'Pair or set clause — insurer pays how much after losing one item from a pair?',
+ a:'The <strong>DIFFERENCE in ACV before and after the loss</strong> — or the insurer may choose to restore the set.<br><br>NOT the full replacement cost of the entire pair.',
+ m:'"One candlestick lost = pay the gap, not the pair"'},
+{c:'prop',e:'🏠 Property',
+ q:'HO coverage for landlord furnishings in an on-premises apartment?',
+ a:'Covered up to <strong>$2,500</strong> for landlord furnishings located in an apartment on the insured premises.',
+ m:'"On-premises landlord furnishings = $2,500"'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'Nonresident license — is a Certification Letter from home state required?',
+ a:'<strong>NO.</strong> License status is verified through the <strong>NAIC Producer Database (PDB)</strong>.<br><br>Requirements: NAIC Uniform Application + fee + age 18+. No cert letter needed.',
+ m:'"No cert letter — NAIC PDB checks your home state"'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'CE deadline missed — how long is the license suspended?',
+ a:'<strong>90 DAYS</strong> or until CE is completed, whichever comes first.',
+ m:'"Miss CE = 90-day timeout"'},
+{c:'ks',e:'🏛️ Kansas Law',
+ q:'Producer license revoked for Insurance Code violations — when can they reapply?',
+ a:'Not until <strong>2 YEARS</strong> after the Commissioner\'s revocation order.',
+ m:'"Revoked = 2-year penalty box"'},
+{c:'prop',e:'🏠 Property',
+ q:'Money kept in a safety deposit box — covered under inland marine?',
+ a:'<strong>NOT COVERED.</strong> Money and securities in safes or safety deposit boxes are specifically excluded from inland marine coverage.',
+ m:'"Money in safe = not marine\'s problem"'},
+{c:'cas',e:'🚗 Garage',
+ q:'Garage coverage — when does a loss occur for concrete falling from faulty renovation work done months ago?',
+ a:'At the <strong>TIME OF THE INCIDENT</strong> (when the concrete fell) — NOT when the faulty work was performed months earlier.',
+ m:'"Garage policy: loss = when it happens, not when it was built wrong"'},
+];
+
+const TOTAL=CARDS.length;
+const CIRC=2*Math.PI*53;
+let deck=[...CARDS],cur=0,flipped=false,scores=new Array(TOTAL).fill(null),deckIdx=[...Array(TOTAL).keys()];
+let touchStartX=0,touchStartY=0,isDrag=false;
+
+function syncCounter(){
+  document.getElementById('cc-cur').textContent=Math.min(cur+1,deck.length);
+  document.getElementById('cc-tot').textContent=deck.length;
+}
+function getClass(c){return c==='prop'?'cp-prop':c==='cas'?'cp-cas':c==='ks'?'cp-ks':'cp-gen';}
+function renderCard(){
+  if(cur>=deck.length){showScore();return;}
+  const c=deck[cur];
+  flipped=false;
+  const card=document.getElementById('card');
+  card.style.transition='none';card.style.transform='';card.style.opacity='1';
+  card.classList.remove('flip');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.transition='';}));
+  document.getElementById('cf').innerHTML=`<div class="cat-pill ${getClass(c.c)}">${c.e}</div><div class="q-text">${c.q}</div><div class="tap-cue">tap to reveal</div>`;
+  document.getElementById('cb').innerHTML=`<div class="cat-pill ${getClass(c.c)}">${c.e}</div><div class="a-text">${c.a}</div><div class="lock-box"><div class="lock-lbl">🔒 Lock It</div><div class="lock-txt">${c.m}</div></div>`;
+  document.getElementById('cn').textContent=cur+1;
+  document.getElementById('ct').textContent=deck.length;
+  syncCounter();
+  document.getElementById('ans').className='ans-row hidden';
+  document.getElementById('pb').disabled=cur===0;
+  document.getElementById('nb').textContent=cur===deck.length-1?'Finish':'Next ▶';
+  document.getElementById('fl').textContent='Reveal Answer';
+  document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';
+  document.getElementById('progress-fill').style.width=((cur/deck.length)*100)+'%';
+}
+function flipCard(){
+  flipped=!flipped;const card=document.getElementById('card');
+  if(flipped){card.classList.add('flip');document.getElementById('ans').className='ans-row';document.getElementById('fl').textContent='Back to Question';}
+  else{card.classList.remove('flip');document.getElementById('ans').className='ans-row hidden';document.getElementById('fl').textContent='Reveal Answer';}
+}
+document.getElementById('scene').addEventListener('click',()=>flipCard());
+function mark(knew){
+  const oi=deckIdx[cur]!==undefined?deckIdx[cur]:cur;
+  scores[oi]=knew;updateStats();exitAnim(knew?'r':'l');setTimeout(()=>{cur++;renderCard();},300);
+}
+function nextCard(){if(cur>=deck.length-1){showScore();return;}exitAnim('l');setTimeout(()=>{cur++;renderCard();},300);}
+function prevCard(){if(cur<=0)return;cur--;renderCard();}
+function exitAnim(dir){
+  const card=document.getElementById('card');const x=dir==='r'?100:-100;
+  card.style.transition='transform .3s,opacity .3s';
+  card.style.transform=`translateX(${x}px) rotate(${dir==='r'?5:-5}deg)`;card.style.opacity='0';
+}
+// Swipe
+document.getElementById('scene').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;isDrag=true;},{passive:true});
+document.getElementById('scene').addEventListener('touchmove',e=>{
+  if(!isDrag||!flipped)return;const dx=e.touches[0].clientX-touchStartX;
+  const card=document.getElementById('card');card.style.transition='none';
+  card.style.transform=`rotateY(180deg) translateX(${-dx}px) rotate(${dx/30}deg)`;
+  const sk=document.getElementById('sw-k'),sm=document.getElementById('sw-m');
+  if(dx>40){sk.style.opacity=Math.min((dx-40)/60,1)+'';sm.style.opacity='0';}
+  else if(dx<-40){sm.style.opacity=Math.min((-dx-40)/60,1)+'';sk.style.opacity='0';}
+  else{sk.style.opacity='0';sm.style.opacity='0';}
+},{passive:true});
+document.getElementById('scene').addEventListener('touchend',e=>{
+  if(!isDrag)return;isDrag=false;if(!flipped)return;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(dx>80)mark(true);else if(dx<-80)mark(false);
+  else{const card=document.getElementById('card');card.style.transition='transform .3s';card.style.transform='rotateY(180deg)';document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';}
+},{passive:true});
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+  else if(e.key==='ArrowRight')nextCard();
+  else if(e.key==='ArrowLeft')prevCard();
+  else if((e.key==='k'||e.key==='K')&&flipped)mark(true);
+  else if((e.key==='m'||e.key==='M')&&flipped)mark(false);
+});
+function updateStats(){
+  document.getElementById('sn-k').textContent=scores.filter(s=>s===true).length;
+  document.getElementById('sn-m').textContent=scores.filter(s=>s===false).length;
+}
+function showScore(){
+  const knew=scores.filter(s=>s===true).length;
+  const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+  const seen=scores.filter(s=>s!==null).length;
+  const pct=seen>0?Math.round(knew/seen*100):0;
+  document.getElementById('flash').style.display='none';
+  document.getElementById('score').style.display='block';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('fp').textContent=pct+'%';
+  document.getElementById('fk').textContent=knew;
+  document.getElementById('fm').textContent=mi.length;
+  const rf=document.getElementById('rf');
+  rf.style.strokeDasharray=`${(pct/100)*CIRC} ${CIRC}`;
+  if(pct>=80)rf.classList.add('pass');
+  document.getElementById('sm').textContent=pct>=80?'These are locked. Sleep. You\'re ready.':mi.length>0?'One more pass on the shaky ones. Then sleep.':'You saw them all. Go get some rest.';
+  document.getElementById('shaky-btn').disabled=mi.length===0;
+  document.getElementById('shaky-btn').textContent=`Shaky (${mi.length})`;
+}
+function restart(missedOnly){
+  document.getElementById('score').style.display='none';
+  document.getElementById('flash').style.display='block';
+  document.getElementById('rf').classList.remove('pass');
+  if(missedOnly){
+    const mi=scores.map((s,i)=>s===false?i:null).filter(i=>i!==null);
+    deck=mi.map(i=>CARDS[i]);deckIdx=mi;mi.forEach(i=>scores[i]=null);
+  } else {
+    deck=[...CARDS];deckIdx=[...Array(TOTAL).keys()];scores=new Array(TOTAL).fill(null);
+  }
+  cur=0;flipped=false;renderCard();updateStats();syncCounter();
+}
+renderCard();
+</script>
+</body>
+</html>
