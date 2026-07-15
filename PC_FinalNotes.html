@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Final Notes — Confusable Pairs, Time Limits &amp; Dollar Amounts</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050505;--surface:#111;--surface2:#181818;
+  --border:#1e1e1e;--border2:#252525;
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,.12);
+  --green:#3d9e3d;--green-dim:rgba(61,158,61,.12);
+  --red:#9e3d3d;--red-dim:rgba(158,61,61,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.1);
+  --orange:#e87c30;--orange-dim:rgba(232,124,48,.1);
+  --teal:#2dd4bf;--teal-dim:rgba(45,212,191,.1);
+  --text:#ddd;--muted:#555;--muted2:#2a2a2a;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;user-select:none;}
+#progress-rail{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--border);z-index:100;}
+#progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+.top-bar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.deck-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);padding:3px 10px;border-radius:20px;}
+.progress-pill{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.5px;}
+.progress-pill strong{color:var(--gold);}
+.title-block{padding:10px 16px 0;}
+.title-block h1{font-size:20px;font-weight:700;color:#fff;}
+.title-block p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pulse-bar{background:linear-gradient(90deg,rgba(200,168,75,.15),rgba(200,168,75,.05));border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:9px 14px;margin:10px 16px 0;text-align:center;font-size:11px;color:#aaa;line-height:1.6;}
+.pulse-bar strong{color:var(--gold);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{background:var(--bg);padding:8px 4px;text-align:center;}
+.stat-n{font-size:20px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-n.g{color:var(--green);}
+.stat-n.r{color:#e05;}
+.stat-l{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-top:1px;text-transform:uppercase;}
+#flash{padding:12px 16px 90px;}
+.card-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-pos{font-size:11px;color:var(--muted);}
+.card-pos strong{color:var(--text);}
+.scene{perspective:1000px;cursor:pointer;}
+.card{position:relative;width:100%;min-height:240px;transform-style:preserve-3d;transition:transform .4s cubic-bezier(.4,0,.2,1);border-radius:12px;}
+.card.flip{transform:rotateY(180deg);}
+.face{position:absolute;top:0;left:0;right:0;min-height:240px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;padding:14px;display:flex;flex-direction:column;}
+.front{background:var(--surface);border:1px solid var(--border2);}
+.back{background:#040d06;border:1px solid #091a0c;transform:rotateY(180deg);}
+/* category pill colors */
+.cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;margin-bottom:8px;width:fit-content;}
+.cp-pair{background:var(--purple-dim);border:1px solid rgba(168,85,247,.2);color:var(--purple);}
+.cp-time{background:var(--blue-dim);border:1px solid rgba(74,144,217,.2);color:var(--blue);}
+.cp-dollar{background:var(--gold-dim);border:1px solid rgba(200,168,75,.25);color:var(--gold);}
+.cp-exam{background:var(--orange-dim);border:1px solid rgba(232,124,48,.2);color:var(--orange);}
+.cp-marine{background:var(--teal-dim);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.q-text{font-size:14px;line-height:1.7;color:var(--text);flex:1;}
+.tap-cue{margin-top:8px;font-size:9px;color:var(--muted2);text-align:center;text-transform:uppercase;letter-spacing:1px;}
+.a-text{font-size:13px;line-height:1.8;color:var(--text);flex:1;}
+.a-text strong{color:#5ec97b;}
+.lock-box{margin-top:8px;background:rgba(61,158,61,.07);border:1px solid rgba(61,158,61,.15);border-radius:7px;padding:7px 10px;}
+.lock-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--green);text-transform:uppercase;margin-bottom:2px;}
+.lock-txt{font-size:11px;color:#5a8f5a;line-height:1.6;}
+.swipe-overlay{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;letter-spacing:2px;opacity:0;pointer-events:none;z-index:5;}
+.swo-k{background:rgba(61,158,61,.15);color:var(--green);border:2px solid rgba(61,158,61,.3);}
+.swo-m{background:rgba(158,61,61,.12);color:var(--red);border:2px solid rgba(158,61,61,.25);}
+.flip-btn{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;margin-bottom:7px;}
+.ans-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.ans-row.hidden{display:none;}
+.ab{border:1px solid;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.ab-m{background:var(--red-dim);border-color:rgba(158,61,61,.3);color:#cc5555;}
+.ab-k{background:var(--green-dim);border-color:rgba(61,158,61,.3);color:var(--green);}
+.nav-row{display:grid;grid-template-columns:1fr 2fr;gap:7px;}
+.nb{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.nb:disabled{opacity:.2;cursor:not-allowed;}
+.nb.primary{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+.kb{text-align:center;font-size:9px;color:var(--muted2);margin-top:4px;}
+#score{display:none;padding:24px 16px;text-align:center;}
+.ring-wrap{position:relative;width:130px;height:130px;margin:0 auto 14px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.rb{fill:none;stroke:var(--border);stroke-width:10;}
+.rf{fill:none;stroke:var(--gold);stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.rf.pass{stroke:var(--green);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-pct{font-size:40px;font-weight:700;color:#fff;line-height:1;}
+.ring-of{font-size:9px;color:var(--muted);}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.sg{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px;}
+.sg-n{font-size:24px;font-weight:700;line-height:1;margin-bottom:2px;}
+.sg-n.g{color:var(--green);}
+.sg-n.r{color:#cc5555;}
+.sg-l{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.sc-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px;}
+.sc-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.sc-btn{border:none;font-size:12px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.sc-restart{background:var(--surface2);border:1px solid var(--border2);color:var(--text);}
+.sc-shaky{background:var(--red-dim);border:1px solid rgba(158,61,61,.3);color:#cc5555;}
+.sc-shaky:disabled{opacity:.3;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="progress-rail"><div id="progress-fill"></div></div>
+<div class="top-bar">
+  <span class="deck-label">FINAL NOTES</span>
+  <span class="progress-pill"><strong id="prog-cur">1</strong> / <span id="prog-tot">21</span></span>
+</div>
+<div class="title-block">
+  <h1>Confusable Pairs &amp; Key Facts</h1>
+  <p>21 cards — pairs, time limits, dollar amounts, exam technique</p>
+</div>
+<div class="pulse-bar">From your study session notes. <strong>These are the exact traps the exam sets.</strong></div>
+<div class="stats-row">
+  <div class="stat"><div class="stat-n" id="sn-t">21</div><div class="stat-l">Total</div></div>
+  <div class="stat"><div class="stat-n g" id="sn-k">0</div><div class="stat-l">Locked</div></div>
+  <div class="stat"><div class="stat-n r" id="sn-m">0</div><div class="stat-l">Shaky</div></div>
+</div>
+<div id="flash">
+  <div class="card-row" style="margin-top:12px;">
+    <div class="card-pos"><strong id="cn">1</strong> / <span id="ct">21</span></div>
+    <button style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;" onclick="nextCard()">Skip →</button>
+  </div>
+  <div class="scene" id="scene">
+    <div class="card" id="card">
+      <div class="face front" id="cf"></div>
+      <div class="face back" id="cb"></div>
+    </div>
+    <div class="swipe-overlay swo-k" id="sw-k">✓ LOCKED</div>
+    <div class="swipe-overlay swo-m" id="sw-m">✕ SHAKY</div>
+  </div>
+  <button class="flip-btn" onclick="flipCard()">↻ <span id="fl">Reveal Answer</span></button>
+  <div class="ans-row hidden" id="ans">
+    <button class="ab ab-m" onclick="mark(false)">✕ Shaky</button>
+    <button class="ab ab-k" onclick="mark(true)">✓ Locked</button>
+  </div>
+  <div class="nav-row">
+    <button class="nb" id="pb" onclick="prevCard()" disabled>◀</button>
+    <button class="nb primary" id="nb" onclick="nextCard()">Next ▶</button>
+  </div>
+  <div class="kb">Space = flip · K = locked · M = shaky · ← →</div>
+</div>
+<div id="score">
+  <div class="ring-wrap">
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <circle class="rb" cx="65" cy="65" r="53"/>
+      <circle class="rf" id="rf" cx="65" cy="65" r="53" stroke-dasharray="0 333"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" id="fp">0%</div>
+      <div class="ring-of" id="ring-of">OF 21</div>
+    </div>
+  </div>
+  <div class="score-grid">
+    <div class="sg"><div class="sg-n g" id="fk">0</div><div class="sg-l">Locked In</div></div>
+    <div class="sg"><div class="sg-n r" id="fm">0</div><div class="sg-l">Still Shaky</div></div>
+  </div>
+  <div class="sc-msg" id="sm"></div>
+  <div class="sc-btns">
+    <button class="sc-btn sc-restart" onclick="restart(false)">Run Again</button>
+    <button class="sc-btn sc-shaky" id="shaky-btn" onclick="restart(true)">Shaky Only</button>
+  </div>
+</div>
+
+<script>
+const CARDS=[
+// ─── SECTION A: CONFUSABLE PAIRS ───────────────────────────
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Declarations vs. Insuring Agreement — what does EACH contain?',
+ a:'<strong>DECLARATIONS</strong> = WHO is insured, WHERE property is, WHEN policy runs, HOW MUCH (limits + premium).<br><strong>INSURING AGREEMENT</strong> = WHAT is covered, perils, insurer\'s promise ("the insurer agrees to…").<br><br>Location / limits / effective dates → Declarations. Coverage description → Insuring Agreement.',
+ m:'"Dec = facts. IA = promise."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Misrepresentation vs. Defamation — what\'s the difference?',
+ a:'<strong>MISREPRESENTATION</strong> = lying about a policy, its benefits, financial condition, or coverage.<br><strong>DEFAMATION</strong> = lying about an insurance COMPANY, producer, or other insurer.<br><br>Misrepresentation = about the POLICY. Defamation = about a PERSON or COMPANY.',
+ m:'"Misrep = bad policy info. Defamation = trash-talking a company."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Supplementary Payments vs. Liability Limits — inside or outside the limits?',
+ a:'<strong>OUTSIDE</strong> the liability limits.<br><br>Supplementary payments cover: defense costs, attorney fees, court costs, bond premiums, interest, loss of earnings for court attendance.<br><br>Liability limits pay <strong>DAMAGES</strong>. Supp payments are IN ADDITION TO limits.',
+ m:'"Supp payments = defense. Limits = damages. Two separate buckets."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'KIGA vs. Workers Compensation Plan — when does each apply?',
+ a:'<strong>WORKERS COMPENSATION PLAN</strong> = employer CAN\'T get WC coverage in the voluntary market → assigned risk plan.<br><br><strong>KIGA</strong> = Kansas Insurance Guaranty Association → only kicks in when an insurer becomes <strong>INSOLVENT</strong>.<br><br>Don\'t mix them up.',
+ m:'"WC Plan = can\'t buy it. KIGA = company went broke."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Rebating — what\'s illegal vs. legal?',
+ a:'<strong>ILLEGAL:</strong> cash, gift cards, stocks, bonds, securities — anything offered to <em>induce</em> a purchase.<br><br><strong>LEGAL:</strong> dividends from a <strong>MUTUAL</strong> insurance company (comes from company profits, not an inducement).',
+ m:'"Dividend from mutual = legal. Everything else as inducement = illegal."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Notice of Claim vs. Proof of Loss — what\'s the difference?',
+ a:'<strong>NOTICE OF CLAIM</strong> = initial notification that a loss occurred.<br><br><strong>PROOF OF LOSS</strong> = formal documentation submitted to support the claim (details, amounts, receipts).<br><br>Notice comes first. Proof follows.',
+ m:'"Notice = I had a loss. Proof = Here\'s the paperwork."'},
+{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',
+ q:'Occurrence vs. Hazard — define each.',
+ a:'<strong>OCCURRENCE</strong> = an accident, including continuous or repeated exposure to the same harmful conditions.<br><br><strong>HAZARD</strong> = a condition that increases the probability or severity of a loss (physical, moral, morale).<br><br>Occurrence = the event. Hazard = what makes it more likely.',
+ m:'"Occurrence = the event. Hazard = what makes it more likely."'},
+// ─── SECTION B: TIME LIMITS ────────────────────────────────
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'Cancellation for nonpayment of premium — how many days notice?',
+ a:'<strong>10 DAYS</strong>',
+ m:'"Non-pay = 10 days"'},
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'BOP cancellation for nonpayment — how many days notice?',
+ a:'<strong>15 DAYS</strong><br><br>BOP is different from standard — remember 15, not 10.',
+ m:'"BOP nonpay = 15"'},
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'Personal lines filing, address changes, most cancellations, nonrenewal — how many days?',
+ a:'<strong>30 DAYS</strong>',
+ m:'"Almost everything else = 30 days"'},
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'Property removed from premises — how long is it covered?',
+ a:'<strong>72 HOURS</strong>',
+ m:'"72 hours for removed property"'},
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'Business income waiting period?',
+ a:'<strong>72 HOURS</strong><br><br>Same as property removed from premises.',
+ m:'"Business income = 72-hour wait too"'},
+{cat:'cp-time',sec:'⏱ TIME LIMIT',
+ q:'PIP claim — how many years to file?',
+ a:'<strong>2 YEARS</strong>',
+ m:'"PIP = 2-year window"'},
+// ─── SECTION C: DOLLAR AMOUNTS ─────────────────────────────
+{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',
+ q:'Dwelling policy standard deductible?',
+ a:'<strong>$250</strong><br><br>Applies to all property coverage EXCEPT: fair rental value, additional living expense, fire dept service charge.',
+ m:'"DP deductible = $250"'},
+{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',
+ q:'Moving a mobile home — how much coverage?',
+ a:'<strong>$500</strong>',
+ m:'"Mobile home moving = $500"'},
+{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',
+ q:'Trees, shrubs, plants per occurrence under HO?',
+ a:'<strong>$500 EACH</strong><br>Maximum <strong>5% of Coverage A</strong> in total.',
+ m:'"Tree limit = $500 each"'},
+{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',
+ q:'Pollutant cleanup and removal — commercial policy limit?',
+ a:'<strong>$10,000</strong>',
+ m:'"Pollutant cleanup = $10K"'},
+// ─── SECTION D: EXAM TECHNIQUE ─────────────────────────────
+{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',
+ q:'What words in a question should STOP you and re-read the whole sentence?',
+ a:'<strong>NOT, EXCEPT, FIRST, BEST, MOST, PRIMARY</strong> — these flip or narrow the answer.<br><br>Also watch one-word traps:<br>Cancellation vs. Nonrenewal · Direct vs. Indirect · Representation vs. Misrepresentation · Occurrence vs. Hazard<br><br><em>One word changes everything.</em>',
+ m:'"See NOT or EXCEPT → read again."'},
+{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',
+ q:'Large Risk plan — what are the minimum premium thresholds?',
+ a:'Property: <strong>$50,000</strong><br>General Liability: <strong>$50,000</strong><br>Multiple Lines: <strong>$100,000</strong><br><br>Workers Compensation is <strong>NOT</strong> part of Large Risk.',
+ m:'"50 / 50 / 100 — no WC"'},
+{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',
+ q:'Commercial General Liability — Coverage A, B, C?',
+ a:'<strong>Coverage A</strong> = Bodily Injury + Property Damage<br><strong>Coverage B</strong> = Personal and Advertising Injury<br><strong>Coverage C</strong> = Medical Payments (per person, regardless of fault)',
+ m:'"A=BI/PD, B=Personal/Ad, C=Med Pay"'},
+// ─── BONUS: MARINE ─────────────────────────────────────────
+{cat:'cp-marine',sec:'⚓ INLAND MARINE',
+ q:'Marine insurance — what\'s the guiding principle for what qualifies?',
+ a:'<strong>MOVING things</strong>, not fixed buildings.<br><br>Inland marine covers: Rolex watches, wedding gifts in transit, commercial articles (cameras, instruments), contractors equipment.<br><br><strong>Radio tower = NOT inland marine</strong> (it\'s fixed).<br><strong>Money in safety deposit box = NOT covered.</strong>',
+ m:'"Marine = moving. Fixed = not marine."'}
+];
+
+const TOTAL=CARDS.length;
+let idx=0,flipped=false,results={};
+const cat=i=>CARDS[i].cat, sec=i=>CARDS[i].sec, q=i=>CARDS[i].q, a=i=>CARDS[i].a, m=i=>CARDS[i].m;
+
+function updateProgress(){
+  const pct=((idx+1)/TOTAL*100).toFixed(0);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('prog-cur').textContent=idx+1;
+  document.getElementById('prog-tot').textContent=TOTAL;
+  document.getElementById('cn').textContent=idx+1;
+  document.getElementById('ct').textContent=TOTAL;
+  document.getElementById('sn-t').textContent=TOTAL;
+  const k=Object.values(results).filter(v=>v).length;
+  const ms=Object.values(results).filter(v=>!v).length;
+  document.getElementById('sn-k').textContent=k;
+  document.getElementById('sn-m').textContent=ms;
+}
+
+function renderCard(){
+  const i=idx;
+  document.getElementById('cf').innerHTML=`
+    <span class="cat-pill ${cat(i)}">${sec(i)}</span>
+    <div class="q-text">${q(i)}</div>
+    <div class="tap-cue">tap to reveal</div>`;
+  document.getElementById('cb').innerHTML=`
+    <span class="cat-pill ${cat(i)}">${sec(i)}</span>
+    <div class="a-text">${a(i)}</div>
+    <div class="lock-box"><div class="lock-lbl">🔐 Hook</div><div class="lock-txt">${m(i)}</div></div>`;
+  document.getElementById('card').classList.remove('flip');
+  document.getElementById('fl').textContent='Reveal Answer';
+  document.getElementById('ans').classList.add('hidden');
+  flipped=false;
+  document.getElementById('pb').disabled=idx===0;
+  document.getElementById('nb').textContent=idx===TOTAL-1?'Finish ✓':'Next ▶';
+  flashOverlay(null);
+  updateProgress();
+}
+
+function flipCard(){
+  flipped=!flipped;
+  document.getElementById('card').classList.toggle('flip',flipped);
+  document.getElementById('fl').textContent=flipped?'↩ Back to Question':'↻ Reveal Answer';
+  document.getElementById('ans').classList.toggle('hidden',!flipped);
+}
+
+function flashOverlay(type){
+  const ok=document.getElementById('sw-k');
+  const ms=document.getElementById('sw-m');
+  ok.style.opacity=0;ms.style.opacity=0;
+  if(type==='k'){ok.style.opacity=1;setTimeout(()=>ok.style.opacity=0,600);}
+  if(type==='m'){ms.style.opacity=1;setTimeout(()=>ms.style.opacity=0,600);}
+}
+
+function mark(known){
+  results[idx]=known;
+  flashOverlay(known?'k':'m');
+  updateProgress();
+  setTimeout(()=>nextCard(),350);
+}
+
+function nextCard(){
+  if(idx<TOTAL-1){idx++;renderCard();}
+  else showScore();
+}
+
+function prevCard(){
+  if(idx>0){idx--;renderCard();}
+}
+
+function showScore(){
+  document.getElementById('flash').style.display='none';
+  document.getElementById('score').style.display='block';
+  const k=Object.values(results).filter(v=>v).length;
+  const ms=Object.values(results).filter(v=>!v).length;
+  const pct=Math.round(k/TOTAL*100);
+  const circ=2*Math.PI*53;
+  const fill=circ*(k/TOTAL);
+  const rf=document.getElementById('rf');
+  rf.setAttribute('stroke-dasharray',`${fill} ${circ}`);
+  if(pct>=80)rf.classList.add('pass');
+  document.getElementById('fp').textContent=pct+'%';
+  document.getElementById('ring-of').textContent='OF '+TOTAL;
+  document.getElementById('fk').textContent=k;
+  document.getElementById('fm').textContent=ms;
+  document.getElementById('sm').textContent=pct===100?'Every single one. Go to sleep — you\'ve got this.':pct>=80?'Strong. You know the patterns. Rest up for 8:30 AM.':'Review the shaky ones one more time, then sleep.';
+  document.getElementById('shaky-btn').disabled=ms===0;
+  document.getElementById('progress-fill').style.width='100%';
+}
+
+function restart(shakyOnly){
+  if(shakyOnly){
+    const shakies=Object.keys(results).filter(k=>results[k]===false).map(Number);
+    if(!shakies.length)return;
+    // put shaky cards at front
+    const orig=[...CARDS];
+    const shaky=shakies.map(i=>orig[i]);
+    CARDS.length=0;shaky.forEach(c=>CARDS.push(c));
+  } else {
+    // restore from orig
+    CARDS.length=0;
+    [{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Declarations vs. Insuring Agreement — what does EACH contain?',a:'<strong>DECLARATIONS</strong> = WHO is insured, WHERE property is, WHEN policy runs, HOW MUCH (limits + premium).<br><strong>INSURING AGREEMENT</strong> = WHAT is covered, perils, insurer\'s promise ("the insurer agrees to…").<br><br>Location / limits / effective dates → Declarations. Coverage description → Insuring Agreement.',m:'"Dec = facts. IA = promise."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Misrepresentation vs. Defamation — what\'s the difference?',a:'<strong>MISREPRESENTATION</strong> = lying about a policy, its benefits, financial condition, or coverage.<br><strong>DEFAMATION</strong> = lying about an insurance COMPANY, producer, or other insurer.<br><br>Misrepresentation = about the POLICY. Defamation = about a PERSON or COMPANY.',m:'"Misrep = bad policy info. Defamation = trash-talking a company."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Supplementary Payments vs. Liability Limits — inside or outside the limits?',a:'<strong>OUTSIDE</strong> the liability limits.<br><br>Supplementary payments cover: defense costs, attorney fees, court costs, bond premiums, interest, loss of earnings for court attendance.<br><br>Liability limits pay <strong>DAMAGES</strong>. Supp payments are IN ADDITION TO limits.',m:'"Supp payments = defense. Limits = damages. Two separate buckets."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'KIGA vs. Workers Compensation Plan — when does each apply?',a:'<strong>WORKERS COMPENSATION PLAN</strong> = employer CAN\'T get WC coverage in the voluntary market → assigned risk plan.<br><br><strong>KIGA</strong> = Kansas Insurance Guaranty Association → only kicks in when an insurer becomes <strong>INSOLVENT</strong>.<br><br>Don\'t mix them up.',m:'"WC Plan = can\'t buy it. KIGA = company went broke."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Rebating — what\'s illegal vs. legal?',a:'<strong>ILLEGAL:</strong> cash, gift cards, stocks, bonds, securities — anything offered to <em>induce</em> a purchase.<br><br><strong>LEGAL:</strong> dividends from a <strong>MUTUAL</strong> insurance company (comes from company profits, not an inducement).',m:'"Dividend from mutual = legal. Everything else as inducement = illegal."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Notice of Claim vs. Proof of Loss — what\'s the difference?',a:'<strong>NOTICE OF CLAIM</strong> = initial notification that a loss occurred.<br><br><strong>PROOF OF LOSS</strong> = formal documentation submitted to support the claim (details, amounts, receipts).<br><br>Notice comes first. Proof follows.',m:'"Notice = I had a loss. Proof = Here\'s the paperwork."'},{cat:'cp-pair',sec:'⚡ CONFUSABLE PAIR',q:'Occurrence vs. Hazard — define each.',a:'<strong>OCCURRENCE</strong> = an accident, including continuous or repeated exposure to the same harmful conditions.<br><br><strong>HAZARD</strong> = a condition that increases the probability or severity of a loss (physical, moral, morale).<br><br>Occurrence = the event. Hazard = what makes it more likely.',m:'"Occurrence = the event. Hazard = what makes it more likely."'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'Cancellation for nonpayment of premium — how many days notice?',a:'<strong>10 DAYS</strong>',m:'"Non-pay = 10 days"'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'BOP cancellation for nonpayment — how many days notice?',a:'<strong>15 DAYS</strong><br><br>BOP is different from standard — remember 15, not 10.',m:'"BOP nonpay = 15"'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'Personal lines filing, address changes, most cancellations, nonrenewal — how many days?',a:'<strong>30 DAYS</strong>',m:'"Almost everything else = 30 days"'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'Property removed from premises — how long is it covered?',a:'<strong>72 HOURS</strong>',m:'"72 hours for removed property"'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'Business income waiting period?',a:'<strong>72 HOURS</strong><br><br>Same as property removed from premises.',m:'"Business income = 72-hour wait too"'},{cat:'cp-time',sec:'⏱ TIME LIMIT',q:'PIP claim — how many years to file?',a:'<strong>2 YEARS</strong>',m:'"PIP = 2-year window"'},{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',q:'Dwelling policy standard deductible?',a:'<strong>$250</strong><br><br>Applies to all property coverage EXCEPT: fair rental value, additional living expense, fire dept service charge.',m:'"DP deductible = $250"'},{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',q:'Moving a mobile home — how much coverage?',a:'<strong>$500</strong>',m:'"Mobile home moving = $500"'},{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',q:'Trees, shrubs, plants per occurrence under HO?',a:'<strong>$500 EACH</strong><br>Maximum <strong>5% of Coverage A</strong> in total.',m:'"Tree limit = $500 each"'},{cat:'cp-dollar',sec:'💰 DOLLAR AMOUNT',q:'Pollutant cleanup and removal — commercial policy limit?',a:'<strong>$10,000</strong>',m:'"Pollutant cleanup = $10K"'},{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',q:'What words in a question should STOP you and re-read the whole sentence?',a:'<strong>NOT, EXCEPT, FIRST, BEST, MOST, PRIMARY</strong> — these flip or narrow the answer.<br><br>Also watch one-word traps:<br>Cancellation vs. Nonrenewal · Direct vs. Indirect · Representation vs. Misrepresentation · Occurrence vs. Hazard<br><br><em>One word changes everything.</em>',m:'"See NOT or EXCEPT → read again."'},{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',q:'Large Risk plan — what are the minimum premium thresholds?',a:'Property: <strong>$50,000</strong><br>General Liability: <strong>$50,000</strong><br>Multiple Lines: <strong>$100,000</strong><br><br>Workers Compensation is <strong>NOT</strong> part of Large Risk.',m:'"50 / 50 / 100 — no WC"'},{cat:'cp-exam',sec:'🎯 EXAM TECHNIQUE',q:'Commercial General Liability — Coverage A, B, C?',a:'<strong>Coverage A</strong> = Bodily Injury + Property Damage<br><strong>Coverage B</strong> = Personal and Advertising Injury<br><strong>Coverage C</strong> = Medical Payments (per person, regardless of fault)',m:'"A=BI/PD, B=Personal/Ad, C=Med Pay"'},{cat:'cp-marine',sec:'⚓ INLAND MARINE',q:'Marine insurance — what\'s the guiding principle for what qualifies?',a:'<strong>MOVING things</strong>, not fixed buildings.<br><br>Inland marine covers: Rolex watches, wedding gifts in transit, commercial articles (cameras, instruments), contractors equipment.<br><br><strong>Radio tower = NOT inland marine</strong> (it\'s fixed).<br><strong>Money in safety deposit box = NOT covered.</strong>',m:'"Marine = moving. Fixed = not marine."'}].forEach(c=>CARDS.push(c));
+  }
+  results={};idx=0;
+  document.getElementById('flash').style.display='';
+  document.getElementById('score').style.display='none';
+  document.getElementById('progress-fill').style.width='0%';
+  renderCard();
+}
+
+// touch swipe
+let tx=0,ty=0;
+document.getElementById('scene').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+document.getElementById('scene').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){
+    if(!flipped){flipCard();return;}
+    if(dx>0)mark(true); else mark(false);
+  } else if(Math.abs(dy)<10&&Math.abs(dx)<10){
+    flipCard();
+  }
+},{passive:true});
+document.getElementById('scene').addEventListener('click',flipCard);
+
+// keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+  else if(e.key==='ArrowRight'){e.preventDefault();nextCard();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prevCard();}
+  else if((e.key==='k'||e.key==='K')&&flipped){mark(true);}
+  else if((e.key==='m'||e.key==='M')&&flipped){mark(false);}
+});
+
+// init
+renderCard();
+</script>
+</body>
+</html>
