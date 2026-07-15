@@ -271,10 +271,15 @@ function renderCard(){
 }
 function flipCard(){
   flipped=!flipped;const card=document.getElementById('card');
+  card.style.transform='';card.style.transition='';
   if(flipped){card.classList.add('flip');document.getElementById('ans').className='ans-row';document.getElementById('fl').textContent='Back to Question';}
   else{card.classList.remove('flip');document.getElementById('ans').className='ans-row hidden';document.getElementById('fl').textContent='Reveal Answer';}
 }
-document.getElementById('scene').addEventListener('click',()=>flipCard());
+let touchFired=false;
+document.getElementById('scene').addEventListener('click',e=>{
+  if(touchFired)return;
+  flipCard();
+});
 function mark(knew){
   const oi=deckIdx[cur]!==undefined?deckIdx[cur]:cur;
   scores[oi]=knew;updateStats();exitAnim(knew?'r':'l');setTimeout(()=>{cur++;renderCard();},300);
@@ -298,10 +303,17 @@ document.getElementById('scene').addEventListener('touchmove',e=>{
   else{sk.style.opacity='0';sm.style.opacity='0';}
 },{passive:true});
 document.getElementById('scene').addEventListener('touchend',e=>{
-  if(!isDrag)return;isDrag=false;if(!flipped)return;
+  if(!isDrag)return;isDrag=false;
+  touchFired=true;setTimeout(()=>{touchFired=false;},500);
   const dx=e.changedTouches[0].clientX-touchStartX;
-  if(dx>80)mark(true);else if(dx<-80)mark(false);
-  else{const card=document.getElementById('card');card.style.transition='transform .3s';card.style.transform='rotateY(180deg)';document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';}
+  if(flipped){
+    if(dx>80){mark(true);return;}
+    if(dx<-80){mark(false);return;}
+    document.getElementById('sw-k').style.opacity='0';document.getElementById('sw-m').style.opacity='0';
+    flipCard();
+  } else {
+    flipCard();
+  }
 },{passive:true});
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT')return;
@@ -349,3 +361,4 @@ renderCard();
 </script>
 </body>
 </html>
+
