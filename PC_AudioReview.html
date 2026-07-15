@@ -253,6 +253,11 @@
   </div>
 
   <div class="controls">
+    <div style="margin: 0 0 12px; text-align: center;">
+      <label style="display:block; font-size:11px; color:#666; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px;">Voice</label>
+      <select id="voiceSelect" style="background:#1a1a2e; color:#e0e0e0; border:1px solid #333; border-radius:8px; padding:8px 12px; font-size:14px; width:80%; max-width:300px;">
+      </select>
+    </div>
     <div class="speed-row">
       <button class="speed-btn" onclick="setRate(0.8)">0.8×</button>
       <button class="speed-btn active" id="sp1" onclick="setRate(1)">1×</button>
@@ -531,7 +536,7 @@ const TOTAL = cards.length; // 41
 let playerState = 'idle';   // 'idle' | 'playing' | 'paused'
 let currentIdx  = 0;
 let speechRate  = 1.0;
-let selectedVoice = null;
+let selectedVoiceIndex = 0;
 let seqId = 0;              // sequence ID — incremented on every new card/skip
 let pendingTimer = null;
 let introPlayed = false;
@@ -550,26 +555,39 @@ const elStatus     = document.getElementById('statusRow');
 // ─────────────────────────────────────────────
 //  VOICE SETUP
 // ─────────────────────────────────────────────
-function getBestVoice(voices) {
-  const preferred = ['Samantha', 'Ava', 'Karen', 'Moira', 'Victoria'];
-  for (const name of preferred) {
-    const v = voices.find(v => v.name === name);
-    if (v) return v;
-  }
-  // Try enhanced/premium
-  const enhanced = voices.find(v => v.name.includes('Enhanced') || v.name.includes('Premium'));
-  if (enhanced) return enhanced;
-  // Try any English female voice, then any English voice
-  return voices.find(v => v.lang.startsWith('en')) || voices[0];
+function getEnglishVoices() {
+  return speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
 }
 
-function pickVoice() {
-  const voices = speechSynthesis.getVoices();
-  if (!voices.length) return;
-  selectedVoice = getBestVoice(voices);
+function populateVoices() {
+  const voices = getEnglishVoices();
+  const select = document.getElementById('voiceSelect');
+  select.innerHTML = '';
+  voices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = v.name + (v.name.includes('Enhanced') || v.name.includes('Premium') ? ' ⭐' : '');
+    select.appendChild(opt);
+  });
+  // Pre-select best voice
+  const preferred = ['Samantha', 'Ava', 'Karen', 'Moira', 'Victoria'];
+  let bestIdx = 0;
+  for (const name of preferred) {
+    const idx = voices.findIndex(v => v.name === name);
+    if (idx !== -1) { bestIdx = idx; break; }
+  }
+  const enhancedIdx = voices.findIndex(v => v.name.includes('Enhanced') || v.name.includes('Premium'));
+  if (enhancedIdx !== -1) bestIdx = enhancedIdx;
+  select.value = bestIdx;
+  selectedVoiceIndex = bestIdx;
 }
-speechSynthesis.onvoiceschanged = pickVoice;
-pickVoice();
+
+speechSynthesis.onvoiceschanged = populateVoices;
+populateVoices();
+
+document.getElementById('voiceSelect').addEventListener('change', function() {
+  selectedVoiceIndex = parseInt(this.value);
+});
 
 // ─────────────────────────────────────────────
 //  DISPLAY HELPERS
@@ -599,11 +617,12 @@ function setStatus(text, cls) {
 //  CORE SPEECH ENGINE
 // ─────────────────────────────────────────────
 function speak(text, onDone) {
+  const voices = getEnglishVoices();
   const utt = new SpeechSynthesisUtterance(text);
   utt.rate  = 0.82 * speechRate;
   utt.pitch = 0.92;
   utt.volume = 1;
-  if (selectedVoice) utt.voice = selectedVoice;
+  if (voices.length > 0) utt.voice = voices[selectedVoiceIndex] || voices[0];
   utt.onend   = onDone;
   utt.onerror = (e) => {
     if (e.error !== 'interrupted' && e.error !== 'canceled') onDone();
@@ -716,6 +735,7 @@ function playComplete() {
   elPlayBtn.classList.add('done');
   setStatus('Review complete — good luck tomorrow!', 'done');
 
+  const voices = getEnglishVoices();
   const fin = new SpeechSynthesisUtterance(
     "Review complete. 41 cards covered. You scored 83 percent on tonight's practice exam. " +
     "The passing score is 70. You know this material. Trust your first instinct tomorrow. " +
@@ -724,7 +744,7 @@ function playComplete() {
   fin.rate  = 0.82 * speechRate;
   fin.pitch = 0.92;
   fin.volume = 1;
-  if (selectedVoice) fin.voice = selectedVoice;
+  if (voices.length > 0) fin.voice = voices[selectedVoiceIndex] || voices[0];
   speechSynthesis.speak(fin);
 }
 
@@ -766,8 +786,6 @@ function togglePlay() {
     playerState = 'playing';
     elPlayBtn.textContent = '⏸';
     setStatus('Playing…', 'active');
-    // Ensure voices are loaded
-    if (!selectedVoice) pickVoice();
     if (currentIdx === 0 && !introPlayed) {
       playIntro();
     } else {
