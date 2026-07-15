@@ -534,6 +534,7 @@ let speechRate  = 1.0;
 let selectedVoice = null;
 let seqId = 0;              // sequence ID — incremented on every new card/skip
 let pendingTimer = null;
+let introPlayed = false;
 
 // ─────────────────────────────────────────────
 //  DOM REFS
@@ -549,19 +550,23 @@ const elStatus     = document.getElementById('statusRow');
 // ─────────────────────────────────────────────
 //  VOICE SETUP
 // ─────────────────────────────────────────────
+function getBestVoice(voices) {
+  const preferred = ['Samantha', 'Ava', 'Karen', 'Moira', 'Victoria'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name === name);
+    if (v) return v;
+  }
+  // Try enhanced/premium
+  const enhanced = voices.find(v => v.name.includes('Enhanced') || v.name.includes('Premium'));
+  if (enhanced) return enhanced;
+  // Try any English female voice, then any English voice
+  return voices.find(v => v.lang.startsWith('en')) || voices[0];
+}
+
 function pickVoice() {
   const voices = speechSynthesis.getVoices();
   if (!voices.length) return;
-  const preferred = ['Samantha','Karen','Daniel','Moira','Fiona',
-                     'Google US English','Microsoft Zira','Microsoft David',
-                     'Alex','Victoria'];
-  for (const name of preferred) {
-    const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
-    if (v) { selectedVoice = v; return; }
-  }
-  selectedVoice = voices.find(v => v.lang === 'en-US') ||
-                  voices.find(v => v.lang.startsWith('en')) ||
-                  voices[0] || null;
+  selectedVoice = getBestVoice(voices);
 }
 speechSynthesis.onvoiceschanged = pickVoice;
 pickVoice();
@@ -595,8 +600,9 @@ function setStatus(text, cls) {
 // ─────────────────────────────────────────────
 function speak(text, onDone) {
   const utt = new SpeechSynthesisUtterance(text);
-  utt.rate  = 0.9 * speechRate;
-  utt.pitch = 1.0;
+  utt.rate  = 0.82 * speechRate;
+  utt.pitch = 0.92;
+  utt.volume = 1;
   if (selectedVoice) utt.voice = selectedVoice;
   utt.onend   = onDone;
   utt.onerror = (e) => {
@@ -610,6 +616,29 @@ function pause(ms, mySeqId, onDone) {
     pendingTimer = null;
     if (seqId === mySeqId && playerState === 'playing') onDone();
   }, ms);
+}
+
+// ─────────────────────────────────────────────
+//  CALMING INTRO
+// ─────────────────────────────────────────────
+function playIntro() {
+  const myId = ++seqId;
+  showPhase('', 'Welcome');
+  setStatus('Intro…', 'active');
+  showText('Welcome to your Kansas P&C final review. Relax and listen.');
+
+  speak(
+    "Welcome to your Kansas P and C final review. Relax and listen. " +
+    "The passing score is 70 percent. You scored 83. " +
+    "Let's lock in what you know.",
+    () => {
+      if (seqId !== myId || playerState !== 'playing') return;
+      introPlayed = true;
+      pause(3000, myId, () => {
+        speakCard(0);
+      });
+    }
+  );
 }
 
 // ─────────────────────────────────────────────
@@ -640,8 +669,8 @@ function speakCard(idx) {
       speak(card.q, () => {
         if (seqId !== myId || playerState !== 'playing') return;
 
-        // Step 3: 2.5-second think pause
-        pause(2500, myId, () => {
+        // Step 3: 3-second think pause
+        pause(3000, myId, () => {
           // Step 4: say "Answer." while showing the answer text
           showPhase('a', 'Answer');
           showText(card.a);
@@ -660,8 +689,8 @@ function speakCard(idx) {
               speak('Remember: ' + card.hook, () => {
                 if (seqId !== myId || playerState !== 'playing') return;
 
-                // Step 7: 3-second pause, then advance
-                pause(3000, myId, () => {
+                // Step 7: 4-second pause between cards, then advance
+                pause(4000, myId, () => {
                   speakCard(idx + 1);
                 });
               });
@@ -688,12 +717,13 @@ function playComplete() {
   setStatus('Review complete — good luck tomorrow!', 'done');
 
   const fin = new SpeechSynthesisUtterance(
-    "That's all 41 cards. Review complete. You scored 83 percent on your practice exam. " +
-    "The passing score is 70. You know this material. " +
-    "Trust your first instinct tomorrow. Good luck."
+    "Review complete. 41 cards covered. You scored 83 percent on tonight's practice exam. " +
+    "The passing score is 70. You know this material. Trust your first instinct tomorrow. " +
+    "Get some rest. Good luck."
   );
-  fin.rate  = 0.9 * speechRate;
-  fin.pitch = 1.0;
+  fin.rate  = 0.82 * speechRate;
+  fin.pitch = 0.92;
+  fin.volume = 1;
   if (selectedVoice) fin.voice = selectedVoice;
   speechSynthesis.speak(fin);
 }
@@ -716,9 +746,10 @@ function togglePlay() {
     elPlayBtn.classList.remove('done');
     elPlayBtn.textContent = '⏸';
     currentIdx = 0;
+    introPlayed = false;
     playerState = 'playing';
     setStatus('Playing…', 'active');
-    speakCard(0);
+    playIntro();
     return;
   }
 
@@ -737,7 +768,11 @@ function togglePlay() {
     setStatus('Playing…', 'active');
     // Ensure voices are loaded
     if (!selectedVoice) pickVoice();
-    speakCard(currentIdx);
+    if (currentIdx === 0 && !introPlayed) {
+      playIntro();
+    } else {
+      speakCard(currentIdx);
+    }
   }
 }
 
