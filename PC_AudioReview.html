@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>P&amp;C Audio Review · Kansas Exam</title>
+  <meta name="theme-color" content="#0d0d1a">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d1a;
+      --surface: #13132b;
+      --border: #1e1e3a;
+      --muted: #3a3a6a;
+      --text: #e2e2f2;
+      --text-dim: #7070a0;
+      --blue: #5b7fff;
+      --blue-dim: #2a3a80;
+      --green: #3ecf7a;
+      --green-dim: #1a4030;
+      --orange: #ffaa44;
+      --orange-dim: #4a3010;
+      --purple: #9b6fff;
+      --glow: rgba(91, 127, 255, 0.35);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      padding: 14px 20px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .header-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── COUNTER + PROGRESS ── */
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 6px;
+      flex-shrink: 0;
+    }
+    .counter {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    .section-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .progress-track {
+      height: 3px;
+      background: var(--border);
+      margin: 0 20px 0;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-dim), var(--blue));
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    /* ── PHASE LABEL ── */
+    .phase-label {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 10px 20px 4px;
+      min-height: 30px;
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+    .phase-label.q  { color: var(--blue); }
+    .phase-label.a  { color: var(--green); }
+    .phase-label.h  { color: var(--orange); }
+    .phase-label.done { color: var(--purple); }
+
+    /* ── CARD TEXT ── */
+    .card-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 28px;
+      text-align: center;
+      overflow-y: auto;
+    }
+    .card-text {
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text);
+      max-width: 580px;
+      transition: opacity 0.25s ease;
+    }
+    .card-text.fade { opacity: 0.3; }
+
+    /* ── CONTROLS PANEL ── */
+    .controls {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Speed row */
+    .speed-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .speed-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .speed-btn:hover { border-color: var(--muted); color: var(--text); }
+    .speed-btn.active {
+      background: var(--blue-dim);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* Playback controls */
+    .playback-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .skip-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .skip-btn:active { background: var(--border); transform: scale(0.93); }
+
+    .play-btn {
+      background: linear-gradient(145deg, #4a6fff, #7b5fff);
+      border: none;
+      color: #fff;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      font-size: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 28px var(--glow), 0 4px 16px rgba(0,0,0,0.5);
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .play-btn:active { transform: scale(0.94); box-shadow: 0 0 12px var(--glow); }
+    .play-btn.done {
+      background: linear-gradient(145deg, #2a8050, #3ecf7a);
+      box-shadow: 0 0 28px rgba(62, 207, 122, 0.35);
+    }
+
+    /* Status */
+    .status-row {
+      text-align: center;
+      padding: 10px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 28px;
+    }
+    .status-row.active { color: var(--blue); }
+    .status-row.done { color: var(--green); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title">Kansas P&amp;C — Audio Review</div>
+    <div class="header-sub">41 cards · Hands-free · Web Speech</div>
+  </div>
+
+  <div class="counter-row">
+    <div class="counter" id="counter">Card 1 of 41</div>
+    <div class="section-badge" id="sectionBadge">Section 1</div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="phase-label" id="phaseLabel">Ready</div>
+
+  <div class="card-area">
+    <div class="card-text" id="cardText">Tap ▶ to start your listen-through. 41 cards, completely hands-free. Drive, close your eyes — it'll do all the work.</div>
+  </div>
+
+  <div class="controls">
+    <div class="speed-row">
+      <button class="speed-btn" onclick="setRate(0.8)">0.8×</button>
+      <button class="speed-btn active" id="sp1" onclick="setRate(1)">1×</button>
+      <button class="speed-btn" onclick="setRate(1.25)">1.25×</button>
+      <button class="speed-btn" onclick="setRate(1.5)">1.5×</button>
+    </div>
+    <div class="playback-row">
+      <button class="skip-btn" onclick="skipBack()" title="Previous card">⏮</button>
+      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="skip-btn" onclick="skipForward()" title="Next card">⏭</button>
+    </div>
+    <div class="status-row" id="statusRow">Tap play to begin</div>
+  </div>
+
+<script>
+// ─────────────────────────────────────────────
+//  CARD DATA
+// ─────────────────────────────────────────────
+const cards = [
+  // ── SECTION 1: TONIGHT'S MISSED QUESTIONS ──
+  {
+    q: "Limited theft endorsement — who is it for?",
+    a: "Property where the owner does not reside — like an apartment building the owner doesn't live in.",
+    hook: "Limited theft means the landlord is absent.",
+    section: 1
+  },
+  {
+    q: "PAP supplemental payments — which is NOT included?",
+    a: "Impound lot release fees are NOT covered. PAP pays appeal bonds, bail bonds up to $250, loss of earnings up to $200 per day — but NOT the cost to get your car out of impound.",
+    hook: "Impound fees — not our problem.",
+    section: 1
+  },
+  {
+    q: "Primary objective of workers compensation?",
+    a: "Pay benefits to employees for injuries arising out of their employment. On the job only — not off-the-job accidents.",
+    hook: "Workers comp equals on the job only.",
+    section: 1
+  },
+  {
+    q: "Homeowners — how much for business property on premises?",
+    a: "Up to $2,500 under Your Contents coverage.",
+    hook: "HO equals $2,500 for business on-site.",
+    section: 1
+  },
+  {
+    q: "Pure risk versus speculative risk — which is insurable?",
+    a: "PURE RISK is insurable — only possibility of loss or no loss. SPECULATIVE RISK is not insurable — could gain or lose, like gambling.",
+    hook: "Pure equals insure. Speculate, no gate.",
+    section: 1
+  },
+  {
+    q: "PAP temporary substitute auto — what qualifies?",
+    a: "A non-owned vehicle used while your covered auto is out of normal use due to breakdown, repair, or servicing. Does NOT apply to vehicles furnished for your regular use.",
+    hook: "Temp sub equals repair only — not your company car.",
+    section: 1
+  },
+  {
+    q: "Which policy section contains exclusions?",
+    a: "The EXCLUSIONS section — separate from Declarations. Declarations contain who, what, where, when, how much, and premium. Exclusions are NOT in Declarations.",
+    hook: "Dec page equals the good stuff. Exclusions are separate.",
+    section: 1
+  },
+  {
+    q: "Dwelling policy standard deductible?",
+    a: "$250 — applies to all property coverage EXCEPT fair rental value, additional living expense, and fire department service charge.",
+    hook: "DP deductible equals $250, except ALE, rental, and fire dept.",
+    section: 1
+  },
+  {
+    q: "Which part of a policy covers defense expenses and property protection expenses?",
+    a: "The ADDITIONAL COVERAGE section — not the Insuring Agreement, not Declarations.",
+    hook: "Additional coverage equals defense plus protect damaged property.",
+    section: 1
+  },
+  {
+    q: "Professional photographers and musicians — what do they insure commercial equipment with?",
+    a: "A Commercial Articles Floater.",
+    hook: "Camera plus guitar equals Commercial Articles.",
+    section: 1
+  },
+  {
+    q: "What coverage does HO have that a dwelling policy does NOT?",
+    a: "LIABILITY coverage. HO includes liability. The dwelling policy does not.",
+    hook: "HO equals home plus liability. DP equals no liability.",
+    section: 1
+  },
+  {
+    q: "Insured hits a pothole and gets a flat tire — covered under PAP?",
+    a: "NOT COVERED. Road hazards causing flat tires are specifically excluded — not collision, not comprehensive.",
+    hook: "Pothole flat equals no coverage — road hazard excluded.",
+    section: 1
+  },
+  {
+    q: "PAP medical payments — how long after the accident must expenses be incurred?",
+    a: "3 YEARS from the date of accident. Both incurred and services rendered within 3 years.",
+    hook: "Med pay equals 3 years.",
+    section: 1
+  },
+  {
+    q: "Pair or set clause — insurer pays how much after losing one item from a pair?",
+    a: "The DIFFERENCE in actual cash value before and after the loss. Or the insurer may restore the set. NOT replacement cost of the whole pair.",
+    hook: "One candlestick lost — pay the gap, not the pair.",
+    section: 1
+  },
+  {
+    q: "HO coverage for landlord furnishings in an on-premises apartment?",
+    a: "Covered up to $2,500.",
+    hook: "On-premises landlord furnishings equals $2,500.",
+    section: 1
+  },
+  {
+    q: "Nonresident license — is a Certification Letter from the home state required?",
+    a: "NO. License status is verified through the NAIC Producer Database. Requirements are: NAIC Uniform Application, fee, and age 18 or older. No certification letter.",
+    hook: "No cert letter — NAIC PDB checks your home state.",
+    section: 1
+  },
+  {
+    q: "CE deadline missed — how long is the license suspended?",
+    a: "90 DAYS or until CE is completed, whichever comes first.",
+    hook: "Miss CE equals 90-day timeout.",
+    section: 1
+  },
+  {
+    q: "Producer license revoked — when can they reapply?",
+    a: "Not until 2 YEARS after the Commissioner's revocation order.",
+    hook: "Revoked equals 2-year penalty box.",
+    section: 1
+  },
+  {
+    q: "Money in a safety deposit box — covered under marine or inland marine?",
+    a: "NOT COVERED. Money and securities in safes or safety deposit boxes are specifically excluded from marine coverage.",
+    hook: "Money in safe equals not marine's problem.",
+    section: 1
+  },
+  {
+    q: "Garage coverage policy — when does a loss occur for concrete falling from faulty renovation work done months ago?",
+    a: "At the TIME OF THE INCIDENT — when the concrete fell. Not when the faulty work was originally done.",
+    hook: "Garage policy: loss equals when it happens — not when it was built wrong.",
+    section: 1
+  },
+
+  // ── SECTION 2: CONFUSABLE PAIRS AND KEY CONCEPTS ──
+  {
+    q: "Declarations versus Insuring Agreement — what does each contain?",
+    a: "DECLARATIONS equals WHO is insured, WHERE the property is, WHEN the policy runs, HOW MUCH in limits and premium. INSURING AGREEMENT equals WHAT is covered, the perils covered, and the insurer's promise.",
+    hook: "Dec equals facts. Insuring Agreement equals promise.",
+    section: 2
+  },
+  {
+    q: "Misrepresentation versus Defamation — what's the difference?",
+    a: "MISREPRESENTATION equals lying about a policy, its benefits, financial condition, or coverage. DEFAMATION equals lying about an insurance company, producer, or other insurer. Misrepresentation is about the POLICY. Defamation is about a PERSON or COMPANY.",
+    hook: "Misrep equals bad policy info. Defamation equals trash-talking a company.",
+    section: 2
+  },
+  {
+    q: "Supplementary Payments — inside or outside the liability limits?",
+    a: "OUTSIDE the liability limits. Supplementary payments cover defense costs, attorney fees, court costs, bond premiums, interest, and loss of earnings for court attendance. Liability limits pay DAMAGES. They are IN ADDITION TO the limits.",
+    hook: "Supp payments equals defense. Limits equals damages. Two separate buckets.",
+    section: 2
+  },
+  {
+    q: "KIGA versus Workers Compensation Plan — when does each apply?",
+    a: "WORKERS COMPENSATION PLAN equals employer CAN'T get WC coverage in the voluntary market — assigned risk plan. KIGA equals Kansas Insurance Guaranty Association — only kicks in when an insurer becomes INSOLVENT.",
+    hook: "WC Plan equals can't buy it. KIGA equals company went broke.",
+    section: 2
+  },
+  {
+    q: "Rebating — what's illegal versus legal?",
+    a: "ILLEGAL: cash, gift cards, stocks, bonds, securities, anything offered to INDUCE a purchase. LEGAL: dividends from a MUTUAL insurance company — comes from company profits, not an inducement.",
+    hook: "Dividend from mutual equals legal. Everything else as inducement equals illegal.",
+    section: 2
+  },
+  {
+    q: "Notice of Claim versus Proof of Loss?",
+    a: "NOTICE OF CLAIM equals initial notification that a loss occurred. PROOF OF LOSS equals formal documentation submitted to support the claim. Notice comes first. Proof follows.",
+    hook: "Notice equals I had a loss. Proof equals here's the paperwork.",
+    section: 2
+  },
+  {
+    q: "Occurrence versus Hazard?",
+    a: "OCCURRENCE equals an accident, including continuous or repeated exposure to the same harmful conditions. HAZARD equals a condition that increases the PROBABILITY or SEVERITY of a loss.",
+    hook: "Occurrence equals the event. Hazard equals what makes it more likely.",
+    section: 2
+  },
+  {
+    q: "Cancellation for nonpayment of premium — how many days notice?",
+    a: "10 DAYS.",
+    hook: "Non-pay equals 10 days.",
+    section: 2
+  },
+  {
+    q: "BOP cancellation for nonpayment — how many days notice?",
+    a: "15 DAYS. BOP is different from standard — remember 15, not 10.",
+    hook: "BOP nonpay equals 15.",
+    section: 2
+  },
+  {
+    q: "Personal lines filing, address changes, most cancellations, nonrenewal — how many days?",
+    a: "30 DAYS.",
+    hook: "Almost everything else equals 30 days.",
+    section: 2
+  },
+  {
+    q: "Property removed from premises — how long is it covered?",
+    a: "72 HOURS.",
+    hook: "72 hours for removed property.",
+    section: 2
+  },
+  {
+    q: "Business income waiting period?",
+    a: "72 HOURS.",
+    hook: "Business income equals 72-hour wait too.",
+    section: 2
+  },
+  {
+    q: "PIP claim — how many years to file?",
+    a: "2 YEARS.",
+    hook: "PIP equals 2-year window.",
+    section: 2
+  },
+  {
+    q: "Dwelling policy standard deductible — what does it apply to?",
+    a: "$250. Applies to all property coverage EXCEPT fair rental value, additional living expense, and fire department service charge.",
+    hook: "DP deductible equals $250.",
+    section: 2
+  },
+  {
+    q: "Moving a mobile home — coverage amount?",
+    a: "$500.",
+    hook: "Mobile home moving equals $500.",
+    section: 2
+  },
+  {
+    q: "Trees, shrubs, plants per occurrence under HO?",
+    a: "$500 EACH, with a maximum of 5% of Coverage A.",
+    hook: "Tree limit equals $500 each.",
+    section: 2
+  },
+  {
+    q: "Pollutant cleanup and removal — commercial policy limit?",
+    a: "$10,000.",
+    hook: "Pollutant cleanup equals $10,000.",
+    section: 2
+  },
+  {
+    q: "Exam trick words — what should make you stop and re-read?",
+    a: "NOT, EXCEPT, FIRST, BEST, MOST, PRIMARY — these flip or narrow the answer. Also watch for: Cancellation versus Nonrenewal, Direct versus Indirect, Representation versus Misrepresentation, Occurrence versus Hazard. One word changes everything.",
+    hook: "See NOT or EXCEPT — read it again.",
+    section: 2
+  },
+  {
+    q: "Large Risk plan — minimum premium thresholds?",
+    a: "Property: $50,000. General Liability: $50,000. Multiple Lines: $100,000. Workers Compensation is NOT part of Large Risk.",
+    hook: "50, 50, 100 — no WC.",
+    section: 2
+  },
+  {
+    q: "Commercial General Liability — Coverage A, B, C?",
+    a: "Coverage A equals Bodily Injury and Property Damage. Coverage B equals Personal and Advertising Injury. Coverage C equals Medical Payments, per person, regardless of fault.",
+    hook: "A equals BI slash PD. B equals Personal and Ad. C equals Med Pay.",
+    section: 2
+  },
+  {
+    q: "Marine insurance — what's the guiding principle?",
+    a: "MOVING things, not fixed buildings. Inland marine covers Rolex watches, wedding gifts in transit, commercial articles like cameras and instruments, contractors equipment. Radio tower equals NOT inland marine — it's fixed. Money in safety deposit box equals NOT covered.",
+    hook: "Marine equals moving. Fixed equals not marine.",
+    section: 2
+  }
+];
+
+const TOTAL = cards.length; // 41
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let playerState = 'idle';   // 'idle' | 'playing' | 'paused'
+let currentIdx  = 0;
+let speechRate  = 1.0;
+let selectedVoice = null;
+let seqId = 0;              // sequence ID — incremented on every new card/skip
+let pendingTimer = null;
+
+// ─────────────────────────────────────────────
+//  DOM REFS
+// ─────────────────────────────────────────────
+const elCounter    = document.getElementById('counter');
+const elSection    = document.getElementById('sectionBadge');
+const elProgress   = document.getElementById('progressBar');
+const elPhase      = document.getElementById('phaseLabel');
+const elCardText   = document.getElementById('cardText');
+const elPlayBtn    = document.getElementById('playBtn');
+const elStatus     = document.getElementById('statusRow');
+
+// ─────────────────────────────────────────────
+//  VOICE SETUP
+// ─────────────────────────────────────────────
+function pickVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return;
+  const preferred = ['Samantha','Karen','Daniel','Moira','Fiona',
+                     'Google US English','Microsoft Zira','Microsoft David',
+                     'Alex','Victoria'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+    if (v) { selectedVoice = v; return; }
+  }
+  selectedVoice = voices.find(v => v.lang === 'en-US') ||
+                  voices.find(v => v.lang.startsWith('en')) ||
+                  voices[0] || null;
+}
+speechSynthesis.onvoiceschanged = pickVoice;
+pickVoice();
+
+// ─────────────────────────────────────────────
+//  DISPLAY HELPERS
+// ─────────────────────────────────────────────
+function updateCounter(idx) {
+  elCounter.textContent = `Card ${idx + 1} of ${TOTAL}`;
+  elProgress.style.width = `${((idx) / TOTAL) * 100}%`;
+  const sec = cards[idx].section;
+  elSection.textContent = `Section ${sec}`;
+}
+
+function showPhase(cls, label) {
+  elPhase.className = 'phase-label' + (cls ? ' ' + cls : '');
+  elPhase.textContent = label;
+}
+
+function showText(text) {
+  elCardText.textContent = text;
+}
+
+function setStatus(text, cls) {
+  elStatus.textContent = text;
+  elStatus.className = 'status-row' + (cls ? ' ' + cls : '');
+}
+
+// ─────────────────────────────────────────────
+//  CORE SPEECH ENGINE
+// ─────────────────────────────────────────────
+function speak(text, onDone) {
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate  = 0.9 * speechRate;
+  utt.pitch = 1.0;
+  if (selectedVoice) utt.voice = selectedVoice;
+  utt.onend   = onDone;
+  utt.onerror = (e) => {
+    if (e.error !== 'interrupted' && e.error !== 'canceled') onDone();
+  };
+  speechSynthesis.speak(utt);
+}
+
+function pause(ms, mySeqId, onDone) {
+  pendingTimer = setTimeout(() => {
+    pendingTimer = null;
+    if (seqId === mySeqId && playerState === 'playing') onDone();
+  }, ms);
+}
+
+// ─────────────────────────────────────────────
+//  CARD SEQUENCE
+// ─────────────────────────────────────────────
+function speakCard(idx) {
+  if (playerState !== 'playing') return;
+  if (idx >= TOTAL) { playComplete(); return; }
+
+  currentIdx = idx;
+  const myId = ++seqId;
+  const card = cards[idx];
+  const num  = idx + 1;
+
+  updateCounter(idx);
+  showPhase('', `Card ${num} of ${TOTAL}`);
+  setStatus(`Card ${num} — listening…`, 'active');
+
+  // Step 1: announce card number
+  speak(`Card ${num}.`, () => {
+    if (seqId !== myId || playerState !== 'playing') return;
+
+    // Step 2: short pause, then show question and speak it
+    pause(300, myId, () => {
+      showPhase('q', 'Question');
+      showText(card.q);
+
+      speak(card.q, () => {
+        if (seqId !== myId || playerState !== 'playing') return;
+
+        // Step 3: 2.5-second think pause
+        pause(2500, myId, () => {
+          // Step 4: say "Answer." while showing the answer text
+          showPhase('a', 'Answer');
+          showText(card.a);
+
+          speak('Answer.', () => {
+            if (seqId !== myId || playerState !== 'playing') return;
+
+            // Step 5: speak answer text
+            speak(card.a, () => {
+              if (seqId !== myId || playerState !== 'playing') return;
+
+              // Step 6: say memory hook
+              showPhase('h', 'Memory Hook');
+              showText('Remember: ' + card.hook);
+
+              speak('Remember: ' + card.hook, () => {
+                if (seqId !== myId || playerState !== 'playing') return;
+
+                // Step 7: 3-second pause, then advance
+                pause(3000, myId, () => {
+                  speakCard(idx + 1);
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  COMPLETION
+// ─────────────────────────────────────────────
+function playComplete() {
+  playerState = 'idle';
+  seqId++;
+  elProgress.style.width = '100%';
+  elCounter.textContent = `All ${TOTAL} cards complete`;
+  showPhase('done', 'Complete ✓');
+  showText("That's all 41 cards. Review complete.");
+  elPlayBtn.textContent = '✓';
+  elPlayBtn.classList.add('done');
+  setStatus('Review complete — good luck tomorrow!', 'done');
+
+  const fin = new SpeechSynthesisUtterance(
+    "That's all 41 cards. Review complete. You scored 83 percent on your practice exam. " +
+    "The passing score is 70. You know this material. " +
+    "Trust your first instinct tomorrow. Good luck."
+  );
+  fin.rate  = 0.9 * speechRate;
+  fin.pitch = 1.0;
+  if (selectedVoice) fin.voice = selectedVoice;
+  speechSynthesis.speak(fin);
+}
+
+// ─────────────────────────────────────────────
+//  CANCEL EVERYTHING
+// ─────────────────────────────────────────────
+function cancelAll() {
+  seqId++;
+  speechSynthesis.cancel();
+  if (pendingTimer) { clearTimeout(pendingTimer); pendingTimer = null; }
+}
+
+// ─────────────────────────────────────────────
+//  CONTROLS
+// ─────────────────────────────────────────────
+function togglePlay() {
+  if (elPlayBtn.classList.contains('done')) {
+    // Restart from beginning
+    elPlayBtn.classList.remove('done');
+    elPlayBtn.textContent = '⏸';
+    currentIdx = 0;
+    playerState = 'playing';
+    setStatus('Playing…', 'active');
+    speakCard(0);
+    return;
+  }
+
+  if (playerState === 'playing') {
+    // Pause
+    cancelAll();
+    playerState = 'paused';
+    elPlayBtn.textContent = '▶';
+    setStatus('Paused — tap ▶ to resume');
+    showPhase('', 'Paused');
+
+  } else {
+    // Start / Resume (restart current card from top)
+    playerState = 'playing';
+    elPlayBtn.textContent = '⏸';
+    setStatus('Playing…', 'active');
+    // Ensure voices are loaded
+    if (!selectedVoice) pickVoice();
+    speakCard(currentIdx);
+  }
+}
+
+function skipForward() {
+  const wasPlaying = (playerState === 'playing');
+  cancelAll();
+  if (currentIdx < TOTAL - 1) {
+    currentIdx++;
+    updateCounter(currentIdx);
+    showPhase('', `Card ${currentIdx + 1} of ${TOTAL}`);
+    showText(cards[currentIdx].q);
+  }
+  if (wasPlaying) {
+    playerState = 'playing';
+    elPlayBtn.textContent = '⏸';
+    setTimeout(() => speakCard(currentIdx), 120);
+  } else if (playerState === 'paused') {
+    showPhase('q', 'Question');
+    showText(cards[currentIdx].q);
+    setStatus(`Card ${currentIdx + 1} — tap ▶ to resume`);
+  }
+}
+
+function skipBack() {
+  const wasPlaying = (playerState === 'playing');
+  cancelAll();
+  if (currentIdx > 0) currentIdx--;
+  updateCounter(currentIdx);
+  showPhase('', `Card ${currentIdx + 1} of ${TOTAL}`);
+  showText(cards[currentIdx].q);
+  if (wasPlaying) {
+    playerState = 'playing';
+    elPlayBtn.textContent = '⏸';
+    setTimeout(() => speakCard(currentIdx), 120);
+  } else if (playerState === 'paused') {
+    showPhase('q', 'Question');
+    showText(cards[currentIdx].q);
+    setStatus(`Card ${currentIdx + 1} — tap ▶ to resume`);
+  }
+}
+
+function setRate(r) {
+  speechRate = r;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.textContent) === r);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  KEYBOARD SHORTCUTS (desktop / sleep mode)
+// ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space')       { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight')  skipForward();
+  if (e.code === 'ArrowLeft')   skipBack();
+});
+
+// ─────────────────────────────────────────────
+//  PREVENT SCREEN SLEEP (Wake Lock API)
+// ─────────────────────────────────────────────
+let wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (_) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && playerState === 'playing') {
+    requestWakeLock();
+  }
+});
+
+// Init counter display
+updateCounter(0);
+</script>
+</body>
+</html>
