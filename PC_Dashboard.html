@@ -94,6 +94,24 @@
   .note-del:hover { color: #c05050; }
   .notes-empty { font-size: 12px; color: #333; padding: 4px 0; }
   .footer-note { font-size: 12px; color: #333; text-align: center; margin-top: 2rem; line-height: 1.6; }
+
+  /* ── Audio Review card ── */
+  .audio-card {
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, #0d0f2e, #13132b);
+    border: 1px solid #2a3060;
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 1rem;
+    text-decoration: none; color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .audio-card:hover { border-color: #5b7fff; box-shadow: 0 0 18px rgba(91,127,255,0.2); }
+  .audio-icon { font-size: 26px; flex-shrink: 0; }
+  .audio-info { flex: 1; }
+  .audio-title { font-size: 14px; font-weight: 700; color: #a0b4ff; margin-bottom: 2px; }
+  .audio-sub   { font-size: 12px; color: #4a5080; }
+  .audio-arrow { font-size: 18px; color: #3a4080; flex-shrink: 0; }
+  .audio-card:hover .audio-arrow { color: #5b7fff; }
+
 </style>
 </head>
 <body>
