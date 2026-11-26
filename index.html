@@ -90,6 +90,24 @@ body {
 .chapter.coming .chapter-meta { color: #333; }
 .chevron { font-size: 11px; color: #444; margin-left: 10px; flex-shrink: 0; }
 
+/* Confidence Rating */
+.conf-btn {
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: transform .1s, background .15s;
+  user-select: none;
+  margin-left: 8px;
+}
+.conf-btn:hover { transform: scale(1.15); background: #1a1a1a; }
+.conf-btn.solid { color: #4aaa4a; }
+.conf-btn.shaky { color: #c8a84b; }
+.conf-btn.rough { color: #c05050; }
+
 .chapter-body { display: none; padding-bottom: 12px; }
 .chapter-body.open { display: block; }
 
@@ -197,8 +215,8 @@ body {
       <span class="stat-label">Chapters Started</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="totalQuestions">21</span>
-      <span class="stat-label">Quiz Questions</span>
+      <span class="stat-val" style="color:#4aaa4a" id="solidCount">0</span>
+      <span class="stat-label">🟢 Solid</span>
     </div>
     <div class="stat-card">
       <span class="stat-val" id="missedCount">0</span>
@@ -292,10 +310,34 @@ function getTotalQuestions() {
   return total;
 }
 
+function getConfidence() {
+  try {
+    return JSON.parse(localStorage.getItem('lh_conf') || '{}');
+  } catch { return {}; }
+}
+
+function setConfidence(chapterKey, level) {
+  const conf = getConfidence();
+  conf[chapterKey] = level;
+  localStorage.setItem('lh_conf', JSON.stringify(conf));
+  render();
+}
+
+function cycleConfidence(chapterKey, event) {
+  event.stopPropagation();
+  const conf = getConfidence();
+  const current = conf[chapterKey];
+  const levels = ['solid', 'shaky', 'rough', null];
+  const idx = levels.indexOf(current);
+  const next = levels[(idx + 1) % levels.length];
+  setConfidence(chapterKey, next);
+}
+
 function render() {
   const present = existingSet();
+  const conf = getConfidence();
   const root = document.getElementById('chapters');
-  let ready = 0, started = 0;
+  let ready = 0, started = 0, solidCount = 0;
 
   root.innerHTML = CHAPTERS.map((ch, i) => {
     const available = slotsFor(ch, present);
@@ -304,6 +346,17 @@ function render() {
     if (available.length) started++;
 
     const hasPages = available.length > 0;
+    const chKey = ch.prefix || ch.title;
+    const chConf = conf[chKey];
+    if (chConf === 'solid') solidCount++;
+
+    let confBtn = '';
+    if (hasPages) {
+      const icon = chConf === 'solid' ? '🟢' : chConf === 'shaky' ? '🟡' : chConf === 'rough' ? '🔴' : '⚪';
+      const cls = chConf || '';
+      confBtn = '<button class="conf-btn ' + cls + '" onclick="cycleConfidence(\'' + chKey + '\', event)" title="Confidence: ' + (chConf || 'not rated') + '">' + icon + '</button>';
+    }
+
     const meta = hasPages ? available.length + ' of ' + totalSlots : 'Coming soon';
     const chevron = hasPages ? '<span class="chevron" id="chev-' + i + '">▼</span>' : '';
     const body = hasPages
@@ -318,6 +371,7 @@ function render() {
             (ch.name ? '<div class="chapter-name">' + ch.name + '</div>' : '') +
           '</div>' +
           '<span class="chapter-meta">' + meta + '</span>' +
+          confBtn +
           chevron +
         '</div>' +
         '<div class="chapter-body" id="ch-' + i + '">' + body + '</div>' +
@@ -327,8 +381,8 @@ function render() {
 
   document.getElementById('pagesReady').textContent = ready;
   document.getElementById('chaptersStarted').textContent = started;
+  document.getElementById('solidCount').textContent = solidCount;
   document.getElementById('missedCount').textContent = getMissedCount();
-  document.getElementById('totalQuestions').textContent = getTotalQuestions();
 
   const lastPage = localStorage.getItem('lh_last_page');
   if (lastPage && LH_PAGES.includes(lastPage)) {
