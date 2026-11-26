@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Score History</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;padding:1.5rem 1rem 3rem}
+.container{max-width:680px;margin:0 auto}
+.label{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+h1{font-size:22px;font-weight:600;color:#fff;margin-bottom:.8rem}
+.desc{font-size:13px;color:#666;line-height:1.6;margin-bottom:2rem}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:2rem}
+.stat-card{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:12px;padding:1.1rem 1.2rem}
+.stat-val{font-size:28px;font-weight:700;color:#5b8dee;line-height:1;margin-bottom:6px}
+.stat-label{font-size:11px;color:#666;letter-spacing:1px;text-transform:uppercase}
+.empty{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:14px;padding:2.5rem;text-align:center}
+.empty-icon{font-size:48px;margin-bottom:1rem;opacity:.3}
+.empty-title{font-size:18px;font-weight:600;color:#ddd;margin-bottom:.5rem}
+.empty-desc{font-size:13px;color:#666;line-height:1.6}
+.history-item{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:12px;padding:1.2rem 1.3rem;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.score-badge{flex-shrink:0;width:64px;height:64px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700}
+.score-badge.pass{background:#0a2e0a;border:1px solid #1a4a1a;color:#4aaa4a}
+.score-badge.warn{background:#1a1500;border:1px solid #2a2500;color:#c8a84b}
+.score-badge.fail{background:#1f0a0a;border:1px solid #2a1a1a;color:#c05050}
+.score-pct{font-size:20px;line-height:1}
+.score-frac{font-size:10px;opacity:.7;margin-top:2px}
+.item-info{flex:1;min-width:0}
+.item-title{font-size:14px;font-weight:600;color:#ddd;margin-bottom:3px}
+.item-meta{font-size:12px;color:#666}
+.clear-btn{width:100%;padding:12px;margin-top:1.5rem;font-size:13px;font-weight:500;background:#1f0a0a;border:1px solid #2a1a1a;border-radius:10px;color:#c05050;cursor:pointer;transition:background .15s}
+.clear-btn:hover{background:#2a0f0f}
+@media(max-width:480px){.stats-grid{gap:8px}.stat-card{padding:1rem}.stat-val{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="label">Progress Tracking</div>
+  <h1>Score History</h1>
+  <div class="desc">Your quiz and practice exam scores over time. Track your progress as you study.</div>
+  
+  <div class="stats-grid" id="statsGrid" style="display:none">
+    <div class="stat-card">
+      <div class="stat-val" id="totalAttempts">0</div>
+      <div class="stat-label">Total Attempts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="avgScore">0%</div>
+      <div class="stat-label">Average Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="bestScore">0%</div>
+      <div class="stat-label">Best Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="recentScore">0%</div>
+      <div class="stat-label">Most Recent</div>
+    </div>
+  </div>
+  
+  <div id="emptyState" style="display:none">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <div class="empty-title">No Quiz Results Yet</div>
+      <div class="empty-desc">Complete quizzes and practice exams to see your scores and track your progress here.</div>
+    </div>
+  </div>
+  
+  <div id="historyList"></div>
+  
+  <button class="clear-btn" id="clearBtn" onclick="clearHistory()" style="display:none">Clear All History</button>
+</div>
+
+<script>
+localStorage.setItem('lh_last_page', 'score-history.html');
+
+function render() {
+  const history = JSON.parse(localStorage.getItem('lh_score_history') || '[]');
+  
+  if (history.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+    return;
+  }
+  
+  document.getElementById('statsGrid').style.display = 'grid';
+  document.getElementById('clearBtn').style.display = 'block';
+  
+  // Calculate stats
+  const total = history.length;
+  const scores = history.map(h => h.percent);
+  const avg = Math.round(scores.reduce((a,b) => a+b, 0) / total);
+  const best = Math.max(...scores);
+  const recent = scores[scores.length - 1];
+  
+  document.getElementById('totalAttempts').textContent = total;
+  document.getElementById('avgScore').textContent = avg + '%';
+  document.getElementById('bestScore').textContent = best + '%';
+  document.getElementById('recentScore').textContent = recent + '%';
+  
+  // Render history items (newest first)
+  const listEl = document.getElementById('historyList');
+  listEl.innerHTML = history.slice().reverse().map(h => {
+    const date = new Date(h.timestamp);
+    const dateStr = date.toLocaleDateString();
+    const timeStr = date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    
+    let badge = 'pass';
+    if (h.percent < 70) badge = 'fail';
+    else if (h.percent < 80) badge = 'warn';
+    
+    let title = '';
+    if (h.type === 'practice_exam') {
+      title = h.examType === 'life' ? 'Life Producer Practice Exam' : 'Life & Health Practice Exam';
+    } else {
+      title = h.chapterName || 'Chapter Quiz';
+    }
+    
+    return `<div class="history-item">
+      <div class="score-badge ${badge}">
+        <div class="score-pct">${h.percent}%</div>
+        <div class="score-frac">${h.score}/${h.total}</div>
+      </div>
+      <div class="item-info">
+        <div class="item-title">${title}</div>
+        <div class="item-meta">${dateStr} at ${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all quiz history? This cannot be undone.')) return;
+  localStorage.removeItem('lh_score_history');
+  location.reload();
+}
+
+render();
+</script>
+
+<a href="index.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+</body>
+</html>

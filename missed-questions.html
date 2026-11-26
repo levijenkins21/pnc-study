@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missed Questions Deck</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem 1rem 3rem}
+.top{width:100%;max-width:640px;margin-bottom:1rem}
+.label{font-size:11px;letter-spacing:2px;color:#c05050;text-transform:uppercase;margin-bottom:4px}
+h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem}
+.meta{font-size:12px;color:#555;margin-bottom:1rem}
+.empty{width:100%;max-width:640px;background:#141414;border:1px solid #222;border-radius:16px;padding:2.5rem;text-align:center}
+.empty-icon{font-size:48px;margin-bottom:1rem;opacity:.3}
+.empty-title{font-size:18px;font-weight:600;color:#ddd;margin-bottom:.5rem}
+.empty-desc{font-size:13px;color:#666;line-height:1.6}
+.prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+.prog-fill{height:3px;background:#c05050;border-radius:2px;transition:width .3s}
+.qcounter{font-size:12px;color:#444;margin-bottom:1.2rem}
+.q-card{width:100%;max-width:640px;background:#141414;border:1px solid #222;border-radius:16px;padding:1.75rem;margin-bottom:1rem}
+.section-tag{font-size:10px;letter-spacing:1.5px;color:#c05050;text-transform:uppercase;margin-bottom:.5rem}
+.q-text{font-size:16px;font-weight:500;color:#fff;line-height:1.5;margin-bottom:1.4rem}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{padding:13px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;font-size:14px;color:#ccc;cursor:pointer;line-height:1.45;transition:border-color .15s,background .15s;text-align:left}
+.choice:hover{border-color:#3a3a3a;background:#222}
+.choice.correct{background:#0a2e0a;border-color:#1a4a1a;color:#4aaa4a}
+.choice.wrong{background:#2e0a0a;border-color:#4a1a1a;color:#c05050}
+.choice.reveal-correct{background:#0a2e0a;border-color:#1a4a1a;color:#4aaa4a}
+.choice:disabled,.choice.done{cursor:default;pointer-events:none}
+.feedback{margin-top:1.1rem;padding:1rem 1.1rem;border-radius:10px;font-size:13px;line-height:1.6;background:#1f0a0a;border:1px solid #3a1a1a;color:#c05050}
+.feedback-body{color:#bbb;margin-top:.4rem;font-size:13px}
+.prev-wrong{font-size:11px;color:#c05050;margin-top:.5rem;padding:.5rem;background:#1a0a0a;border:1px solid #2a1a1a;border-radius:8px}
+.nav-row{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:.5rem}
+.nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+.nav-btn:hover{background:#222}
+.nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+.nav-btn.primary:hover{background:#112040}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.nav-btn.remove{background:#1f0a0a;border-color:#3a1a1a;color:#c05050}
+.nav-btn.remove:hover{background:#2a0f0f}
+@media(max-width:480px){.q-text{font-size:15px}.choice{font-size:13px;padding:11px 13px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="label">Missed Questions Deck</div>
+  <h1>Review Every Wrong Answer</h1>
+  <div class="meta" id="meta">Loading...</div>
+  <div class="prog-wrap" id="progWrap" style="display:none"><div class="prog-fill" id="prog"></div></div>
+  <div class="qcounter" id="qcounter" style="display:none"></div>
+</div>
+
+<div id="emptyState" style="display:none">
+  <div class="empty">
+    <div class="empty-icon">✓</div>
+    <div class="empty-title">No Missed Questions Yet</div>
+    <div class="empty-desc">Complete some quizzes to populate this deck. Every wrong answer automatically appears here for review.</div>
+  </div>
+</div>
+
+<div id="quizArea" style="display:none">
+  <div class="q-card">
+    <div class="section-tag" id="qChapter"></div>
+    <div class="section-tag" id="qSection" style="margin-top:4px"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback">
+      <div id="feedbackHead"></div>
+      <div class="feedback-body" id="feedbackBody"></div>
+      <div class="prev-wrong" id="prevWrong"></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
+    <button class="nav-btn remove" onclick="removeFromDeck()">✓ Got It — Remove</button>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script src="question-banks.js"></script>
+<script>
+let deck = [];
+let current = 0;
+
+localStorage.setItem('lh_last_page', 'missed-questions.html');
+
+function loadDeck() {
+  const missed = JSON.parse(localStorage.getItem('lh_missed') || '{}');
+  deck = Object.keys(missed).map(k => ({ key: k, ...missed[k] }));
+  
+  if (deck.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('meta').textContent = 'No questions missed yet';
+    return;
+  }
+  
+  document.getElementById('meta').textContent = deck.length + ' question' + (deck.length === 1 ? '' : 's') + ' to review';
+  document.getElementById('progWrap').style.display = 'block';
+  document.getElementById('qcounter').style.display = 'block';
+  document.getElementById('quizArea').style.display = 'block';
+  
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const q = deck[current];
+  document.getElementById('qChapter').textContent = q.chapterName;
+  document.getElementById('qSection').textContent = q.section;
+  document.getElementById('qText').textContent = q.question;
+  document.getElementById('prog').style.width = Math.round(((current + 1) / deck.length) * 100) + '%';
+  document.getElementById('qcounter').textContent = 'Question ' + (current + 1) + ' of ' + deck.length;
+  
+  document.getElementById('feedbackHead').textContent = '✗ You chose ' + String.fromCharCode(65 + q.userAnswer) + ' — Correct answer is ' + String.fromCharCode(65 + q.correct);
+  document.getElementById('feedbackBody').textContent = q.explain;
+  
+  const date = new Date(q.timestamp);
+  document.getElementById('prevWrong').textContent = 'Missed on ' + date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = q.choices.map((c, i) => {
+    let cls = 'choice done';
+    if (i === q.correct) cls += ' correct';
+    else if (i === q.userAnswer) cls += ' wrong';
+    return `<button class="${cls}">${String.fromCharCode(65+i)}. ${c}</button>`;
+  }).join('');
+  
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === deck.length - 1;
+}
+
+function go(dir) {
+  current += dir;
+  if (current < 0) current = 0;
+  if (current >= deck.length) current = deck.length - 1;
+  loadQuestion();
+  window.scrollTo(0, 0);
+}
+
+function removeFromDeck() {
+  const q = deck[current];
+  const missed = JSON.parse(localStorage.getItem('lh_missed') || '{}');
+  delete missed[q.key];
+  localStorage.setItem('lh_missed', JSON.stringify(missed));
+  
+  deck.splice(current, 1);
+  
+  if (deck.length === 0) {
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('progWrap').style.display = 'none';
+    document.getElementById('qcounter').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('meta').textContent = 'Deck cleared — great work!';
+    return;
+  }
+  
+  if (current >= deck.length) current = deck.length - 1;
+  document.getElementById('meta').textContent = deck.length + ' question' + (deck.length === 1 ? '' : 's') + ' to review';
+  loadQuestion();
+}
+
+loadDeck();
+</script>
+<a href="index.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+</body>
+</html>
