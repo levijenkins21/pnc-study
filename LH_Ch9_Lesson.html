@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L&amp;H — Ch9: Kansas Statutes Common to All Lines</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+  .deck{width:100%;max-width:680px}
+  .progress-bar{width:100%;height:3px;background:#1a1a1a;border-radius:2px;margin-bottom:1.5rem}
+  .progress-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .4s ease}
+  .card{background:#141414;border:1px solid #222;border-radius:20px;padding:2.2rem 2rem;min-height:360px;display:flex;flex-direction:column;justify-content:center;margin-bottom:1.2rem;position:relative}
+  .card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.6rem}
+  .card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem;line-height:1.25}
+  .card-body{font-size:14px;color:#aaa;line-height:1.75}
+  .card-body strong{color:#e2e2e2;font-weight:600}
+  .card-body p+p{margin-top:.7rem}
+  .info-grid{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+  .info-row{background:#1a1a1a;border:1px solid #242424;border-radius:10px;padding:10px 13px}
+  .info-label{font-size:11px;font-weight:600;color:#5b8dee;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .info-val{font-size:13px;color:#bbb;line-height:1.5}
+  .know-this{background:#1c1500;border:2px solid #c8a84b;border-radius:12px;padding:13px 15px;margin-top:.8rem}
+  .know-this-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#c8a84b;font-weight:700;margin-bottom:5px}
+  .know-this p{font-size:14px;color:#f0d080;line-height:1.6}
+  .warn-box{background:#1a1200;border:1px solid #3a2a00;border-radius:10px;padding:11px 13px;margin-top:.8rem}
+  .warn-box p{font-size:13px;color:#c8a84b;line-height:1.55}
+  .num-card{background:#0d1a2e;border:1px solid #1e3a6e;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:12px}
+  .num-big{font-size:24px;font-weight:700;color:#5b8dee;flex-shrink:0;min-width:64px;text-align:center;line-height:1.1}
+  .num-desc{font-size:13px;color:#aaa;line-height:1.45}
+  .num-desc strong{color:#e2e2e2}
+  ul.bullet{padding-left:1.1rem;display:flex;flex-direction:column;gap:5px;margin-top:.4rem}
+  ul.bullet li{font-size:13px;color:#999;line-height:1.45}
+  ul.bullet li strong{color:#ddd}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.6rem}
+  .mini-card{background:#1a1a1a;border:1px solid #242424;border-radius:9px;padding:9px 11px}
+  .mini-label{font-size:10px;color:#5b8dee;font-weight:600;letter-spacing:.5px;margin-bottom:2px;text-transform:uppercase}
+  .mini-val{font-size:12px;color:#bbb;line-height:1.4}
+  .slide-num{position:absolute;top:1.1rem;right:1.4rem;font-size:11px;color:#333}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-btn{padding:11px 28px;font-size:14px;font-weight:500;cursor:pointer;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#252525}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .nav-btn.primary{background:#0d1a2e;border-color:#1e3a6e;color:#5b8dee}
+  .nav-btn.primary:hover{background:#112244}
+  .counter{font-size:12px;color:#444;text-align:center;flex:1}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+  <div class="card" id="card">
+    <div class="slide-num" id="slideNum"></div>
+    <div id="content"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Back</button>
+    <span class="counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<a href="index.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const SLIDES = [
+{label:"Chapter 9 · Overview",title:"Kansas law that applies to every line",body:"<p>This chapter is Kansas-specific: the <strong>Commissioner</strong>, how <strong>insurers</strong> are classified, <strong>producer licensing</strong>, and <strong>unfair marketing practices</strong>.</p><p>It is full of <strong>numbers</strong>: time limits, fees and fines. Kansas law is a big share of the state portion of the exam, so the numbers matter.</p><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>Learn the numbers cold: 4 years, 5 years, 15 days, 30 days, 90 days, 180 days, 18 hours, 3 hours.</p></div>"},
+{label:"Commissioner",title:"Commissioner of Insurance",body:"<p>Heads the Kansas Department of Insurance. <strong>Elected</strong> for a <strong>4-year term</strong>, in the same election as other state officials.</p><ul class=\"bullet\"><li>Enforces the Insurance Code (the Commissioner <strong>does not write laws</strong>)</li><li>Issues licenses and certificates of authority</li><li>Conducts examinations and investigations</li><li>Approves or disapproves forms and rates</li><li>Issues orders and notices</li></ul>"},
+{label:"Commissioner · Examinations",title:"Examining insurers",body:"<div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">Domestic insurers</div><div class=\"info-val\">Examined before a certificate of authority is issued, then as often as needed</div></div><div class=\"info-row\"><div class=\"info-label\">Every authorized insurer</div><div class=\"info-val\">At least once every <strong>5 years</strong></div></div><div class=\"info-row\"><div class=\"info-label\">Who pays</div><div class=\"info-val\">The insurer being examined</div></div><div class=\"info-row\"><div class=\"info-label\">Foreign and alien insurers</div><div class=\"info-val\">Commissioner may accept the exam report of the insurer's home state instead</div></div></div><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>Purpose of an exam: make sure the insurer is <strong>solvent</strong> and following the law.</p></div>"},
+{label:"Commissioner · Hearings",title:"Hearings and orders",body:"<ul class=\"bullet\"><li>Notice to interested parties by <strong>registered mail</strong>: time, place and purpose</li><li>Hearing held within <strong>15 days</strong> of a written request</li><li>At the hearing the Commissioner can administer oaths, <strong>subpoena</strong> witnesses, examine and cross-examine, take evidence, and require books and records</li><li>If a violation is found, the person pays the <strong>cost of the hearing</strong> and may be fined</li><li>The charged party must show cause why a <strong>cease and desist</strong> order should not issue</li></ul>"},
+{label:"Commissioner · Penalties",title:"Three sets of fines (don't mix them up)",body:"<div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">General provisions of the Code</div><div class=\"info-val\">$500 per nonwillful (max $2,500 in 6 months) · $1,000 per willful (max $5,000 in 6 months)</div></div><div class=\"info-row\"><div class=\"info-label\">Violating insurance law</div><div class=\"info-val\">Up to $1,000 nonwillful · $2,000 willful, plus suspension/revocation and/or cease and desist</div></div><div class=\"info-row\"><div class=\"info-label\">Failure to file a report</div><div class=\"info-val\">Up to $1,000 per violation + up to $500 a week late</div></div><div class=\"info-row\"><div class=\"info-label\">Unfair trade practices</div><div class=\"info-val\">$1,000 per act nonwillful (max $10,000) · $5,000 per act willful (max $50,000 in 6 months), plus cease and desist, license action, refund with interest</div></div></div>"},
+{label:"Insurers · Domicile",title:"Domestic, foreign, alien",body:"<div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">Domestic</div><div class=\"info-val\">Incorporated in Kansas</div></div><div class=\"info-row\"><div class=\"info-label\">Foreign</div><div class=\"info-val\">Incorporated in another state, DC or a U.S. territory (a Puerto Rico company is foreign in every state)</div></div><div class=\"info-row\"><div class=\"info-label\">Alien</div><div class=\"info-val\">Incorporated outside the United States</div></div></div><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>Domicile = where the insurer is <strong>incorporated</strong>, not where it does business. Every insurer needs a <strong>Certificate of Authority</strong> before transacting in Kansas.</p></div>"},
+{label:"Insurers · Types",title:"Fraternals, authorized vs. unauthorized",body:"<p><strong>Fraternal benefit society:</strong> sells only to members of a lodge, religious or fraternal group with a representative government. Treated as a <strong>charitable institution</strong>, not an insurer. Issues life, health and annuities, <strong>not</strong> property or liability.</p><p><strong>Authorized (admitted):</strong> has a Certificate of Authority. <strong>Unauthorized (nonadmitted):</strong> does not; may only do business through excess and surplus lines brokers.</p>"},
+{label:"Insurers · Guaranty Association",title:"Life and Health Insurance Guaranty Association",body:"<p>Protects policyowners, insureds and beneficiaries when an insurer becomes <strong>insolvent</strong>. All admitted life and health insurers <strong>must be members</strong>. Funded by <strong>assessing member insurers</strong> by their share of premiums.</p><p>3 accounts: <strong>life, health, annuity</strong>.</p><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>It is an unfair trade practice to advertise that policies are guaranteed by the Guaranty Association.</p></div>"},
+{label:"Guaranty Association · Limits",title:"Most the Association pays",body:"<div class=\"info-grid\"><div class=\"num-card\"><div class=\"num-big\">$100K</div><div class=\"num-desc\">Life cash surrender / withdrawal values</div></div><div class=\"num-card\"><div class=\"num-big\">$300K</div><div class=\"num-desc\">Life death benefits, any one life</div></div><div class=\"num-card\"><div class=\"num-big\">$300K</div><div class=\"num-desc\">Disability and long-term care</div></div><div class=\"num-card\"><div class=\"num-big\">$500K</div><div class=\"num-desc\">Basic hospital, medical, surgical or major medical</div></div><div class=\"num-card\"><div class=\"num-big\">$100K</div><div class=\"num-desc\">Other health insurance</div></div><div class=\"num-card\"><div class=\"num-big\">$250K</div><div class=\"num-desc\">Present value of annuity benefits, any one life</div></div></div>"},
+{label:"Licensing · Who",title:"Producers, residents and nonresidents",body:"<p>A <strong>producer (agent)</strong> is anyone licensed to sell, solicit or negotiate insurance. The agent <strong>always represents the insurer</strong>; the agent's knowledge is presumed to be the insurer's.</p><div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">Resident license</div><div class=\"info-val\">Kansas resident who meets the Commissioner's requirements</div></div><div class=\"info-row\"><div class=\"info-label\">Nonresident license</div><div class=\"info-val\">18+, licensed and in good standing at home, applies through NIPR ($80), home state reciprocal with Kansas. Renewal $50 every 2 years. Report changes within 30 days</div></div></div>"},
+{label:"Licensing · Temporary",title:"Temporary license",body:"<div class=\"info-grid\"><div class=\"num-card\"><div class=\"num-big\">180</div><div class=\"num-desc\">days maximum, no exam; may be extended once for another 180</div></div></div><ul class=\"bullet\"><li>Issued on an agent's <strong>death or disability</strong> (to spouse, personal representative or business member)</li><li>Agent entering <strong>active military service</strong> (to a designee)</li><li>Any case where the public interest is served</li></ul><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>A temporary licensee <strong>cannot write new business</strong>. One temporary license per person per year. Purpose: keep the existing business going, sell it, or train someone.</p></div>"},
+{label:"Licensing · Appointment",title:"Appointment by an insurer",body:"<p>The insurer appoints a producer who has a <strong>good business reputation</strong> and insurance experience or training. A producer cannot act for an insurer until appointed.</p><ul class=\"bullet\"><li>Insurer files appointment or termination with <strong>NIPR within 30 days</strong></li><li>The <strong>insurer pays</strong> the appointment fee</li><li>Late certification: <strong>$25 per day</strong> penalty</li><li>Appointments renew every <strong>January 1</strong></li></ul>"},
+{label:"Licensing · Getting licensed",title:"Resident license requirements",body:"<ul class=\"bullet\"><li><strong>18</strong> or older</li><li>NAIC Uniform Application through <strong>NIPR</strong> (no paper)</li><li><strong>$30</strong> application fee + <strong>$60</strong> fingerprint fee; background check</li><li>Tax clearance from the Kansas Department of Revenue</li><li>FINRA registration if selling variable products</li><li>Pass the exam; everything done within <strong>1 year</strong> of applying</li></ul><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>Failed the exam? Wait <strong>7 calendar days</strong> to retake (24 hours to schedule). No limit on attempts.</p></div>"},
+{label:"Licensing · Exam waived",title:"When the exam is waived",body:"<ul class=\"bullet\"><li>Currently licensed in another state</li><li>Applying within <strong>90 days</strong> of cancelling a license in another state (in good standing)</li><li>Previously licensed in Kansas for the same line and voluntarily surrendered it within the last <strong>2 years</strong></li><li>Writes only travel or crop insurance</li></ul><p style='margin-top:.7rem'><strong>No license needed:</strong> employees doing only clerical or managerial work who get <strong>no commission</strong>, people who only advertise, employers running their own employee benefit program, and similar.</p>"},
+{label:"Licensing · Keeping it",title:"Continuing education",body:"<div class=\"info-grid\"><div class=\"num-card\"><div class=\"num-big\">18</div><div class=\"num-desc\">hours of CE every 2 years</div></div><div class=\"num-card\"><div class=\"num-big\">3</div><div class=\"num-desc\">of those hours must be ethics</div></div><div class=\"num-card\"><div class=\"num-big\">2 / 4</div><div class=\"num-desc\">hours for crop-only / title producers</div></div></div><p style='margin-top:.7rem'>Due by the <strong>last day of your birth month</strong>: odd-year births in odd years, even in even years. New producers get at least 2 years before the first due date.</p>"},
+{label:"Licensing · Missed CE",title:"Missed CE, lapse and reinstatement",body:"<div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">Missed deadline</div><div class=\"info-val\">License <strong>suspended 90 days</strong> + $100 fine</div></div><div class=\"info-row\"><div class=\"info-label\">Within 1 year</div><div class=\"info-val\">Renewal app, $4 fee, 18 hours CE, $100 reinstatement, get reappointed</div></div><div class=\"info-row\"><div class=\"info-label\">1 to 4 years</div><div class=\"info-val\">Reapply, finish CE, $90 application + $100 reinstatement, reappointed</div></div><div class=\"info-row\"><div class=\"info-label\">After 4 years</div><div class=\"info-val\">New license and <strong>pass the exam again</strong></div></div></div><div class=\"know-this\"><div class=\"know-this-label\">Know This</div><p>Report a change of address or name within <strong>30 days</strong>.</p></div>"},
+{label:"Licensing · Discipline",title:"Suspension and revocation",body:"<ul class=\"bullet\"><li>License obtained by fraud</li><li>Misleading policy comparisons</li><li>Misdemeanor or felony conviction</li><li>Violating a Commissioner's subpoena or order</li><li>Forging a name on an application</li><li>Not paying child support or state income tax</li></ul><p style='margin-top:.7rem'>After revocation, wait <strong>2 years</strong> to reapply. Instead of revoking, the Commissioner may <strong>censure</strong> or fine ($500 / $2,500 nonwillful, $1,000 / $5,000 willful).</p>"},
+{label:"Marketing Practices",title:"Unfair trade practices",body:"<div class=\"info-grid\"><div class=\"info-row\"><div class=\"info-label\">Misrepresentation</div><div class=\"info-val\">False or misleading statements or illustrations about benefits, terms or dividends (spoken counts too)</div></div><div class=\"info-row\"><div class=\"info-label\">False advertising</div><div class=\"info-val\">Untrue ads; calling a policy a share of stock; a name that suggests you're an insurer</div></div><div class=\"info-row\"><div class=\"info-label\">Rebating</div><div class=\"info-val\">Any inducement not in the policy. Offering <strong>and</strong> accepting are both illegal</div></div><div class=\"info-row\"><div class=\"info-label\">Twisting</div><div class=\"info-val\">Misleading comparison that gets someone to drop a policy to their detriment</div></div><div class=\"info-row\"><div class=\"info-label\">Coercion</div><div class=\"info-val\">Requiring insurance from a certain insurer as a condition of a loan</div></div><div class=\"info-row\"><div class=\"info-label\">Defamation</div><div class=\"info-val\">Statements meant to injure someone in the business</div></div><div class=\"info-row\"><div class=\"info-label\">Unfair discrimination</div><div class=\"info-val\">Different rates for people in the same class or life expectancy</div></div></div>"},
+{label:"Chapter 9 · Recap",title:"The numbers sheet",body:"<div class=\"info-grid\"><div class=\"num-card\"><div class=\"num-big\">4 yrs</div><div class=\"num-desc\">Commissioner's term</div></div><div class=\"num-card\"><div class=\"num-big\">5 yrs</div><div class=\"num-desc\">Exam of every insurer, at least</div></div><div class=\"num-card\"><div class=\"num-big\">15 days</div><div class=\"num-desc\">Hearing after written request</div></div><div class=\"num-card\"><div class=\"num-big\">30 days</div><div class=\"num-desc\">Appointment filing; report address change</div></div><div class=\"num-card\"><div class=\"num-big\">90 days</div><div class=\"num-desc\">CE suspension; exam waiver window</div></div><div class=\"num-card\"><div class=\"num-big\">180 days</div><div class=\"num-desc\">Temporary license</div></div><div class=\"num-card\"><div class=\"num-big\">2 yrs</div><div class=\"num-desc\">Reapply after revocation; surrender waiver</div></div><div class=\"num-card\"><div class=\"num-big\">4 yrs</div><div class=\"num-desc\">Expired: must retest</div></div></div>"}
+];
+
+let cur = 0;
+
+function render() {
+  const s = SLIDES[cur];
+  document.getElementById('content').innerHTML =
+    `<div class="card-label">${s.label}</div><div class="card-title">${s.title}</div><div class="card-body">${s.body}</div>`;
+  document.getElementById('fill').style.width = ((cur + 1) / SLIDES.length * 100) + '%';
+  document.getElementById('counter').textContent = (cur + 1) + ' of ' + SLIDES.length;
+  document.getElementById('slideNum').textContent = (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === SLIDES.length - 1 ? '✓ Done' : 'Next →';
+  document.getElementById('nextBtn').onclick = cur === SLIDES.length - 1
+    ? () => window.location.href = 'LH_Dashboard.html'
+    : () => go(1);
+}
+
+function go(dir) {
+  cur = Math.max(0, Math.min(SLIDES.length - 1, cur + dir));
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

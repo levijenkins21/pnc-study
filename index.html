@@ -3,285 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P&C Exam — Study Dashboard</title>
+<title>Life & Health Licensing Exam — Study Dashboard</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e2e2e2; min-height: 100vh; padding: 2rem 1rem; }
-  .container { max-width: 720px; margin: 0 auto; }
-  .header { margin-bottom: 2rem; }
-  .header h1 { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-  .header p { font-size: 13px; color: #555; }
-  .progress-summary { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; gap: 2rem; }
-  .stat { display: flex; flex-direction: column; gap: 3px; }
-  .stat-val { font-size: 22px; font-weight: 600; color: #5b8dee; }
-  .stat-label { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
-  .chapter { margin-bottom: 1.5rem; }
-  .chapter-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; cursor: pointer; user-select: none; }
-  .chapter-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
-  .chapter-progress { font-size: 11px; color: #444; }
-  .chapter-body { display: none; }
-  .chapter-body.open { display: block; }
-  .section-row { display: flex; align-items: center; justify-content: space-between; background: #141414; border: 1px solid #1e1e1e; border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; transition: border-color 0.15s; }
-  .section-row:hover { border-color: #2a2a2a; }
-  .section-row.done { border-color: #1a3a1a; }
-  .section-row.done .section-name { color: #aaa; }
-  .section-name { font-size: 14px; color: #e2e2e2; flex: 1; }
-  .section-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .badge-done { font-size: 10px; letter-spacing: 1px; color: #3a8a3a; background: #0d1f0d; border: 1px solid #1a3a1a; border-radius: 6px; padding: 3px 8px; }
-  .btn { padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; border-radius: 7px; border: 1px solid #2a2a2a; background: #1a1a1a; color: #e2e2e2; text-decoration: none; display: inline-block; transition: background 0.15s, border-color 0.15s; }
-  .btn:hover { background: #222; border-color: #3a3a3a; }
-  .btn-blue { border-color: #1e3a6e; background: #0d1a2e; color: #5b8dee; }
-  .btn-blue:hover { background: #112040; }
-  .btn-sm { padding: 4px 10px; font-size: 11px; }
-  .divider { border: none; border-top: 1px solid #1a1a1a; margin: 1.5rem 0; }
-  .note { font-size: 12px; color: #444; text-align: center; margin-top: 2rem; line-height: 1.6; }
-  /* notes section */
-  .notes-section { margin-bottom: 2rem; }
-  .notes-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; cursor: pointer; user-select: none; }
-  .notes-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
-  .notes-body { display: none; }
-  .notes-body.open { display: block; }
-  .notes-card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1rem 1.1rem; }
-  .notes-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-  .notes-add-row { display: flex; gap: 8px; }
-  .notes-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; color: #e2e2e2; font-size: 13px; padding: 8px 12px; font-family: inherit; outline: none; transition: border-color .15s; }
-  .notes-input:focus { border-color: #3a3a3a; }
-  .notes-add-btn { padding: 8px 16px; font-size: 12px; font-weight: 500; cursor: pointer; border-radius: 8px; border: 1px solid #1e3a6e; background: #0d1a2e; color: #5b8dee; white-space: nowrap; }
-  .notes-add-btn:hover { background: #112040; }
-  .notes-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-  .note-item { display: flex; align-items: flex-start; gap: 10px; background: #1a1a1a; border: 1px solid #242424; border-radius: 8px; padding: 10px 12px; }
-  .note-dot { width: 6px; height: 6px; border-radius: 50%; background: #5b8dee; flex-shrink: 0; margin-top: 5px; }
-  .note-text { font-size: 13px; color: #ccc; line-height: 1.5; flex: 1; word-break: break-word; }
-  .note-meta { font-size: 10px; color: #444; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
-  .note-del { font-size: 14px; color: #333; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0 2px; transition: color .15s; }
-  .note-del:hover { color: #c05050; }
-  .notes-empty { font-size: 12px; color: #333; padding: 8px 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overflow-x: hidden; }
+body {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e2e2e2;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 3rem;
+  -webkit-text-size-adjust: 100%;
+}
+.container { max-width: 680px; margin: 0 auto; width: 100%; }
+
+/* Header */
+.header { margin-bottom: 2rem; }
+.header h1 { font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+.header p { font-size: 13px; color: #666; line-height: 1.5; }
+
+/* Continue Card */
+.continue-card {
+  background: linear-gradient(135deg, #0d1a2e 0%, #1a1a2e 100%);
+  border: 1px solid #1e3a6e;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.continue-card:hover { border-color: #5b8dee; box-shadow: 0 0 24px rgba(91, 141, 238, 0.15); }
+.continue-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #5b8dee; margin-bottom: 8px; }
+.continue-title { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.continue-desc { font-size: 13px; color: #8a9ab8; }
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 1.75rem;
+}
+.stat-card {
+  background: #0f0f0f;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-val { font-size: 28px; font-weight: 700; color: #5b8dee; line-height: 1; }
+.stat-label { font-size: 11px; color: #666; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Chapter List */
+.chapter { margin-bottom: 10px; }
+.chapter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  cursor: pointer;
+  user-select: none;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.chapter-header.locked { cursor: default; opacity: 0.5; }
+.chapter-title-block { min-width: 0; flex: 1; }
+.chapter-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #666;
+}
+.chapter.has-pages .chapter-title { color: #aaa; }
+.chapter-name {
+  font-size: 14px;
+  color: #888;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+.chapter.has-pages .chapter-name { color: #bbb; }
+.chapter-meta { font-size: 11px; color: #444; flex-shrink: 0; white-space: nowrap; }
+.chapter.coming .chapter-meta { color: #333; }
+.chevron { font-size: 11px; color: #444; margin-left: 10px; flex-shrink: 0; }
+
+.chapter-body { display: none; padding-bottom: 12px; }
+.chapter-body.open { display: block; }
+
+/* Slot buttons */
+.slot-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.slot-btn {
+  flex: 1 1 115px;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid #1e3a6e;
+  background: #0d1a2e;
+  color: #5b8dee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  font-family: inherit;
+  cursor: pointer;
+}
+.slot-btn:hover { background: #112040; border-color: #2a4a7e; }
+.coming-card {
+  background: #0f0f0f;
+  border: 1px solid #1a1a1a;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #444;
+}
+
+/* Global Tools */
+.tools-section { margin: 2rem 0 1.5rem; }
+.tools-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 10px;
+}
+.tool-card {
+  background: #0f0f0f;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tool-card:hover { background: #121212; border-color: #2a2a2a; }
+.tool-info { flex: 1; min-width: 0; }
+.tool-name { font-size: 14px; font-weight: 500; color: #ddd; margin-bottom: 3px; }
+.tool-desc { font-size: 12px; color: #666; line-height: 1.4; }
+.tool-arrow { font-size: 16px; color: #444; flex-shrink: 0; }
+
+/* Archive Link */
+.archive-link {
+  display: inline-block;
+  padding: 8px 14px;
+  margin-top: 2rem;
+  font-size: 12px;
+  color: #555;
+  background: #0f0f0f;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+.archive-link:hover { border-color: #2a2a2a; color: #888; }
+
+.footer-note { font-size: 12px; color: #333; text-align: center; margin-top: 3rem; line-height: 1.6; }
+
+@media (max-width: 480px) {
+  .stats-grid { gap: 8px; }
+  .stat-card { padding: 1rem; }
+  .stat-val { font-size: 24px; }
+}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>P&amp;C Licensing Exam</h1>
-    <p>Study dashboard — click a chapter to expand, open any completed slideshow</p>
+    <h1>Life & Health Licensing Exam</h1>
+    <p>Kansas Life Producer (12-KS-01) & Life/Accident/Health (12-KS-05)<br>Study dashboard — tap a chapter to open lesson, flashcards, or quiz</p>
   </div>
 
-  <div class="progress-summary">
-    <div class="stat"><span class="stat-val" id="done-count">0</span><span class="stat-label">Sections done</span></div>
-    <div class="stat"><span class="stat-val" id="total-count">0</span><span class="stat-label">Total sections</span></div>
-    <div class="stat"><span class="stat-val" id="pct">0%</span><span class="stat-label">Complete</span></div>
-  </div>
+  <div id="continueCard" style="display:none"></div>
 
-  <!-- Notes Section -->
-  <div class="notes-section">
-    <div class="notes-header" onclick="toggleNotes()">
-      <span class="notes-title">📋 My Notes</span>
-      <span id="notes-toggle-icon" style="font-size:11px;color:#444">▼</span>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-val" id="pagesReady">3</span>
+      <span class="stat-label">Pages Ready</span>
     </div>
-    <div class="notes-body" id="notesBody">
-      <div class="notes-card">
-        <div class="notes-add-row">
-          <input class="notes-input" id="noteInput" type="text" placeholder="Add a note, reminder, or anything on your mind…" onkeydown="if(event.key==='Enter')addNote()">
-          <button class="notes-add-btn" onclick="addNote()">+ Add</button>
-        </div>
-        <div class="notes-list" id="notesList"></div>
+    <div class="stat-card">
+      <span class="stat-val" id="chaptersStarted">1</span>
+      <span class="stat-label">Chapters Started</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="totalQuestions">21</span>
+      <span class="stat-label">Quiz Questions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="missedCount">0</span>
+      <span class="stat-label">Missed Questions</span>
+    </div>
+  </div>
+
+  <div class="tools-section">
+    <div class="tools-title">Practice Tools</div>
+    <a href="missed-questions.html" class="tool-card">
+      <div class="tool-info">
+        <div class="tool-name">Missed Questions Deck</div>
+        <div class="tool-desc">Review every question you've gotten wrong</div>
       </div>
-    </div>
+      <span class="tool-arrow">→</span>
+    </a>
+    <a href="practice-exam.html" class="tool-card">
+      <div class="tool-info">
+        <div class="tool-name">Timed Practice Exam</div>
+        <div class="tool-desc">Life-only or Life & Health, real exam conditions</div>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
+    <a href="score-history.html" class="tool-card">
+      <div class="tool-info">
+        <div class="tool-name">Score History</div>
+        <div class="tool-desc">Track your quiz scores and progress over time</div>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
   </div>
-  <hr class="divider" style="margin-top:0">
 
+  <div class="tools-title" style="margin-top:2rem">Chapters</div>
   <div id="chapters"></div>
 
-  <p class="note">Slideshows are HTML files saved in the same folder as this dashboard.<br>Open this file and the slideshows from the same folder and links will work.</p>
+  <a href="pc/PC_Dashboard.html" class="archive-link">← P&C Study Site (archived)</a>
+
+  <p class="footer-note">Only chapters with pages added are shown. New chapters appear as content lands.</p>
 </div>
 
+<script src="question-banks.js"></script>
 <script>
 const CHAPTERS = [
-  {
-    title: "Chapter 1",
-    name: "Chapter 1",
-    sections: []
-  },
-  {
-    title: "Chapter 2",
-    name: "Chapter 2",
-    sections: []
-  },
-  {
-    title: "Chapter 3",
-    name: "Chapter 3",
-    sections: []
-  },
-  {
-    title: "Chapter 4",
-    name: "Chapter 4 · Casualty & Liability Insurance",
-    sections: [
-      { name: "Introduction", file: "PC_Ch4_Intro.html" },
-      { name: "Automotive: Personal Auto & Business Auto", file: "PC_Ch4_Personal_Business_Auto.html" },
-      { name: "Commercial General Liability (CGL)", file: "PC_Ch4_CGL.html" },
-      { name: "Businessowners Policy (BOP)", file: "PC_Ch4_BOP.html" },
-      { name: "Workers Compensation, Employers Liability, and Related Issues", file: "PC_Ch4_WorkersComp.html" },
-      { name: "Crime", file: "PC_Ch4_Crime.html" },
-      { name: "Professional Liability", file: "PC_Ch4_ProfessionalLiability.html" },
-      { name: "Umbrella and Excess Liability", file: "PC_Ch4_UmbrellaExcess.html" },
-      { name: "Bonds", file: "PC_Ch4_Bonds.html" }
-    ],
-    tools: [
-      { name: "Chapter 4 Flashcards (78 cards)", file: "PC_Ch4_Flashcards.html", icon: "🃏" },
-      { name: "Chapter 4 Quiz (40 questions)", file: "PC_Ch4_Quiz.html", icon: "📝" },
-      { name: "FX Recap Flashcards (55 cards)", file: "PC_Ch4_FX_Recap_Flashcards.html", icon: "📖" }
-    ]
-  },
-  {
-    title: "Chapter 5",
-    name: "Chapter 5",
-    sections: []
-  },
-  {
-    title: "Chapter 6",
-    name: "Chapter 6",
-    sections: []
-  },
-  {
-    title: "Chapter 7",
-    name: "Chapter 7",
-    sections: []
-  },
-  {
-    title: "Chapter 8",
-    name: "Chapter 8",
-    sections: []
-  },
-  {
-    title: "Chapter 9",
-    name: "Chapter 9",
-    sections: []
-  }
+  { title: "Chapter 1",  prefix: "LH_Ch1" },
+  { title: "Chapter 2",  prefix: "LH_Ch2" },
+  { title: "Chapter 3",  prefix: "LH_Ch3" },
+  { title: "Chapter 4",  prefix: "LH_Ch4" },
+  { title: "Chapter 5",  prefix: "LH_Ch5" },
+  { title: "Chapter 6",  prefix: "LH_Ch6" },
+  { title: "Chapter 7",  prefix: "LH_Ch7" },
+  { title: "Chapter 8",  prefix: "LH_Ch8" },
+  { title: "Chapter 9",  prefix: "LH_Ch9", name: "Kansas Statutes Common to All Lines" },
+  { title: "Chapter 10", prefix: "LH_Ch10" },
+  { title: "Chapter 11", prefix: "LH_Ch11" },
+  { title: "Key Facts",  files: [{ label: "Key Facts", file: "LH_KeyFacts.html" }] },
+  { title: "Kansas Law", files: [{ label: "Kansas Law", file: "LH_KansasLaw.html" }] }
 ];
 
-function getSaved() {
-  try { return JSON.parse(localStorage.getItem('pc_done') || '{}'); } catch { return {}; }
+const SLOT_LABELS = [
+  { label: "Lesson",     suffix: "_Lesson.html" },
+  { label: "Flashcards", suffix: "_Flashcards.html" },
+  { label: "Quiz",       suffix: "_Quiz.html" }
+];
+
+const LH_PAGES = [
+  "LH_Ch9_Lesson.html",
+  "LH_Ch9_Flashcards.html",
+  "LH_Ch9_Quiz.html"
+];
+
+function existingSet() { return new Set(LH_PAGES); }
+
+function slotsFor(ch, present) {
+  if (ch.files) return ch.files.filter(s => present.has(s.file));
+  return SLOT_LABELS.map(s => ({ label: s.label, file: ch.prefix + s.suffix })).filter(s => present.has(s.file));
 }
 
-function markDone(file) {
-  const d = getSaved(); d[file] = true;
-  localStorage.setItem('pc_done', JSON.stringify(d));
-  render();
+function getMissedCount() {
+  try {
+    const missed = JSON.parse(localStorage.getItem('lh_missed') || '{}');
+    return Object.keys(missed).length;
+  } catch { return 0; }
+}
+
+function getTotalQuestions() {
+  if (typeof window.QUESTION_BANKS === 'undefined') return 21;
+  let total = 0;
+  for (let key in window.QUESTION_BANKS) {
+    total += window.QUESTION_BANKS[key].length;
+  }
+  return total;
 }
 
 function render() {
-  const done = getSaved();
-  const el = document.getElementById('chapters');
-  let totalSections = 0, doneSections = 0;
+  const present = existingSet();
+  const root = document.getElementById('chapters');
+  let ready = 0, started = 0;
 
-  el.innerHTML = CHAPTERS.map((ch, ci) => {
-    const hasSections = ch.sections.length > 0;
-    const chDone = ch.sections.filter(s => done[s.file]).length;
-    totalSections += ch.sections.length;
-    doneSections += chDone;
+  root.innerHTML = CHAPTERS.map((ch, i) => {
+    const available = slotsFor(ch, present);
+    const totalSlots = ch.files ? ch.files.length : SLOT_LABELS.length;
+    ready += available.length;
+    if (available.length) started++;
 
-    const rows = ch.sections.map(s => {
-      const isDone = done[s.file];
-      return `<div class="section-row ${isDone ? 'done' : ''}">
-        <span class="section-name">${s.name}</span>
-        <div class="section-actions">
-          ${isDone ? '<span class="badge-done">✓ DONE</span>' : ''}
-          ${s.file ? `<a class="btn btn-blue btn-sm" href="${s.file}" target="_blank">Open →</a>` : '<span style="font-size:11px;color:#333;">No slideshow yet</span>'}
-          ${!isDone && s.file ? `<button class="btn btn-sm" onclick="markDone('${s.file}')">Mark done</button>` : ''}
-        </div>
-      </div>`;
-    }).join('');
+    const hasPages = available.length > 0;
+    const meta = hasPages ? available.length + ' of ' + totalSlots : 'Coming soon';
+    const chevron = hasPages ? '<span class="chevron" id="chev-' + i + '">▼</span>' : '';
+    const body = hasPages
+      ? '<div class="slot-row">' + available.map(s => '<a class="slot-btn" href="' + s.file + '">' + s.label + '</a>').join('') + '</div>'
+      : '<div class="coming-card">Chapter content has not been added yet.</div>';
 
-    const toolRows = (ch.tools || []).map(t =>
-      `<div class="section-row" style="border-color:#1a2e1a">
-        <span class="section-name">${t.icon || '🔧'} ${t.name}</span>
-        <div class="section-actions">
-          <a class="btn btn-sm" href="${t.file}" target="_blank" style="border-color:#1a3a1a;background:#0a1f0a;color:#4aaa4a">Open →</a>
-        </div>
-      </div>`
-    ).join('');
-
-    const emptyMsg = hasSections ? '' : `<div style="font-size:12px;color:#333;padding:8px 0 12px;">No sections built yet — paste a section to Claude to generate one.</div>`;
-
-    return `<div class="chapter">
-      <div class="chapter-header" onclick="toggle(${ci})">
-        <span class="chapter-title">${ch.name}</span>
-        <span class="chapter-progress">${hasSections ? chDone + '/' + ch.sections.length : ''}</span>
-      </div>
-      <div class="chapter-body" id="ch-${ci}">
-        ${rows}
-        ${toolRows}
-        ${emptyMsg}
-      </div>
-    </div><hr class="divider">`;
+    return (
+      '<div class="chapter' + (hasPages ? ' has-pages' : ' coming') + '">' +
+        '<div class="chapter-header' + (hasPages ? '' : ' locked') + '" ' + (hasPages ? 'onclick="toggleChapter(' + i + ')"' : '') + '>' +
+          '<div class="chapter-title-block">' +
+            '<div class="chapter-title">' + ch.title + '</div>' +
+            (ch.name ? '<div class="chapter-name">' + ch.name + '</div>' : '') +
+          '</div>' +
+          '<span class="chapter-meta">' + meta + '</span>' +
+          chevron +
+        '</div>' +
+        '<div class="chapter-body" id="ch-' + i + '">' + body + '</div>' +
+      '</div>'
+    );
   }).join('');
 
-  document.getElementById('done-count').textContent = doneSections;
-  document.getElementById('total-count').textContent = totalSections;
-  document.getElementById('pct').textContent = totalSections ? Math.round((doneSections/totalSections)*100) + '%' : '0%';
+  document.getElementById('pagesReady').textContent = ready;
+  document.getElementById('chaptersStarted').textContent = started;
+  document.getElementById('missedCount').textContent = getMissedCount();
+  document.getElementById('totalQuestions').textContent = getTotalQuestions();
 
-  // Auto-open chapter 4 since it has content
-  const ch4 = document.getElementById('ch-3');
-  if (ch4) ch4.classList.add('open');
-}
-
-function toggle(i) {
-  const el = document.getElementById('ch-' + i);
-  el.classList.toggle('open');
-}
-
-// ── Notes ──────────────────────────────────────────────────────
-function getNotes() {
-  try { return JSON.parse(localStorage.getItem('pc_notes') || '[]'); } catch { return []; }
-}
-function saveNotes(arr) {
-  localStorage.setItem('pc_notes', JSON.stringify(arr));
-}
-function addNote() {
-  const input = document.getElementById('noteInput');
-  const text = input.value.trim();
-  if (!text) return;
-  const notes = getNotes();
-  const now = new Date();
-  const label = (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  notes.unshift({ text, ts: label, id: Date.now() });
-  saveNotes(notes);
-  input.value = '';
-  renderNotes();
-}
-function deleteNote(id) {
-  const notes = getNotes().filter(n => n.id !== id);
-  saveNotes(notes);
-  renderNotes();
-}
-function renderNotes() {
-  const notes = getNotes();
-  const el = document.getElementById('notesList');
-  if (!el) return;
-  if (notes.length === 0) {
-    el.innerHTML = '<div class="notes-empty">No notes yet — add your first one above.</div>';
-    return;
+  const lastPage = localStorage.getItem('lh_last_page');
+  if (lastPage && LH_PAGES.includes(lastPage)) {
+    const card = document.getElementById('continueCard');
+    const pageName = lastPage.replace('LH_', '').replace('.html', '').replace(/_/g, ' ');
+    card.innerHTML = '<div class="continue-label">Continue Studying</div><div class="continue-title">' + pageName + '</div><div class="continue-desc">Pick up where you left off</div>';
+    card.onclick = () => window.location.href = lastPage;
+    card.style.display = 'block';
   }
-  el.innerHTML = notes.map(n =>
-    `<div class="note-item">
-      <div class="note-dot"></div>
-      <span class="note-text">${n.text.replace(/</g,'&lt;')}</span>
-      <span class="note-meta">${n.ts}</span>
-      <span class="note-del" onclick="deleteNote(${n.id})" title="Delete">✕</span>
-    </div>`
-  ).join('');
 }
-function toggleNotes() {
-  const body = document.getElementById('notesBody');
-  const icon = document.getElementById('notes-toggle-icon');
-  body.classList.toggle('open');
-  icon.textContent = body.classList.contains('open') ? '▲' : '▼';
-  if (body.classList.contains('open')) renderNotes();
-}
-// Auto-open notes if there are any saved
-if (getNotes().length > 0) {
-  document.getElementById('notesBody').classList.add('open');
-  document.getElementById('notes-toggle-icon').textContent = '▲';
-  renderNotes();
+
+function toggleChapter(i) {
+  const body = document.getElementById('ch-' + i);
+  const chev = document.getElementById('chev-' + i);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (chev) chev.textContent = isOpen ? '▼' : '▲';
 }
 
 render();

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L&amp;H — Ch9 Flashcards</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e2e2e2;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1rem 1rem 4rem}
+  .top{width:100%;max-width:660px;margin-bottom:1rem}
+  .title{font-size:11px;letter-spacing:2px;color:#5b8dee;text-transform:uppercase;margin-bottom:4px}
+  h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.3rem}
+  .subtitle{font-size:12px;color:#555;margin-bottom:.8rem}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem}
+  select{background:#1a1a1a;border:1px solid #2a2a2a;color:#e2e2e2;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+  .btn-sm{padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .btn-sm:hover{background:#222}
+  .prog-wrap{background:#1e1e1e;border-radius:2px;height:3px;margin-bottom:.4rem}
+  .prog-fill{height:3px;background:#5b8dee;border-radius:2px;transition:width .3s}
+  .stats{font-size:12px;color:#555;display:flex;gap:16px;margin-bottom:1rem}
+  .stat-val{color:#e2e2e2;font-weight:600}
+  .card-wrap{width:100%;max-width:660px;perspective:1200px;cursor:pointer;margin-bottom:1rem;user-select:none}
+  .card-inner{position:relative;min-height:300px;transition:transform .5s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg)}
+  .face{position:absolute;width:100%;min-height:300px;border-radius:16px;padding:2rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center}
+  .front{background:#141414;border:1px solid #222}
+  .back{background:#0d1a2e;border:1px solid #1e3a6e;transform:rotateY(180deg)}
+  .face-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:.6rem}
+  .back .face-label{color:#1e3a6e}
+  .section-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5b8dee;margin-bottom:.5rem;text-align:center}
+  .q-text{font-size:16px;font-weight:500;color:#fff;line-height:1.5;text-align:center}
+  .a-text{font-size:15px;color:#ccc;line-height:1.65;text-align:center}
+  .nav-row{width:100%;max-width:660px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+  .counter{font-size:13px;color:#555;text-align:center;flex:1}
+  .nav-btn{padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;border:1px solid #2a2a2a;background:#1a1a1a;color:#e2e2e2;transition:background .15s}
+  .nav-btn:hover{background:#222}
+  .nav-btn:disabled{opacity:.3;cursor:default}
+  .know-row{width:100%;max-width:660px;display:none;gap:10px;margin-bottom:1rem}
+  .card-wrap.flipped ~ .know-row{display:flex}
+  .know-btn{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;border:none;transition:opacity .15s}
+  .know-btn.yes{background:#0a2e0a;color:#4aaa4a;border:1px solid #1a4a1a}
+  .know-btn.no{background:#2e0a0a;color:#c05050;border:1px solid #4a1a1a}
+  .know-btn:hover{opacity:.8}
+  .done-screen{display:none;width:100%;max-width:660px;background:#141414;border:1px solid #222;border-radius:16px;padding:2rem;text-align:center}
+  .done-screen.show{display:block}
+  @media(max-width:480px){.q-text{font-size:14px}.a-text{font-size:13px}.face{padding:1.4rem}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="title">Life &amp; Health Exam · Chapter 9</div>
+  <h1>Chapter Flashcards</h1>
+  <div class="subtitle">Kansas Statutes Common to All Lines</div>
+  <div class="controls">
+    <select id="sectionFilter" onchange="filterSection()">
+      <option value="all">All Topics</option>
+<option value="Commissioner">Commissioner</option>
+<option value="Insurers">Insurers</option>
+<option value="Guaranty">Guaranty</option>
+<option value="Licensing">Licensing</option>
+<option value="CE">CE</option>
+<option value="Marketing">Marketing</option>
+    </select>
+    <button class="btn-sm" onclick="shuffle()">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="resetProgress()">↺ Reset</button>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+  <div class="stats">
+    <span>Card <span class="stat-val" id="cardNum">1</span> of <span class="stat-val" id="cardTotal">0</span></span>
+    <span>✓ <span class="stat-val" id="knewCount" style="color:#4aaa4a">0</span> knew it</span>
+    <span>✗ <span class="stat-val" id="stillCount" style="color:#c05050">0</span> still learning</span>
+  </div>
+</div>
+
+<div class="card-wrap" id="cardWrap" onclick="flip()">
+  <div class="card-inner">
+    <div class="face front">
+      <div class="face-label">Question — tap to reveal answer</div>
+      <div class="section-tag" id="sectionText"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="face back">
+      <div class="face-label">Answer</div>
+      <div class="a-text" id="aText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="know-row" id="knowRow">
+  <button class="know-btn yes" onclick="markKnew()">✓ Knew it</button>
+  <button class="know-btn no" onclick="markLearning()">✗ Still learning</button>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">← Prev</button>
+  <span class="counter" id="counter"></span>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<div class="done-screen" id="doneScreen">
+  <div style="font-size:32px;margin-bottom:.5rem">🎉</div>
+  <div style="font-size:20px;font-weight:600;color:#fff;margin-bottom:.5rem">Deck complete!</div>
+  <div id="doneStats" style="font-size:14px;color:#aaa;margin-bottom:1.2rem"></div>
+  <button class="btn-sm" onclick="restart()" style="padding:10px 24px;font-size:14px">Start Over</button>
+  <button class="btn-sm" onclick="reviewLearning()" style="padding:10px 24px;font-size:14px;margin-left:8px">Review Still Learning</button>
+</div>
+
+<a href="LH_Dashboard.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+
+<script>
+const ALL_CARDS = [
+{ s:"Commissioner", q:"How long is the Kansas Commissioner's term, and how is the Commissioner chosen?", a:"4 years, elected with the other state officials." },
+{ s:"Commissioner", q:"Does the Commissioner write insurance laws?", a:"No. The legislature writes them; the Commissioner enforces the Insurance Code." },
+{ s:"Commissioner", q:"How often must every authorized insurer be examined?", a:"At least once every 5 years. The insurer pays for the exam." },
+{ s:"Commissioner", q:"What is the purpose of examining an insurer?", a:"To make sure it is solvent and complying with the law." },
+{ s:"Commissioner", q:"Within how many days of a written request must a hearing be held?", a:"15 days." },
+{ s:"Commissioner", q:"How must notice of a hearing be sent?", a:"By registered mail, stating time, place and purpose." },
+{ s:"Commissioner", q:"Who pays for a hearing if a violation is found?", a:"The person or insurer found in violation." },
+{ s:"Commissioner", q:"Penalty for a nonwillful violation of the Code's general provisions?", a:"Up to $500 each, max $2,500 for the same violation within 6 months." },
+{ s:"Commissioner", q:"Penalty for a willful violation of the Code's general provisions?", a:"Up to $1,000 each, max $5,000 for the same violation within 6 months." },
+{ s:"Commissioner", q:"Penalty for failing to file a required report?", a:"Up to $1,000 per violation plus up to $500 a week late." },
+{ s:"Commissioner", q:"Unfair trade practice fines, nonwillful?", a:"Up to $1,000 per act, max $10,000 total." },
+{ s:"Commissioner", q:"Unfair trade practice fines, willful?", a:"Up to $5,000 per act, max $50,000 in 6 months." },
+{ s:"Insurers", q:"What is a domestic insurer?", a:"One incorporated in Kansas." },
+{ s:"Insurers", q:"What is a foreign insurer?", a:"One incorporated in another state, DC or a U.S. territory." },
+{ s:"Insurers", q:"What is an alien insurer?", a:"One incorporated outside the United States." },
+{ s:"Insurers", q:"A company chartered in Puerto Rico selling in Kansas is…", a:"Foreign (territories count as foreign, not alien)." },
+{ s:"Insurers", q:"What must every insurer have before doing business in Kansas?", a:"A Certificate of Authority." },
+{ s:"Insurers", q:"What is a fraternal benefit society, and what can it sell?", a:"A member-only lodge, religious or fraternal group treated as a charity. Life, health and annuities, not property or liability." },
+{ s:"Insurers", q:"Authorized vs. unauthorized insurer?", a:"Authorized (admitted) holds a Certificate of Authority; unauthorized (nonadmitted) does not." },
+{ s:"Guaranty", q:"What does the Guaranty Association do?", a:"Pays covered claims when a member insurer becomes insolvent, by assessing the other members." },
+{ s:"Guaranty", q:"What are the Guaranty Association's 3 accounts?", a:"Life, health, annuity." },
+{ s:"Guaranty", q:"Guaranty limit on life death benefits?", a:"$300,000 for any one life." },
+{ s:"Guaranty", q:"Guaranty limit on life cash values?", a:"$100,000." },
+{ s:"Guaranty", q:"Guaranty limit on basic hospital, medical, surgical or major medical?", a:"$500,000." },
+{ s:"Guaranty", q:"Guaranty limit on annuities?", a:"$250,000 present value for any one life." },
+{ s:"Guaranty", q:"Can an agent say a policy is safe because of the Guaranty Association?", a:"No. That is an unfair trade practice." },
+{ s:"Licensing", q:"Whom does the agent represent?", a:"Always the insurer. What the agent knows, the insurer is presumed to know." },
+{ s:"Licensing", q:"How long is a temporary license good for?", a:"180 days, extendable once for another 180." },
+{ s:"Licensing", q:"Can a temporary licensee write new business?", a:"No." },
+{ s:"Licensing", q:"Who can get a temporary license?", a:"Spouse or representative after an agent's death or disability, a designee when an agent enters military service, or anyone when it serves the public." },
+{ s:"Licensing", q:"How soon must an insurer file an appointment with NIPR?", a:"Within 30 days. Late certification costs $25 a day." },
+{ s:"Licensing", q:"Who pays the appointment fee?", a:"The insurer." },
+{ s:"Licensing", q:"When do appointments renew?", a:"Every January 1." },
+{ s:"Licensing", q:"Minimum age for a Kansas license?", a:"18." },
+{ s:"Licensing", q:"Resident application and fingerprint fees?", a:"$30 application, $60 fingerprints." },
+{ s:"Licensing", q:"How long are an application and fingerprints good for?", a:"1 year." },
+{ s:"Licensing", q:"After failing the exam, how long until a retake?", a:"At least 7 calendar days. No limit on attempts." },
+{ s:"Licensing", q:"Name two ways the exam is waived.", a:"Licensed in another state; applying within 90 days of cancelling another state's license; Kansas license surrendered within 2 years; travel or crop only." },
+{ s:"Licensing", q:"Who does NOT need a license?", a:"Employees doing clerical, administrative or managerial work with no commission; people who only advertise; employers running their own benefit plan." },
+{ s:"CE", q:"How much CE every 2 years, and how much ethics?", a:"18 hours, including 3 of ethics." },
+{ s:"CE", q:"When is CE due?", a:"By the last day of your birth month: odd-year births in odd years, even in even years." },
+{ s:"CE", q:"What happens if CE isn't done on time?", a:"License suspended 90 days plus a $100 fine. Not done by then, it expires." },
+{ s:"CE", q:"After how long must you retake the exam?", a:"4 years after expiration." },
+{ s:"Licensing", q:"How soon must you report a change of address or name?", a:"30 days." },
+{ s:"Licensing", q:"After revocation, how long before reapplying?", a:"2 years." },
+{ s:"Licensing", q:"What can the Commissioner do instead of revoking a license?", a:"Censure, or fine $500 per violation (max $2,500 in 6 months), or $1,000 willful (max $5,000)." },
+{ s:"Marketing", q:"What is rebating?", a:"Any inducement not in the policy. Offering and accepting are both illegal." },
+{ s:"Marketing", q:"What is twisting?", a:"A misleading comparison that gets someone to drop or switch a policy to their detriment." },
+{ s:"Marketing", q:"What is coercion?", a:"Requiring someone to buy insurance from a certain insurer as a condition of a loan." },
+{ s:"Marketing", q:"What is defamation?", a:"A statement meant to injure someone in the insurance business, including malicious claims about finances." },
+{ s:"Marketing", q:"What is unfair discrimination?", a:"Charging different rates or benefits to people in the same class or with the same life expectancy." },
+{ s:"Marketing", q:"Calling a policy a share of stock is…", a:"False advertising (misrepresenting the policy's true nature)." }
+];
+
+let deck = [...ALL_CARDS];
+let idx = 0, knew = 0, still = 0;
+let marked = new Set();
+
+function filterSection() {
+  const val = document.getElementById('sectionFilter').value;
+  deck = val === 'all' ? [...ALL_CARDS] : ALL_CARDS.filter(c => c.s === val);
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function render() {
+  if (!deck.length) return;
+  const card = deck[idx];
+  document.getElementById('sectionText').textContent = card.s;
+  document.getElementById('qText').textContent = card.q;
+  document.getElementById('aText').textContent = card.a;
+  document.getElementById('cardWrap').classList.remove('flipped');
+  document.getElementById('cardNum').textContent = idx + 1;
+  document.getElementById('cardTotal').textContent = deck.length;
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + deck.length;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === deck.length - 1;
+  document.getElementById('prog').style.width = ((idx + 1) / deck.length * 100) + '%';
+  document.getElementById('knewCount').textContent = knew;
+  document.getElementById('stillCount').textContent = still;
+}
+
+function flip() { document.getElementById('cardWrap').classList.toggle('flipped'); }
+
+function markKnew() { if (!marked.has(idx)) { knew++; marked.add(idx); } next(); }
+function markLearning() { if (!marked.has(idx)) { still++; marked.add(idx); } next(); }
+
+function next() {
+  if (idx < deck.length - 1) { idx++; render(); } else { showDone(); }
+}
+function prev() { if (idx > 0) { idx--; render(); } }
+
+function shuffle() {
+  deck = [...ALL_CARDS].sort(() => Math.random() - .5);
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('sectionFilter').value = 'all';
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function resetProgress() {
+  deck = [...ALL_CARDS];
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('sectionFilter').value = 'all';
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function restart() { resetProgress(); }
+
+function reviewLearning() {
+  const learning = deck.filter((_, i) => marked.has(i) && still > 0);
+  deck = deck.filter((_, i) => marked.has(i));
+  if (!deck.length) deck = [...ALL_CARDS];
+  idx = 0; knew = 0; still = 0; marked.clear();
+  document.getElementById('doneScreen').classList.remove('show');
+  render();
+}
+
+function showDone() {
+  document.getElementById('doneStats').textContent =
+    'Knew it: ' + knew + ' · Still learning: ' + still + ' · Unmarked: ' + (deck.length - marked.size);
+  document.getElementById('doneScreen').classList.add('show');
+}
+
+render();
+</script>
+<a href="index.html" style="position:fixed;bottom:16px;left:16px;padding:8px 16px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-family:-apple-system,sans-serif;text-decoration:none;z-index:999">← Home</a>
+</body>
+</html>
